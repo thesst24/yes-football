@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const fs = require('fs');
 const multer = require('multer');
 const Member = require('../models/member.model');
 
@@ -14,9 +15,11 @@ const upload = multer({ storage });
 
 // CREATE
 router.post('/', upload.single('image'), async (req, res) => {
+  const imagePath = req.file ? '/uploads/' + req.file.filename : null;
   const member = new Member({
     image: req.file?.filename,
-    ...req.body
+    ...req.body,
+    image: imagePath
   });
   await member.save();
   res.json(member);
@@ -42,5 +45,19 @@ router.delete('/:id', async (req, res) => {
   await Member.findByIdAndDelete(req.params.id);
   res.json({ message: 'Deleted' });
 });
+
+
+// router status toggle
+router.patch('/:id/status', async (req, res) => {
+  const { status } = req.body;
+  if (typeof status !== 'boolean') {
+    return res.status(400).json({ error: 'status must be boolean' });
+  }
+
+  const member = await Member.findByIdAndUpdate(req.params.id, { status }, { new: true });
+  res.json(member);
+});
+
+
 
 module.exports = router;

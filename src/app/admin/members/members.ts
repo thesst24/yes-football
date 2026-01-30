@@ -2,19 +2,17 @@ import { Component } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
-import { RouterLink } from "@angular/router";
 import { Member } from '../../services/member';
-import { AddMember } from "./add-member/add-member";
-
+import { AddMember } from './add-member/add-member';
 
 @Component({
   selector: 'app-members',
-  imports: [CommonModule, ToggleSwitchModule,DatePipe, FormsModule, RouterLink, AddMember],
+  imports: [CommonModule, ToggleSwitchModule, DatePipe, FormsModule, AddMember],
   templateUrl: './members.html',
   styleUrl: './members.css',
 })
 export class Members {
- members: any[] = [];
+  members: any[] = [];
   showPopup = false;
   editData: any = null;
 
@@ -23,14 +21,14 @@ export class Members {
   ngOnInit() {
     this.load();
   }
-load() {
-  this.service.getAll().subscribe(res => {
-    this.members = (res as any[]).map(m => ({
-      ...m,
-      ageGroup: this.getAgeGroup(m.dateOfBirth)
-    }));
-  });
-}
+  load() {
+    this.service.getAll().subscribe((res) => {
+      this.members = (res as any[]).map((m) => ({
+        ...m,
+        ageGroup: this.getAgeGroup(m.dateOfBirth),
+      }));
+    });
+  }
 
   openAdd() {
     this.editData = null;
@@ -42,9 +40,18 @@ load() {
     this.showPopup = true;
   }
 
-  closePopup(refresh = false) {
+  closePopup(data?: any) {
     this.showPopup = false;
-    if (refresh) this.load();
+
+    if (data && typeof data === 'object') {
+      // member ใหม่ push เข้า list
+      this.members.push({
+        ...data,
+        ageGroup: this.getAgeGroup(data.dateOfBirth),
+      });
+    } else {
+      this.load(); // สำหรับ edit / delete
+    }
   }
 
   delete(id: string) {
@@ -52,20 +59,38 @@ load() {
       this.service.delete(id).subscribe(() => this.load());
     }
   }
-getAgeGroup(dateOfBirth: string | Date): string {
-  if (!dateOfBirth) return '-';
+  getAgeGroup(dateOfBirth: string | Date): string {
+    if (!dateOfBirth) return '-';
 
-  const dob = new Date(dateOfBirth);
-  const today = new Date();
+    const dob = new Date(dateOfBirth);
+    const today = new Date();
 
-  let age = today.getFullYear() - dob.getFullYear();
-  const m = today.getMonth() - dob.getMonth();
+    let age = today.getFullYear() - dob.getFullYear();
+    const m = today.getMonth() - dob.getMonth();
 
-  if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
-    age--;
+    if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+      age--;
+    }
+
+    return `U${age}`;
   }
 
-  return `U${age}`;
-}
+  toggleStatus(member: any) {
+    if (!member._id) {
+      alert('Cannot update status: missing _id');
+      return;
+    }
 
+    const newStatus = !!member.status;
+
+    member.status = newStatus; // Optimistic UI
+
+    this.service.updateStatus(member._id, newStatus).subscribe({
+      next: () => {},
+      error: () => {
+        member.status = !newStatus; // rollback
+        alert('Cannot update status');
+      },
+    });
+  }
 }

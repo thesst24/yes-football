@@ -6,8 +6,8 @@ const memberSchema = new mongoose.Schema({
     nickname: String,
     guardian:  String,
     dateOfBirth: Date,
-    WhatsApp:Number,
-    status: { type: String, default: 'active'}, 
+    whatsapp:Number,
+    status: { type: Boolean, default: true},  
 }, { timestamps: true });
 
 module.exports = mongoose.model('Member',memberSchema);

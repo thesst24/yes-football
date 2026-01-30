@@ -1,50 +1,84 @@
-import { Component,Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Member } from '../../../services/member';
 
 @Component({
   selector: 'app-add-member',
+  standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './add-member.html',
-  styleUrl: './add-member.css',
+  styleUrls: ['./add-member.css'],
 })
 export class AddMember {
+   @Input() data: any;
+  @Output() close = new EventEmitter<any>();
 
-  @Input() data: any;
-  @Output() close = new EventEmitter<boolean>();
-
-  form: any = {};
+  form: any = { status: true };
   image!: File;
+  imagePreview: string | null = null;
+  
 
   constructor(private service: Member) {}
 
   ngOnInit() {
     if (this.data) {
       this.form = { ...this.data };
+
+      this.imagePreview = this.form.image
+  ? 'http://localhost:3000' + this.form.image
+  : null;
+
+      // ✅ แสดงรูปเดิมตอน edit
+      if (this.form.image) {
+        this.imagePreview = 'http://localhost:3000' + this.form.image;
+      }
     }
+    
   }
 
-  onFile(e: any) {
-    this.image = e.target.files[0];
+  
+onFile(event: Event) {
+  const input = event.target as HTMLInputElement;
+
+  if (!input.files || input.files.length === 0) return;
+
+  this.image = input.files[0];
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    this.imagePreview = reader.result as string; // 🔥 preview ทันที
+  };
+  reader.readAsDataURL(this.image);
+}
+removeImage() {
+  this.image = undefined as any;
+  this.imagePreview = null;
+
+  // ถ้า edit แล้วลบรูปเดิม
+  if (this.form.image) {
+    this.form.image = null;
   }
+}
+
 
   save() {
-    if (!this.form.fullname ||
-      !this.form.guardian ||
-      !this.form.dateOfBirth ||
-      !this.form.WhatsApp) {
-    return;}
+    if (!this.form.fullname || !this.form.guardian || !this.form.dateOfBirth || !this.form.whatsapp) {
+      return;
+    }
+
+    if (this.form.status === undefined) {
+      this.form.status = true;
+    }
+
     const fd = new FormData();
     Object.keys(this.form).forEach(k => fd.append(k, this.form[k]));
     if (this.image) fd.append('image', this.image);
 
     if (this.form._id) {
-      this.service.update(this.form._id, fd)
-        .subscribe(() => this.close.emit(true));
+      this.service.update(this.form._id, fd).subscribe(() => this.close.emit(true));
     } else {
-      this.service.create(fd)
-        .subscribe(() => this.close.emit(true));
+      this.service.create(fd).subscribe(res => this.close.emit(res));
     }
   }
 }

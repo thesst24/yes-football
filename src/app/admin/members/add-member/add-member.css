@@ -13,12 +13,73 @@ form {
     border-radius: 47px;
     padding: 20px 50px 50px;
 }
+.title {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
 .input-container {
     display: flex;
     width: 100%;
-    gap: 20px;
-    justify-content: space-between;
+    gap: 50px;
 }
+
+.avatar-wrapper {
+  text-align: center;
+  margin-bottom: 16px;
+
+}
+
+.avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px dashed #ccc;
+  cursor: pointer;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: .2s;
+}
+
+.avatar:hover {
+  border-color: #3b82f6;
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.placeholder {
+  font-size: 40px;
+  color: #999;
+}
+
+.avatar-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.avatar-actions button {
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  cursor: pointer;
+}
+
+.avatar-actions .danger {
+  color: #dc2626;
+  border-color: #dc2626;
+}
+
+
 .box-input {
     display: flex;
     flex-direction: column;
@@ -46,6 +107,18 @@ input[type="file"] {
     border-bottom: 1px solid #5f5f5f;
     padding: 8px;
 }
+/* image preview */
+.image-preview {
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.image-preview img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 50%;
+}
 
 .btn {
     display: flex;
@@ -71,7 +144,7 @@ input[type="file"] {
     text-align: center;
     border-radius: 15px;
     cursor: pointer;
-    width: 218px;
+    width: 160px;
     height: 48px;
     font-size: var(--font-size-fc);
     font-weight: bold;

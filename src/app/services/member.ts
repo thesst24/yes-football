@@ -9,6 +9,12 @@ export class Member {
 
   constructor(private http: HttpClient) {}
 
+  updateStatus(id: string, status: boolean) {
+    return this.http.patch(`${this.api}/${id}/status`, { status });
+  }
+
+
+
   getAll() {
     return this.http.get(this.api);
   }
@@ -24,4 +30,5 @@ export class Member {
   delete(id: string) {
     return this.http.delete(`${this.api}/${id}`);
   }
+  
 }
