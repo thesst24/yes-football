@@ -1,0 +1,66 @@
+<div class="container">
+    <header>
+        <h2 class="title-member">Members: <span class="member-number">(102/156)</span></h2>
+        <div class="search">
+            <i class="pi pi-search icon-search"></i>
+            <input type="text" name="search" id="search" placeholder="Search..." />
+        </div>
+        <a class="btn-new-member" (click)="openAdd()">
+            <i class="pi pi-plus-circle"></i>
+            New Member
+        </a>
+    </header>
+
+    <table class="data-member">
+        <thead class="table-member">
+            <tr class="header-data">
+                <p>Account</p>
+                <p>Guardian</p>
+                <p>Date of birth <i class="pi pi-sort-alt"></i></p>
+                <p>U <i class="pi pi-sort-alt"></i></p>
+                <p>Phone</p>
+                <p>Status</p>
+                <p>Action</p>
+            </tr>
+
+            <div class="data"  >
+                <ul *ngFor="let list of members">
+                    <li>
+                        <div class="profile">
+                            <img [src]="list.image" alt="profile">
+                            <div class="name">
+                                <p>{{list.fullname}}</p>
+                            <p class="nickname">{{list.nickname}}</p>
+                            </div>
+                        </div>
+                        <p>{{list.guardian}}</p>
+                        <p>{{list.dateOfBirth | date: "yyyy-MM-dd"}}</p>
+                        <p>{{list.ageGroup }}</p>
+                        <p>{{list.WhatsApp}}</p>
+                        <p-toggleswitch [(ngModel)]="list.status" class="toggle-active" title="toggle"/>
+                        <p>
+                            <i class="pi pi-pencil" title="edit" (click)="openEdit(list)"></i>
+                            <i class="pi pi-trash" title="delete" (click)="delete(list._id)"></i>
+                        </p>
+                    </li>
+                </ul>
+
+            </div>
+        </thead>
+    </table>
+    <div class="pagination">
+                    <div class="showing">
+                        <p>Showing 1-09 of 152</p>
+                    </div>
+                    <div class="pre-next">
+                        <button class="btn-pre"><i class="pi pi-angle-left"></i></button>
+                        <button class="btn-next"><i class="pi pi-angle-right"></i></button>
+                    </div>
+                </div>
+</div>
+
+<app-add-member
+    *ngIf="showPopup"
+    [data]="editData"
+    (close)="closePopup($event)">
+</app-add-member>

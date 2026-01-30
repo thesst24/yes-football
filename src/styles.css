@@ -1,1 +1,15 @@
 /* You can add global styles to this file, and also import other style files */
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Kufam:ital,wght@0,400..900;1,400..900&display=swap');
+@import "primeicons/primeicons.css";
+
+body {
+    font-family: "Kufam", sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg-body);
+}
+:root {
+    --bg-body: #f5f6fa;
+    --font-size-fc: 16px;
+}

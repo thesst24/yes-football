@@ -1,0 +1,28 @@
+.container {
+    display: flex;
+    max-width: 100%;
+    height: auto;
+}
+.sidebar {
+    height: auto;
+}
+.main {
+    width: 100%;
+}
+header {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding: 24px;
+    background-color: white;
+}
+header p {
+    font-size: var(--font-size-fc);
+    font-weight: 700;
+}
+.main-content {
+    width: 100%;
+    background-color: var(--bg-body);
+    height: 100vh;
+    padding: 24px;
+}

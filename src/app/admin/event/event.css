@@ -1,0 +1,145 @@
+.container {
+    background-color: white;
+    height: 100%;
+    border-radius: 15px;
+    padding: 24px;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.pre-title {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+.pre-title i {
+    margin-top: 3px;
+    font-size: 28px;
+}
+.pre-title p {
+    font-size: var(--font-size-fc);
+    color: #293690;
+}
+/* Search */
+.search {
+    width: 332px;
+    height: 40px;
+    position: relative;
+}
+.icon-search {
+    position: absolute;
+    top:50%;
+    transform: translateY(-60%);
+    left: 15px;
+    color: #484848;
+}
+.search input[type="text"] {
+    width: 100%;
+    height: 100%;
+    background-color: #F5F6FA;
+    border-radius: 20px;
+    border: 1px solid #d5d5d5;
+    padding: 0 40px;
+    outline: none;
+}
+.search input[type="text"]:focus {
+    outline: 1px solid #b1b1b1;
+}
+
+/* button add trial */
+.btn-add-trial {
+    width: 158px;
+    height: 45px;
+    background-color: #0db328;
+    border-radius: 6px;
+    color: white;
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+/* content */
+.content {
+    border: 1px solid #b7b7b7;
+    border-radius: 15px;
+    padding: 24px;
+    margin: 24px 0;
+}
+.club-member {
+    overflow: scroll;
+}
+
+.title-member {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+.title-member p {
+    font-size: var(--font-size-fc);
+    font-weight: 700;
+}
+.memberofall {
+    font-size: 14px;
+    color: #484848;
+}
+.list-member {
+    display: grid;
+    grid-template-columns: repeat(16, 1fr);
+    margin-top: 24px;
+}
+.member {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: start;
+    width: 60px;
+    height: 70px;
+}
+.list-member img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+.list-member p {
+    font-size: 12px;
+}
+.scroll-con {
+    margin-top: 24px;
+    position: relative;
+}
+.scroll {
+    width: 100%;
+    height: 7px;
+    background-color: #f5f5f5;
+}
+.slide {
+    position: absolute;
+    top: 0;
+    width: 35px;
+    height: 7px;
+    background-color: #b5b5b5;
+}
+.title-parti h2 {
+    font-size: var(--font-size-fc);
+    font-weight: 700;
+}
+.roster {
+    font-size: 14px;
+    margin-top: 10px;
+}
+.icon-roster {
+    color: #0db328;
+    font-size: 10px;
+    margin-right: 5px;
+}
+.participants {
+    height: 100%;
+    overflow: scroll;
+}
