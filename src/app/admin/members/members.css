@@ -149,9 +149,11 @@ tbody tr:hover {
     margin-right: 24px;
     border:1px solid #d5d5d5;
 }
+
 .btn-pre {
     border-right: 1px solid #d5d5d5;
 }
+
 .btn-next, .btn-pre {
     background-color: white;
     text-align: center;
@@ -159,6 +161,7 @@ tbody tr:hover {
     height: 100%;
     cursor: pointer;
 }
+
 .btn-next:hover, .btn-pre:hover {
     background-color: #eeeeee;
-} 
+}

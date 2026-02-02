@@ -8,7 +8,7 @@
       <div class="input-left">
         <div class="input-fullname box-input">
           <label for="fullname">Full Name</label>
-          <input type="text" [(ngModel)]="form.fullname" name="fullname" id="fullname" required />
+          <input type="text" [(ngModel)]="form.fullname" placeholder="input fullname..." name="fullname" id="fullname" required />
           <small *ngIf="f.submitted && f.controls['fullname']?.invalid" style="color: red">
             Fullname is required
           </small>
@@ -16,7 +16,7 @@
 
         <div class="input-nickname box-input">
           <label for="nickname">Nick Name</label>
-          <input type="text" [(ngModel)]="form.nickname" name="nickname" id="nickname" required />
+          <input type="text" [(ngModel)]="form.nickname" placeholder="input nickname..." name="nickname" id="nickname" required />
         </div>
 
         <div class="input-dateofbirth box-input">
@@ -35,7 +35,7 @@
 
         <div class="input-guardian box-input">
           <label for="guardian">Guardian</label>
-          <input type="text" [(ngModel)]="form.guardian" name="guardian" id="guardian" required />
+          <input type="text" [(ngModel)]="form.guardian" placeholder="input guardian..." name="guardian" id="guardian" required />
           <small *ngIf="f.submitted && f.controls['guardian']?.invalid" style="color: red">
             guardian is required
           </small>
@@ -43,7 +43,7 @@
 
         <div class="input-whatsapp box-input">
           <label for="whatsapp">WhatsApp</label>
-          <input type="text" [(ngModel)]="form.whatsapp" name="whatsapp" id="whatsapp" required />
+          <input type="text" [(ngModel)]="form.whatsapp" placeholder="20 xxx-xxx-xx" name="whatsapp" id="whatsapp" required />
           <small *ngIf="f.submitted && f.controls['whatsapp']?.invalid" style="color: red">
             whatsapp is required
           </small>
@@ -53,6 +53,7 @@
 
         <!-- AVATAR -->
         <div class="avatar-wrapper">
+
           <input #fileInput type="file" accept="image/*" hidden (change)="onFile($event)" />
 
           <div class="avatar" (click)="fileInput.click()">
@@ -61,6 +62,7 @@
             <ng-template #noImage>
               <div class="placeholder">+</div>
             </ng-template>
+            
           </div>
 
           <div class="avatar-actions" *ngIf="imagePreview">
