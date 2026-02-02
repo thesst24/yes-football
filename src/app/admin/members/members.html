@@ -1,9 +1,13 @@
 <div class="container">
   <header>
-    <h2 class="title-member">Members: <span class="member-number">(102/156)</span></h2>
+    <h2 class="title-member">Members: <span class="member-number">({{activeMembers}} / {{totalMembers}})</span></h2>
     <div class="search">
       <i class="pi pi-search icon-search"></i>
-      <input type="text" name="search" id="search" placeholder="Search..." />
+      <input type="text" 
+      placeholder="Search..."
+      [(ngModel)]="searchText"
+      (input)="filterMembers()"
+      />
     </div>
     <a class="btn-new-member" (click)="openAdd()">
       <i class="pi pi-plus-circle"></i>
@@ -17,15 +21,15 @@
         <tr class="header-data">
           <th>Account</th>
           <th>Guardian</th>
-          <th>Date of birth <i class="pi pi-sort-alt"></i></th>
-          <th>U <i class="pi pi-sort-alt"></i></th>
+          <th (click)="sortByDate()" class="sort">Date of birth <i class="pi pi-sort-alt"></i></th>
+          <th (click)="sortByU()"  class="sort">U <i class="pi pi-sort-alt"></i></th>
           <th>Phone</th>
           <th>Status</th>
           <th>Action</th>
         </tr>
       </thead>
       <tbody class="data">
-        <tr *ngFor="let list of members">
+        <tr *ngFor="let list of filteredMembers">
           <td class="profile">
             <div class="image-profile"><img *ngIf="list.image" [src]="'http://localhost:3000' + list.image" alt="profile" /></div>
             <div class="name">

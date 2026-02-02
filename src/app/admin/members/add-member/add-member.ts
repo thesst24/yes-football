@@ -61,24 +61,27 @@ removeImage() {
   }
 }
 
+save() {
+  if (!this.form.fullname || !this.form.guardian || !this.form.dateOfBirth || !this.form.whatsapp) return;
 
-  save() {
-    if (!this.form.fullname || !this.form.guardian || !this.form.dateOfBirth || !this.form.whatsapp) {
-      return;
+  const fd = new FormData();
+  Object.keys(this.form).forEach((k) => fd.append(k, this.form[k]));
+  if (this.image) fd.append('image', this.image);
+
+  const request$ = this.form._id ? 
+    this.service.update(this.form._id, fd) : 
+    this.service.create(fd);
+
+  request$.subscribe({
+    next: () => this.close.emit(true),
+    error: (err) => {
+      if (err.status === 400 && err.error.msg === 'WhatsApp number already exists') {
+        alert('This WhatsApp number already exists.!');
+      } else {
+        alert('An error occurred. Please try again.');
+      }
     }
+  });
+}
 
-    if (this.form.status === undefined) {
-      this.form.status = true;
-    }
-
-    const fd = new FormData();
-    Object.keys(this.form).forEach(k => fd.append(k, this.form[k]));
-    if (this.image) fd.append('image', this.image);
-
-    if (this.form._id) {
-      this.service.update(this.form._id, fd).subscribe(() => this.close.emit(true));
-    } else {
-      this.service.create(fd).subscribe(res => this.close.emit(res));
-    }
-  }
 }

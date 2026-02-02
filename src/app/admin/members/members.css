@@ -77,6 +77,9 @@ table, tbody, tr {
     width: 100%;
     background-color: white;
 }
+.table-member .sort {
+    cursor: pointer;
+}
 .header-data {
     border-collapse: collapse;
 }
@@ -117,6 +120,17 @@ tbody tr:hover {
 .toggle-active {
    transform: scale(0.8);
 }
+.status-text {
+    margin-left: 8px;
+    font-size: 13px;
+    font-weight: 500;
+}
+.status-text.active {
+    color: #16a34a;
+}
+.status-text.inactive {
+    color: #dc2626;
+}
 .pi-pencil {
     font-size: 18px;
     color: #293690;
@@ -130,38 +144,24 @@ tbody tr:hover {
     cursor: pointer;
 }
 
+
 .pagination {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 8px;
-}
-.showing p {
-    font-size: 16px;
-    color: #202224;
-    font-weight: 100;
-}
-.pre-next {
-    width: 100px;
-    height: 35px;
-    border-radius: 8px;
-    overflow: hidden;
-    margin-right: 24px;
-    border:1px solid #d5d5d5;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  font-size: 14px;
 }
 
-.btn-pre {
-    border-right: 1px solid #d5d5d5;
+.pre-next button {
+  border: 1px solid #ddd;
+  background: #fff;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
 }
 
-.btn-next, .btn-pre {
-    background-color: white;
-    text-align: center;
-    width: 50%;
-    height: 100%;
-    cursor: pointer;
-}
-
-.btn-next:hover, .btn-pre:hover {
-    background-color: #eeeeee;
+.pre-next button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }

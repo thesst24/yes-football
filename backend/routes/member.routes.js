@@ -16,14 +16,25 @@ const upload = multer({ storage });
 
 // CREATE
 router.post('/', upload.single('image'), async (req, res) => {
-  const imagePath = req.file ? '/uploads/' + req.file.filename : null;
-  const member = new Member({
-    image: req.file?.filename,
-    ...req.body,
-    image: imagePath
-  });
-  await member.save();
-  res.json(member);
+  try {
+    const { whatsapp } = req.body;
+
+    // 🔹 ตรวจสอบ WhatsApp ซ้ำ
+    const exist = await Member.findOne({ whatsapp });
+    if (exist) return res.status(400).json({ msg: 'WhatsApp number already exists' });
+
+    const imagePath = req.file ? '/uploads/' + req.file.filename : null;
+    const member = new Member({
+      ...req.body,
+      image: imagePath,
+    });
+
+    await member.save();
+    res.json(member);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: 'Server error' });
+  }
 });
 
 // READ
@@ -34,20 +45,41 @@ router.get('/', async (req, res) => {
 
 // UPDATE
 router.put('/:id', upload.single('image'), async (req, res) => {
-  const data = { ...req.body };
+  try {
+    const member = await Member.findById(req.params.id);
+    if (!member) {
+      return res.status(404).json({ message: 'Member not found' });
+    }
 
-  if (req.file) {
-    data.image = '/uploads/' + req.file.filename; // ⭐ สำคัญ
+    const data = { ...req.body };
+
+    // 🔥 ถ้ามีอัปโหลดรูปใหม่
+    if (req.file) {
+      // 1️⃣ ลบรูปเก่า
+      if (member.image) {
+        const oldPath = path.join(__dirname, '..', member.image);
+        if (fs.existsSync(oldPath)) {
+          fs.unlinkSync(oldPath);
+        }
+      }
+
+      // 2️⃣ เก็บ path รูปใหม่
+      data.image = '/uploads/' + req.file.filename;
+    }
+
+    const updated = await Member.findByIdAndUpdate(
+      req.params.id,
+      data,
+      { new: true }
+    );
+
+    res.json(updated);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Update failed' });
   }
-
-  const member = await Member.findByIdAndUpdate(
-    req.params.id,
-    data,
-    { new: true }
-  );
-
-  res.json(member);
 });
+
 
 
 // DELETE
