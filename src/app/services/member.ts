@@ -16,8 +16,9 @@ export class Member {
 
 
   getAll() {
-    return this.http.get(this.api);
-  }
+  return this.http.get<any[]>(this.api);
+}
+
 
   create(data: FormData) {
     return this.http.post(this.api, data);

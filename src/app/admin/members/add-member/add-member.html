@@ -42,10 +42,13 @@
         </div>
 
         <div class="input-whatsapp box-input">
-          <label for="whatsapp">WhatsApp</label>
-          <input type="text" [(ngModel)]="form.whatsapp" placeholder="20 xxx-xxx-xx" name="whatsapp" id="whatsapp" required />
+          <label for="whatsapp">WhatsApp (20xxxxxxxx)</label>
+          <input type="text" 
+          [(ngModel)]="form.whatsapp" 
+          pattern="^[0-9]{10}$"
+          placeholder="20 xxx-xxx-xx" name="whatsapp" id="whatsapp" required />
           <small *ngIf="f.submitted && f.controls['whatsapp']?.invalid" style="color: red">
-            whatsapp is required
+            Invalid WhatsApp number
           </small>
         </div>
       </div>

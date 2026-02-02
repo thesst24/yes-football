@@ -5,6 +5,7 @@ import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { Member } from '../../services/member';
 import { AddMember } from './add-member/add-member';
 
+
 @Component({
   selector: 'app-members',
   imports: [CommonModule, ToggleSwitchModule, DatePipe, FormsModule, AddMember],
@@ -12,58 +13,135 @@ import { AddMember } from './add-member/add-member';
   styleUrl: './members.css',
 })
 export class Members {
-  members: any[] = []; 
+ // ===== DATA =====
+  allMembers: any[] = [];
+  filteredMembers: any[] = [];
+  members: any[] = [];
+
+  // ===== UI =====
   showPopup = false;
   editData: any = null;
-  // pagination
-   allMembers: any[] = [];
-    pageSize = 9;
+
+  // ===== PAGINATION =====
+  pageSize = 9;
   currentPage = 1;
   totalItems = 0;
 
-  //  sortKey: string = '';
-  // sortDir: 'asc' | 'desc' = 'asc';
+  // ===== SORT =====
   sortDateDir: 'asc' | 'desc' = 'asc';
   sortUDir: 'asc' | 'desc' = 'asc';
 
+  // ===== SEARCH =====
   searchText = '';
-filteredMembers: any[] = [];
 
-totalMembers: number = 0;
-activeMembers: number = 0;
-
+  // ===== COUNT =====
+  totalMembers = 0;
+  activeMembers = 0;
 
   constructor(private service: Member) {}
 
   ngOnInit() {
     this.load();
   }
-  
+
+  // ===== LOAD =====
   load() {
-     this.service.getAll().subscribe((res: any) => {
-      // คำนวณ ageGroup ถ้าใช้ U12 U13 ...
-      this.members = res.map((m: any) => ({
+    this.service.getAll().subscribe((res: any[]) => {
+      this.allMembers = res.map(m => ({
         ...m,
         ageGroup: this.getAgeGroup(m.dateOfBirth),
       }));
-      this.filteredMembers = [...this.members]; // initialize
+
+      this.filteredMembers = [...this.allMembers];
+      this.totalItems = this.filteredMembers.length;
+      this.currentPage = 1;
+
+      this.updatePage();
       this.updateMemberCount();
     });
   }
+
+  // ===== PAGINATION =====
+  updatePage() {
+    const start = (this.currentPage - 1) * this.pageSize;
+    const end = start + this.pageSize;
+    this.members = this.filteredMembers.slice(start, end);
+  }
+
+  nextPage() {
+    if (this.currentPage * this.pageSize < this.totalItems) {
+      this.currentPage++;
+      this.updatePage();
+    }
+  }
+
+  prevPage() {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.updatePage();
+    }
+  }
+
+  get startItem() {
+    return (this.currentPage - 1) * this.pageSize + 1;
+  }
+
+  get endItem() {
+    return Math.min(this.currentPage * this.pageSize, this.totalItems);
+  }
+
+  // ===== SEARCH =====
   filterMembers() {
-  const text = this.searchText.toLowerCase();
-  this.filteredMembers = this.members.filter(m =>
-    (m.fullname?.toLowerCase().includes(text)) ||
-    (m.guardian?.toLowerCase().includes(text)) ||
-    (m.whatsapp?.toString().includes(text))
-  );
-}
-updateMemberCount() {
-  this.totalMembers = this.members.length;
-  this.activeMembers = this.members.filter(m => m.status).length;
-}
+    const text = this.searchText.trim().toLowerCase();
 
+    if (!text) {
+      this.filteredMembers = [...this.allMembers];
+    } else {
+      this.filteredMembers = this.allMembers.filter(m =>
+        m.fullname?.toLowerCase().includes(text) ||
+        m.guardian?.toLowerCase().includes(text) ||
+        m.whatsapp?.toString().includes(text)
+      );
+    }
+    this.filteredMembers = [...this.allMembers];
+    this.totalItems = this.filteredMembers.length;
+    this.currentPage = 1;
+    this.updatePage();
+    this.updateMemberCount();
+  }
 
+  // ===== COUNT =====
+  updateMemberCount() {
+    this.totalMembers = this.filteredMembers.length;
+    this.activeMembers = this.filteredMembers.filter(m => m.status).length;
+  }
+
+  // ===== SORT =====
+  sortByU() {
+    this.sortUDir = this.sortUDir === 'asc' ? 'desc' : 'asc';
+
+    this.filteredMembers.sort((a, b) => {
+      const u1 = +a.ageGroup.replace('U', '');
+      const u2 = +b.ageGroup.replace('U', '');
+      return this.sortUDir === 'asc' ? u1 - u2 : u2 - u1;
+    });
+
+    this.updatePage();
+  }
+
+  sortByDate() {
+    this.sortDateDir = this.sortDateDir === 'asc' ? 'desc' : 'asc';
+
+    this.filteredMembers.sort((a, b) => {
+      const d1 = new Date(a.dateOfBirth).getTime();
+      const d2 = new Date(b.dateOfBirth).getTime();
+      return this.sortDateDir === 'asc' ? d1 - d2 : d2 - d1;
+    });
+
+    this.updatePage();
+  }
+
+  // ===== CRUD =====
   openAdd() {
     this.editData = null;
     this.showPopup = true;
@@ -74,20 +152,9 @@ updateMemberCount() {
     this.showPopup = true;
   }
 
-  closePopup(data?: any) {
+  closePopup(refresh?: boolean) {
     this.showPopup = false;
-
-    if (data && typeof data === 'object') {
-      // member ใหม่ push เข้า list
-      this.members.push({
-        ...data,
-        ageGroup: this.getAgeGroup(data.dateOfBirth),
-      });
-    } else {
-      this.load(); // สำหรับ edit / delete
-    }
-      this.filteredMembers = [...this.members]; // รีเฟรช search list
-  this.updateMemberCount(); // อัปเดต counter
+    if (refresh) this.load();
   }
 
   delete(id: string) {
@@ -95,63 +162,26 @@ updateMemberCount() {
       this.service.delete(id).subscribe(() => this.load());
     }
   }
-  getAgeGroup(dateOfBirth: string | Date): string {
-    if (!dateOfBirth) return '-';
-
-    const dob = new Date(dateOfBirth);
-    const today = new Date();
-
-    let age = today.getFullYear() - dob.getFullYear();
-    const m = today.getMonth() - dob.getMonth();
-
-    if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
-      age--;
-    }
-
-    return `U${age}`;
-  }
 
   toggleStatus(member: any) {
-    if (!member._id) {
-      alert('Cannot update status: missing _id');
-      return;
-    }
-
+    
     const newStatus = !!member.status;
-    member.status = newStatus; // Optimistic UI
-    this.updateMemberCount();
-
-    this.service.updateStatus(member._id, newStatus).subscribe({
-      next: () => {},
-      error: () => {
-        member.status = !newStatus; // rollback
-        this.updateMemberCount();
-        alert('Cannot update status');
-      },
-    });
-  }
-//  Sort BY Date
-   // 🔥 sort U
-  sortByU() {
-    this.sortUDir = this.sortUDir === 'asc' ? 'desc' : 'asc';
-
-    this.filteredMembers.sort((a, b) => {
-      const u1 = parseInt(a.ageGroup?.replace('U', '') || 0, 10);
-      const u2 = parseInt(b.ageGroup?.replace('U', '') || 0, 10);
-
-      return this.sortUDir === 'asc' ? u1 - u2 : u2 - u1;
+    this.service.updateStatus(member._id, newStatus).subscribe(() => {
+      member.status = newStatus;
+      this.updateMemberCount();
+      this.load();
     });
   }
 
-  // 🔥 sort Date of Birth
-  sortByDate() {
-    this.sortDateDir = this.sortDateDir === 'asc' ? 'desc' : 'asc';
-
-    this.filteredMembers.sort((a, b) => {
-      const d1 = new Date(a.dateOfBirth).getTime();
-      const d2 = new Date(b.dateOfBirth).getTime();
-
-      return this.sortDateDir === 'asc' ? d1 - d2 : d2 - d1;
-    });
+  // ===== UTIL =====
+  getAgeGroup(date: string | Date) {
+    const dob = new Date(date);
+    const today = new Date();
+    let age = today.getFullYear() - dob.getFullYear();
+    if (
+      today.getMonth() < dob.getMonth() ||
+      (today.getMonth() === dob.getMonth() && today.getDate() < dob.getDate())
+    ) age--;
+    return `U${age}`;
   }
 }

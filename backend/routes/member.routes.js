@@ -22,6 +22,13 @@ router.post('/', upload.single('image'), async (req, res) => {
     // 🔹 ตรวจสอบ WhatsApp ซ้ำ
     const exist = await Member.findOne({ whatsapp });
     if (exist) return res.status(400).json({ msg: 'WhatsApp number already exists' });
+    // pattern whatsapp
+    if (!/^[0-9]{10}$/.test(req.body.whatsapp)) {
+  return res.status(400).json({
+    message: 'Invalid WhatsApp number'
+  });
+}
+
 
     const imagePath = req.file ? '/uploads/' + req.file.filename : null;
     const member = new Member({

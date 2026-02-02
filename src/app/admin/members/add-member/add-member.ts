@@ -17,6 +17,8 @@ export class AddMember {
   form: any = { status: true };
   image!: File;
   imagePreview: string | null = null;
+
+  whatsappInvalid = false;
   
 
   constructor(private service: Member) {}
@@ -63,6 +65,15 @@ removeImage() {
 
 save() {
   if (!this.form.fullname || !this.form.guardian || !this.form.dateOfBirth || !this.form.whatsapp) return;
+
+ const whatsappPattern = /^[0-9]{10}$/;
+
+  if (!whatsappPattern.test(this.form.whatsapp)) {
+    this.whatsappInvalid = true;
+    return;
+  }
+
+  this.whatsappInvalid = false;
 
   const fd = new FormData();
   Object.keys(this.form).forEach((k) => fd.append(k, this.form[k]));

@@ -29,7 +29,7 @@
         </tr>
       </thead>
       <tbody class="data">
-        <tr *ngFor="let list of filteredMembers">
+        <tr *ngFor="let list of members">
           <td class="profile">
             <div class="image-profile"><img *ngIf="list.image" [src]="'http://localhost:3000' + list.image" alt="profile" /></div>
             <div class="name">
@@ -63,14 +63,27 @@
     </table>
   </div>
   <div class="pagination">
-    <div class="showing">
-      <p>Showing 1-09 of 152</p>
-    </div>
-    <div class="pre-next">
-      <button class="btn-pre"><i class="pi pi-angle-left"></i></button>
-      <button class="btn-next"><i class="pi pi-angle-right"></i></button>
-    </div>
+  <div class="showing">
+    Showing {{ startItem }}-{{ endItem }} of {{ totalMembers }}
   </div>
+
+  <div class="pre-next">
+    <button
+      class="btn-pre"
+      (click)="prevPage()"
+      [disabled]="currentPage === 1">
+      <i class="pi pi-angle-left"></i>
+    </button>
+
+    <button
+      class="btn-next"
+      (click)="nextPage()"
+      [disabled]="currentPage * pageSize >= totalMembers">
+      <i class="pi pi-angle-right"></i>
+    </button>
+  </div>
+</div>
+
 </div>
 
 <app-add-member *ngIf="showPopup" [data]="editData" (close)="closePopup($event)"> </app-add-member>
