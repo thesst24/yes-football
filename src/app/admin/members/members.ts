@@ -103,7 +103,6 @@ export class Members {
         m.whatsapp?.toString().includes(text)
       );
     }
-    this.filteredMembers = [...this.allMembers];
     this.totalItems = this.filteredMembers.length;
     this.currentPage = 1;
     this.updatePage();

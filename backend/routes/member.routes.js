@@ -137,6 +137,41 @@ router.patch('/:id/status', async (req, res) => {
   res.json(member);
 });
 
+// MEMBER LOGIN (by whatsapp only)
+router.post('/user-login', async (req, res) => {
+  try {
+    let { whatsapp } = req.body;
+
+    if (!whatsapp) {
+      return res.status(400).json({ message: 'Whatsapp is required' });
+    }
+
+    whatsapp = whatsapp.trim();
+
+    // 🔐 บังคับขึ้นต้นด้วย 20 และมีตัวเลขอย่างน้อย 9–10 ตัว
+    const phoneRegex = /^20\d{7,10}$/;
+
+    if (!phoneRegex.test(whatsapp)) {
+      return res.status(400).json({
+        message: 'Invalid phone format',
+      });
+    }
+
+    const member = await Member.findOne({ whatsapp });
+
+    if (!member) {
+      return res.status(401).json({ message: 'Wrong WhatsApp Number' });
+    }
+
+    res.json({
+      member,
+    });
+  } catch (err) {
+    console.error('LOGIN ERROR:', err);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
+
 
 
 module.exports = router;

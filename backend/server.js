@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
+const auth = require('./routes/auth.routes');
 const memberModel = require('./models/member.model');
 require('dotenv').config();
 
@@ -18,7 +19,7 @@ mongoose.connect(process.env.MONGO_URL)
   .catch(err => console.error(err));
 
 // Routes
-app.use('/api/auth', require('./routes/auth.routes'));
+app.use('/api/auth', auth);
 
 app.listen(3000, () => {
   console.log('🚀 Backend running on port 3000');

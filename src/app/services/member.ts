@@ -31,5 +31,14 @@ export class Member {
   delete(id: string) {
     return this.http.delete(`${this.api}/${id}`);
   }
+
+  
+loginByWhatsapp(whatsapp: string) {
+  return this.http.post<any>(
+    `${this.api}/user-login`,
+    { whatsapp }
+  );
+}
+
   
 }

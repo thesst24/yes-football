@@ -5,14 +5,21 @@
     </div>
     <div class="box-input flex flex-col justify-center items-center gap-8 mb-28">
         <div class="input-tel w-[356px] h-[56px]">
-            <input type="tel" name="phone" id="phone"
-            placeholder="20 xxx-xxx-xx" required 
+            <input type="tel" name="phone" id="phone" 
+            [(ngModel)]="whatsapp"
+            placeholder="20 xxx-xxx-xx"
+            maxlength="12"
+            inputmode="numeric"
+            pattern="[0-9]*"
+            required 
             class="border-[1px] border-[#1976d2] w-full h-full p-3 focus:border-[2px] focus:border-[#1946d2] outline-none rounded-[4px]"/>
         </div>
 
-        <button type="submit" routerLink="/card-check"
+        <button type="submit" (click)="login()"
         class="btn-login rounded-[4px] text-white w-[356px] h-[55px] hover:bg-[#0F68C0] cursor-pointer text-center bg-[#1976d2] text-[15px]"
         >LOGIN</button>
+
+         <p class="error" *ngIf="error">{{ error }}</p>
     </div>
 </div>
 

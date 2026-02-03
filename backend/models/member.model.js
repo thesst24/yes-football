@@ -6,7 +6,7 @@ const memberSchema = new mongoose.Schema({
     nickname: String,
     guardian:  String,
     dateOfBirth: Date,
-    whatsapp:Number,
+    whatsapp: Number,
     status: { type: Boolean, default: true},  
 }, { timestamps: true });
 
