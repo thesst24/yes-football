@@ -1,4 +1,4 @@
-.container {
+.sidebar {
     width: 239px;
     height: 100%;
     background-color: white;
@@ -30,16 +30,20 @@ nav {
     margin-left: 40px;
 }
 
-.link a{
+nav a{
     font-size: 16px;
     color: #414141;
     padding: 13px;
     border-radius: 10px;
     cursor: pointer;
 }
-.link a:hover {
-    background-color: #293690;
-    color: white;
+nav a:hover {
+    background-color: #f1f1f1;
+}
+/* ACTIVE */
+nav a.active {
+  background: #293690;
+  color: #fff;
 }
 .sign-out {
     cursor: pointer;

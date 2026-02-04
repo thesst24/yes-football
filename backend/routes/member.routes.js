@@ -5,6 +5,7 @@ const multer = require('multer');
 const Member = require('../models/member.model');
 const path = require('path');
 
+
 // multer config
 const storage = multer.diskStorage({
   destination: 'uploads/',
@@ -24,10 +25,10 @@ router.post('/', upload.single('image'), async (req, res) => {
     if (exist) return res.status(400).json({ msg: 'WhatsApp number already exists' });
     // pattern whatsapp
     if (!/^[0-9]{10}$/.test(req.body.whatsapp)) {
-  return res.status(400).json({
-    message: 'Invalid WhatsApp number'
-  });
-}
+      return res.status(400).json({
+        message: 'Invalid WhatsApp number'
+      });
+    }
 
 
     const imagePath = req.file ? '/uploads/' + req.file.filename : null;
@@ -88,7 +89,6 @@ router.put('/:id', upload.single('image'), async (req, res) => {
 });
 
 
-
 // DELETE
 router.delete('/:id', async (req, res) => {
   try {
@@ -100,7 +100,6 @@ router.delete('/:id', async (req, res) => {
     // 🧨 ลบไฟล์รูป
     if (member.image) {
       const filePath = path.join(__dirname, '..', member.image);
-      // ตัวอย่าง: backend/uploads/xxx.jpg
 
       fs.unlink(filePath, (err) => {
         if (err) {
@@ -110,9 +109,6 @@ router.delete('/:id', async (req, res) => {
         }
       });
     }
-
-
-
     // 🧹 ลบ member จาก DB
     await Member.findByIdAndDelete(req.params.id);
 
@@ -172,6 +168,38 @@ router.post('/user-login', async (req, res) => {
   }
 });
 
+// card-checkin
+router.post('/members/:id/checkin', async (req, res) => {
+  const member = await Member.findById(req.params.id);
+  if (!member) return res.status(404).send('Not found');
+
+  const today = new Date();
+  today.setHours(0,0,0,0);
+
+  // ❌ เช็กวันนี้เคย check-in แล้วหรือยัง
+  const alreadyChecked = member.checkins.some(c => {
+    const d = new Date(c.date);
+    d.setHours(0,0,0,0);
+    return d.getTime() === today.getTime();
+  });
+
+  if (alreadyChecked) {
+    return res.status(400).json({ message: 'วันนี้เช็กอินแล้ว' });
+  }
+
+  // ❌ ครบ 10 ครั้งแล้ว
+  if (member.checkins.length >= 10) {
+    return res.status(400).json({ message: 'เช็กอินครบ 10 ครั้งแล้ว' });
+  }
+
+  member.checkins.push({
+    date: new Date(),
+    order: member.checkins.length + 1
+  });
+
+  await member.save();
+  res.json(member);
+});
 
 
 module.exports = router;

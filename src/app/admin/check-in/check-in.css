@@ -45,6 +45,7 @@ header {
 }
 .club-member {
     overflow: scroll;
+    max-height: 700px;
 }
 .title {
     display: flex;
@@ -58,23 +59,31 @@ header {
 .title p {
     font-size: 14px;
 }
+
 .list-member {
     display: grid;
-    grid-template-columns: repeat(16, 1fr);
+    grid-template-columns: repeat(auto-fill, 70px);
+    gap: 10px;
     margin-top: 24px;
 }
+
 .member {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: start;
     width: 60px;
-    height: 70px;
+    height: 90px;
 }
-.list-member img {
+.image-profile {
     width: 50px;
     height: 50px;
+}
+.list-member img {
+    width: 100%;
+    height: 100%;
     border-radius: 50%;
+    object-fit: cover;
 }
 .list-member p {
     font-size: 12px;

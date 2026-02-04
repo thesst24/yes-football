@@ -9,13 +9,15 @@ import { Pages } from './admin/pages/pages';
 import { Event } from './admin/event/event';
 import { AddMember } from './admin/members/add-member/add-member';
 import { CheckIn } from './admin/check-in/check-in';
-import { CardCheckin } from './card-checkin/card-checkin';
+import { CardCheckin } from './admin/check-in/card-checkin/card-checkin';
 import { EventUser } from './user/event-user/event-user';
 import { Join } from './popup/join/join';
-import { Main } from './admin/main/main';
 import { Login } from './test/login/login';
 import { Register } from './test/register/register';
-import { Member } from './services/member';
+import { Session } from './admin/session/session';
+import { Setting } from './admin/setting/setting';
+import { Report } from './admin/report/report';
+
 
 export const routes: Routes = [
     { path: '',redirectTo:'user-login', pathMatch:'full' },    
@@ -34,11 +36,14 @@ export const routes: Routes = [
     { path:'',
         component: Pages,
         children: [ 
-            { path: 'member',component:Members},
-            { path: 'members/create', component: Members },
-            { path: 'members/edit/:id', component: Members },
-            { path: 'event', component: Event},
-            { path: 'check-in',component: CheckIn },
+            { path: 'member',component:Members, },
+            { path: 'members/create', component: Members, },
+            { path: 'members/edit/:id', component: Members,   },
+            { path: 'event', component: Event, },
+            { path: 'check-in',component: CheckIn, },
+            { path: 'session', component: Session},
+            { path: 'report', component: Report},
+            { path: 'setting', component: Setting}
         ]
     }
 

@@ -1,0 +1,37 @@
+<div class="overlay" >
+  <div class="card-checkin">
+ <button type="button" class="close" (click)="closePopup()">✕</button>
+
+    <div class="active">
+      <p>active</p>
+    </div>
+
+    <div class="con-input">
+
+      <div class="box-input">
+        <div class="input-name input">
+          <label for="name" class="">Name</label>
+           <div class="box">{{ member.fullname }}</div>
+           
+        </div>
+        <div class="input-expiry input">
+          <label for="expiry">Expiry</label>
+          <input type="text" name="expiry" id="expiry" value="2025/8/5" readonly />
+        </div>
+      </div>
+
+      <div class="image-profile">
+        <img [src]="'http://localhost:3000' + member.image">
+      </div>
+    </div>
+
+    <div class="checkin-grid">
+      <div
+        class="circle"
+        *ngFor="let c of checkinSlots; let i = index"
+        [class.checked]="i < member.checkins.length">
+        <span *ngIf="i === member.checkins.length">Check-in</span>
+      </div>
+    </div>
+  </div>
+</div>

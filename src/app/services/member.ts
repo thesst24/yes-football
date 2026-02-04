@@ -40,5 +40,9 @@ loginByWhatsapp(whatsapp: string) {
   );
 }
 
+checkin(id: string) {
+  return this.http.post(`/api/members/${id}/checkin`, {});
+}
+
   
 }

@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { Member } from '../../services/member';
 import { AddMember } from './add-member/add-member';
+import { NavigationEnd, Router } from '@angular/router';
 
 
 @Component({
@@ -38,7 +39,16 @@ export class Members {
   totalMembers = 0;
   activeMembers = 0;
 
-  constructor(private service: Member) {}
+  constructor(private service: Member, private router:Router) {
+    
+  this.router.events.subscribe(event => {
+    if (event instanceof NavigationEnd) {
+      if (event.urlAfterRedirects.includes('/member')) {
+        this.load();
+      }
+    }
+  });
+  }
 
   ngOnInit() {
     this.load();
