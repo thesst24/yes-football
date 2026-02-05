@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import { RouterLink } from "@angular/router";
 import { Member } from '../../services/member';
 import { CommonModule } from '@angular/common';
@@ -25,7 +25,9 @@ export class CheckIn {
     // ===== UI =====
  selectedMember: any = null;
 
-  constructor(private service: Member) {}
+  constructor(private service: Member,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit() {
     this.load();
@@ -38,6 +40,7 @@ load() {
     this.allMembers = res;
     this.filteredMembers = [...this.allMembers];
     this.updateMemberCount();
+    this.cdr.detectChanges();
   });
 }
 

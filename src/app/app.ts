@@ -1,14 +1,10 @@
 import { Component, signal } from '@angular/core';
-import { RouterOutlet, RouterLink, Router } from '@angular/router';
-import { UserLogin } from "./user/user-login/user-login";
-import { CardCheck } from "./user/card-check/card-check";
-import { Login } from "./test/login/login";
-import { NgModel } from '@angular/forms';
-import { CardCheckin } from "./admin/check-in/card-checkin/card-checkin";
+import { RouterOutlet } from '@angular/router';
+
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, UserLogin, CardCheck, RouterLink, Login, CardCheckin],
+  imports: [RouterOutlet],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })

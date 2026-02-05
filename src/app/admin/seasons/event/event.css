@@ -1,14 +1,11 @@
-.container {
-    background-color: white;
-    height: 100%;
-    border-radius: 15px;
-    padding: 24px;
-}
 
 header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    background-color: white;
+    padding: 24px;
+    border-radius: 15px;
 }
 
 .pre-title {
@@ -22,7 +19,7 @@ header {
 }
 .pre-title p {
     font-size: var(--font-size-fc);
-    color: #293690;
+    font-weight: bold;
 }
 /* Search */
 .search {
@@ -67,13 +64,14 @@ header {
 
 /* content */
 .content {
-    border: 1px solid #b7b7b7;
+    background-color: white;
     border-radius: 15px;
     padding: 24px;
     margin: 24px 0;
 }
 .club-member {
     overflow: scroll;
+    height: auto;
 }
 
 .title-member {
@@ -106,6 +104,7 @@ header {
     width: 50px;
     height: 50px;
     border-radius: 50%;
+    object-fit: cover;
 }
 .list-member p {
     font-size: 12px;

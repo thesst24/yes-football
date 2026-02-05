@@ -1,9 +1,9 @@
 <div class="sidebar">
     
   <div class="top-sidebar">
-    <div class="logo">
+    <a class="logo" routerLink="/check-in">
       <img src="logo.png" alt="logo" width="150px" height="150px" />
-    </div>
+    </a>
     
     <div class="menu">
       <nav class="link">
@@ -11,7 +11,7 @@
         routerLinkActive="active"
         [routerLinkActiveOptions]="{exact:true}"
         ><i class="pi pi-verified icon-menu"></i>Check-in</a>
-        <a routerLink="/event" routerLinkActive="active"><i class="pi pi-calendar icon-menu"></i>Seasons</a>
+        <a routerLink="/season" routerLinkActive="active"><i class="pi pi-calendar icon-menu"></i>Seasons</a>
         <a routerLink="/member"
          routerLinkActive="active"><i class="pi pi-user-plus icon-menu"></i>Members</a>
         <a routerLink="/session"

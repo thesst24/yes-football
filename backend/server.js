@@ -2,8 +2,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
-const auth = require('./routes/auth.routes');
 const memberModel = require('./models/member.model');
+const adminRoute = require('./routes/admin.route');
 require('dotenv').config();
 
 const app = express();
@@ -11,6 +11,7 @@ app.use(cors());
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api/members', require('./routes/member.routes'));
+app.use('/api/admin',adminRoute)
 
 
 // MongoDB
@@ -18,8 +19,6 @@ mongoose.connect(process.env.MONGO_URL)
   .then(() => console.log('✅ MongoDB Connected'))
   .catch(err => console.error(err));
 
-// Routes
-app.use('/api/auth', auth);
 
 app.listen(3000, () => {
   console.log('🚀 Backend running on port 3000');

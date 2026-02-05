@@ -1,7 +1,7 @@
 <div class="container relative bg-[#f5f6fa] max-w-full flex flex-col h-screen">
 <header class="flex justify-end items-center p-[24px] hover:text-[#293690]">
     <a routerLink="/user-login" class="text-[20px] flex justify-center items-center">
-        <p class="">User</p>
+        <p class="">user</p>
         <i class="pi pi-sign-out ml-2"></i>
     </a>
 </header>
@@ -17,7 +17,7 @@
     </div>
     <div class="box-input flex flex-col justify-center items-center gap-8 mb-28">
         <div class="input-tel w-[356px] h-[56px]">
-            <input type="password" name="password" id="password" [(ngModel)]="form.password"
+            <input type="password" name="password" id="password" [(ngModel)]="password"
             placeholder="Input password..." required 
             class="border-[1px] border-[#1976d2] w-full h-full p-3 focus:border-[2px] focus:border-[#1946d2] outline-none rounded-[4px]"/>
         </div>
@@ -25,6 +25,7 @@
         <button type="submit" (click)="login()"
         class="btn-login rounded-[4px] text-white w-[356px] h-[55px] hover:bg-[#0F68C0] cursor-pointer text-center bg-[#1976d2] text-[15px]"
         >LOGIN</button>
+        
     </div>
 </div>
 </div>

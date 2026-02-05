@@ -1,13 +1,14 @@
 .container {
     display: flex;
     max-width: 100%;
-    height: auto;
+    height: 100%;
 }
 .sidebar {
     height: auto;
 }
 .main {
     width: 100%;
+    height: auto;
 }
 header {
     display: flex;

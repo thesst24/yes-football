@@ -2,7 +2,7 @@
     width: 239px;
     height: 100%;
     background-color: white;
-    padding: 15px 15px 45px;
+    padding: 15px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -13,6 +13,9 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+.logo img {
+    cursor: pointer;
 }
 .menu {
     width: 100%;

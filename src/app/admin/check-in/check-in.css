@@ -1,14 +1,12 @@
-.container {
-    background-color: white;
-    padding: 24px 15px;
-    border-radius: 15px;
-}
 
 header {
     display: flex;
     justify-content: center;
     align-items: center;
     margin-bottom: 24px;
+    background-color: white;
+    padding: 14px 10px;
+    border-radius: 15px;
 }
 
 /* Search */
@@ -38,10 +36,10 @@ header {
 }
 /*  */
 .content {
-    border: 1px solid #b7b7b7;
     border-radius: 15px;
     overflow: hidden;
     padding: 20px;
+    background-color: white;
 }
 .club-member {
     overflow: scroll;

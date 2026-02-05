@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Member } from '../../../services/member';
@@ -20,19 +20,22 @@ export class AddMember {
 
   whatsappInvalid = false;
 
-  constructor(private service: Member) {}
+  constructor(private service: Member,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit() {
+        this.cdr.detectChanges(); 
     if (this.data) {
       this.form = { ...this.data };
 
       this.imagePreview = this.form.image ? 'http://localhost:3000' + this.form.image : null;
 
-      // ✅ แสดงรูปเดิมตอน edit
       if (this.form.image) {
         this.imagePreview = 'http://localhost:3000' + this.form.image;
       }
     }
+
   }
 
   onFile(event: Event) {
@@ -45,8 +48,11 @@ export class AddMember {
     const reader = new FileReader();
     reader.onload = () => {
       this.imagePreview = reader.result as string; // 🔥 preview ทันที
+
+      this.cdr.detectChanges();
     };
     reader.readAsDataURL(this.image);
+
   }
   removeImage() {
     this.image = undefined as any;
