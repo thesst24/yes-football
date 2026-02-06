@@ -18,32 +18,30 @@ import { Setting } from './admin/setting/setting';
 import { Report } from './admin/report/report';
 import { Seasons } from './admin/seasons/seasons';
 
-
 export const routes: Routes = [
-    { path: '',redirectTo:'user-login', pathMatch:'full' },    
-    { path: 'card-check', component:CardCheck},
-    { path: 'card', component: Card},
-    { path: 'user-login', component: UserLogin},
+  { path: '', redirectTo: 'user-login', pathMatch: 'full' },
+  { path: 'card-check', component: CardCheck },
+  { path: 'card', component: Card },
+  { path: 'user-login', component: UserLogin },
 
+  { path: 'card-checkin', component: CardCheckin },
+  { path: 'admin-login', component: AdminLogin },
 
-    { path: 'card-checkin',component:CardCheckin},
-    { path: 'admin-login', component: AdminLogin},
-
-    { path: 'event-user', component: EventUser},
-    { path: 'popupjoin', component: Join},
-    { path:'',
-        component: Pages,
-        children: [ 
-            { path: 'member',component:Members, },
-            { path: 'members/create', component: Members, },
-            { path: 'members/edit/:id', component: Members,   },
-            { path: 'season', component: Seasons},
-            { path: 'event', component: Event, },
-            { path: 'check-in',component: CheckIn, },
-            { path: 'session', component: Session},
-            { path: 'report', component: Report},
-            { path: 'setting', component: Setting}
-        ]
-    }
-
+  { path: 'event-user', component: EventUser },
+  { path: 'popupjoin', component: Join },
+  {
+    path: '',
+    component: Pages,
+    children: [
+      { path: 'member', component: Members },
+      { path: 'members/create', component: Members },
+      { path: 'members/edit/:id', component: Members },
+      { path: 'season', component: Seasons}, 
+      { path: 'event', component: Event },
+      { path: 'check-in', component: CheckIn },
+      { path: 'session', component: Session },
+      { path: 'report', component: Report },
+      { path: 'setting', component: Setting },
+    ],
+  },
 ];

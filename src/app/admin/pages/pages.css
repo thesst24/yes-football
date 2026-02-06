@@ -5,6 +5,12 @@
 }
 .sidebar {
     height: auto;
+    transition: margin-left 0.3s ease-in-out;
+}
+.sidebar.hidden {
+    width: 0;
+    border: none;
+    margin-left: -250px;
 }
 .main {
     width: 100%;

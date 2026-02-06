@@ -1,25 +1,43 @@
 <div class="sidebar">
-    
   <div class="top-sidebar">
     <a class="logo" routerLink="/check-in">
       <img src="logo.png" alt="logo" width="150px" height="150px" />
     </a>
-    
+
     <div class="menu">
       <nav class="link">
-        <a routerLink="/check-in"
+        <a
+          routerLink="/check-in"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+          (click)="selectMenu('Check-in')"
+          ><i class="pi pi-verified icon-menu"></i>Check-in</a
+        >
+        <a routerLink="/season" 
         routerLinkActive="active"
-        [routerLinkActiveOptions]="{exact:true}"
-        ><i class="pi pi-verified icon-menu"></i>Check-in</a>
-        <a routerLink="/season" routerLinkActive="active"><i class="pi pi-calendar icon-menu"></i>Seasons</a>
-        <a routerLink="/member"
-         routerLinkActive="active"><i class="pi pi-user-plus icon-menu"></i>Members</a>
-        <a routerLink="/session"
-        routerLinkActive="active"><i class="pi pi-calendar-plus icon-menu"></i>Sessions</a>
+        (click)="selectMenu('Season')"
+          ><i class="pi pi-calendar icon-menu"></i>Seasons</a
+        >
+        <a routerLink="/member" 
+        routerLinkActive="active"
+        (click)="selectMenu('Member')"
+          ><i class="pi pi-user-plus icon-menu"></i>Members</a
+        >
+        <a routerLink="/session" 
+        routerLinkActive="active"
+        (click)="selectMenu('Session')"
+          ><i class="pi pi-calendar-plus icon-menu"></i>Sessions</a
+        >
         <a routerLink="/report"
-        routerLinkActive="active"><i class="pi pi-chart-line icon-menu"></i>Report</a>
-        <a routerLink="/setting"
-        routerLinkActive="active"><i class="pi pi-cog icon-menu"></i>Setting</a>
+         routerLinkActive="active"
+         (click)="selectMenu('Report')"
+          ><i class="pi pi-chart-line icon-menu"></i>Report</a
+        >
+        <a routerLink="/setting" 
+        routerLinkActive="active"
+        (click)="selectMenu('Setting')"
+          ><i class="pi pi-cog icon-menu"></i>Setting</a
+        >
       </nav>
     </div>
   </div>

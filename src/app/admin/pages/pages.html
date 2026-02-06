@@ -1,11 +1,12 @@
 <div class="container">
-    <div class="sidebar">
-        <app-sidebar></app-sidebar>
+    <div class="sidebar" [ngClass]="{'hidden': !sidebarVisible}">
+        <app-sidebar (menuSelect)="selectedMenu = $event"></app-sidebar>
     </div>
     <div class="main">
         <header>
-            <i class="pi pi-align-justify"></i>
-            <p>Header</p>
+            <i class="pi pi-align-justify"
+            (click)="sidebarVisible = !sidebarVisible"></i>
+            <p>{{selectedMenu}}</p>
         </header>
         <div class="main-content">
             <router-outlet></router-outlet>

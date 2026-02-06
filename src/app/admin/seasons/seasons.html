@@ -10,6 +10,7 @@
     <div class="manage-season">
       <button
         type="button"
+        (click)="openPopup()"
         class="bg-[#0db328] w-[214px] h-[45px] rounded-[6px] text-center text-white cursor-pointer"
       >
         <i class="pi pi-plus-circle"></i>
@@ -21,22 +22,24 @@
   <div class="session bg-white p-6 rounded-[15px] max-h-[700px]">
     <div class="con-session flex flex-col gap-4 ml-20"><a
       class="session1 w-[200px] h-[60px] rounded-[6px] bg-[#293690] text-white text-[16px] flex justify-center items-center"
-      routerLink="/event"
+      routerLink="/event" routerLinkActive="active"
     >
-      session1
+      session10
     </a>
     <button
       type="button"
       class="session1 w-[200px] h-[60px] rounded-[6px] bg-[#293690] text-center text-white text-[16px]"
     >
-      <p>session1</p>
+      <p>session9</p>
     </button>
     <button
       type="button"
       class="session1 w-[200px] h-[60px] rounded-[6px] bg-[#293690] text-center text-white text-[16px]"
     >
-      <p>session1</p>
+      <p>session8</p>
     </button>
     </div>
   </div>
 </div>
+
+<app-manage-season *ngIf="showPopup" (close)="closePopup($event)"></app-manage-season>
