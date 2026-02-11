@@ -33,7 +33,6 @@ ngOnInit() {
     if (url.includes('check-in')) this.selectedMenu = 'Check-in';
     else if (url.includes('season')) this.selectedMenu = 'Seasons';
     else if (url.includes('member')) this.selectedMenu = 'Members';
-    else if (url.includes('session')) this.selectedMenu = 'Sessions';
     else if (url.includes('report')) this.selectedMenu = 'Report';
     else if (url.includes('setting')) this.selectedMenu = 'Setting';
     else this.selectedMenu = 'Check-in'; // ค่า Default

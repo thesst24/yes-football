@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
-import { RouterLink } from "@angular/router";
+import { ActivatedRoute, RouterLink } from "@angular/router";
 import { Member } from '../../services/member';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -17,6 +17,9 @@ export class CheckIn {
   allMembers: any[] = [];
   filteredMembers: any[] = [];
 
+  seasonId!: string;
+sessionId!: string;
+
   // ===== COUNT =====
   totalMembers = 0;
   activeMembers = 0;
@@ -26,10 +29,13 @@ export class CheckIn {
  selectedMember: any = null;
 
   constructor(private service: Member,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit() {
+      this.seasonId = this.route.snapshot.paramMap.get("seasonId")!;
+  this.sessionId = this.route.snapshot.paramMap.get("sessionId")!;
     this.load();
   }
 
@@ -77,5 +83,6 @@ filterMembers() {
     this.selectedMember = null;
   }
 
+  
 }
 

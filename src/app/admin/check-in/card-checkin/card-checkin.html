@@ -26,12 +26,19 @@
     </div>
 
     <div class="checkin-grid">
-      <div
-        class="circle"
-        *ngFor="let c of checkinSlots; let i = index"
-        [class.checked]="i < member.checkins.length">
-        <span *ngIf="i === member.checkins.length">Check-in</span>
-      </div>
-    </div>
+  <div class="checkin-grid" *ngIf="card">
+  <div
+    class="circle"
+    *ngFor="let c of checkinSlots; let i = index"
+    [class.checked]="i < card.usedSessions"
+    [class.next-queue]="i === card.usedSessions && !isExpired()"
+    (click)="onCheckInClick(i)">
+    
+    <span *ngIf="i < card.usedSessions">✓</span>
+    <span *ngIf="i === card.usedSessions">Check-in</span>
+    <span *ngIf="i > card.usedSessions">{{ i + 1 }}</span>
+  </div>
+</div>
+</div>
   </div>
 </div>

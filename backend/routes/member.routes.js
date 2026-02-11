@@ -3,8 +3,10 @@ const router = express.Router();
 const fs = require('fs');
 const multer = require('multer');
 const Member = require('../models/member.model');
+const MemberCard = require('../models/memberCard.model');
 const path = require('path');
 
+const phoneRegex = /^\d{10,12}$/;
 
 // multer config
 const storage = multer.diskStorage({
@@ -24,7 +26,7 @@ router.post('/', upload.single('image'), async (req, res) => {
     const exist = await Member.findOne({ whatsapp });
     if (exist) return res.status(400).json({ msg: 'WhatsApp number already exists' });
     // pattern whatsapp
-    if (!/^[0-9]{10}$/.test(req.body.whatsapp)) {
+    if (!phoneRegex.test(req.body.whatsapp)) {
       return res.status(400).json({
         message: 'Invalid WhatsApp number'
       });
@@ -37,8 +39,28 @@ router.post('/', upload.single('image'), async (req, res) => {
       image: imagePath,
     });
 
-    await member.save();
-    res.json(member);
+  const savedMember = await member.save();
+
+    // 3. 🔥 สร้าง Card 10 ครั้ง/90 วัน อัตโนมัติ
+    const expiry = new Date();
+    expiry.setDate(expiry.getDate() + 90); // บวกเพิ่ม 90 วัน
+
+    const newCard = new MemberCard({
+      memberId: savedMember._id,
+      totalSessions: 10,
+      usedSessions: 0,
+      expiryDate: expiry,
+      status: 'active'
+    });
+    await newCard.save();
+
+    res.status(201).json({
+      message: 'Member and Training Card created!',
+      member: savedMember,
+      card: newCard
+    });
+
+    
   } catch (err) {
     console.error(err);
     res.status(500).json({ msg: 'Server error' });
@@ -109,6 +131,9 @@ router.delete('/:id', async (req, res) => {
         }
       });
     }
+      // 🔥 ลบ Card ก่อน
+    await MemberCard.deleteOne({ memberId: member._id });
+
     // 🧹 ลบ member จาก DB
     await Member.findByIdAndDelete(req.params.id);
 
@@ -145,11 +170,10 @@ router.post('/user-login', async (req, res) => {
     whatsapp = whatsapp.trim();
 
     // 🔐 บังคับขึ้นต้นด้วย 20 และมีตัวเลขอย่างน้อย 9–10 ตัว
-    const phoneRegex = /^20\d{7,10}$/;
 
     if (!phoneRegex.test(whatsapp)) {
       return res.status(400).json({
-        message: 'Invalid phone format',
+        message: 'Invalid WhatsApp format',
       });
     }
 
@@ -168,38 +192,6 @@ router.post('/user-login', async (req, res) => {
   }
 });
 
-// card-checkin
-router.post('/members/:id/checkin', async (req, res) => {
-  const member = await Member.findById(req.params.id);
-  if (!member) return res.status(404).send('Not found');
-
-  const today = new Date();
-  today.setHours(0,0,0,0);
-
-  // ❌ เช็กวันนี้เคย check-in แล้วหรือยัง
-  const alreadyChecked = member.checkins.some(c => {
-    const d = new Date(c.date);
-    d.setHours(0,0,0,0);
-    return d.getTime() === today.getTime();
-  });
-
-  if (alreadyChecked) {
-    return res.status(400).json({ message: 'วันนี้เช็กอินแล้ว' });
-  }
-
-  // ❌ ครบ 10 ครั้งแล้ว
-  if (member.checkins.length >= 10) {
-    return res.status(400).json({ message: 'เช็กอินครบ 10 ครั้งแล้ว' });
-  }
-
-  member.checkins.push({
-    date: new Date(),
-    order: member.checkins.length + 1
-  });
-
-  await member.save();
-  res.json(member);
-});
 
 
 module.exports = router;

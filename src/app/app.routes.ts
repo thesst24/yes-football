@@ -6,17 +6,17 @@ import { Sidebar } from './components/sidebar/sidebar';
 import { Members } from './admin/members/members';
 import { AdminLogin } from './admin/admin-login/admin-login';
 import { Pages } from './admin/pages/pages';
-import { Event } from './admin/seasons/event/event';
 import { AddMember } from './admin/members/add-member/add-member';
 import { CheckIn } from './admin/check-in/check-in';
 import { CardCheckin } from './admin/check-in/card-checkin/card-checkin';
 import { EventUser } from './user/event-user/event-user';
 import { Join } from './popup/join/join';
 
-import { Session } from './admin/session/session';
 import { Setting } from './admin/setting/setting';
 import { Report } from './admin/report/report';
 import { Seasons } from './admin/seasons/seasons';
+import { Attendence } from './admin/seasons/attendence/attendence';
+import { Attentest } from './admin/seasons/attentest/attentest';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'user-login', pathMatch: 'full' },
@@ -29,6 +29,7 @@ export const routes: Routes = [
 
   { path: 'event-user', component: EventUser },
   { path: 'popupjoin', component: Join },
+  { path: 'checkin/:seasonId/:sessionId',component: CheckIn},
   {
     path: '',
     component: Pages,
@@ -37,9 +38,9 @@ export const routes: Routes = [
       { path: 'members/create', component: Members },
       { path: 'members/edit/:id', component: Members },
       { path: 'season', component: Seasons}, 
-      { path: 'event', component: Event },
+      { path: 'attendence', component: Attendence },
+      { path: 'attentest',component: Attentest},
       { path: 'check-in', component: CheckIn },
-      { path: 'session', component: Session },
       { path: 'report', component: Report },
       { path: 'setting', component: Setting },
     ],

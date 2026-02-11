@@ -6,25 +6,33 @@
         <h2>Manage Season</h2>
     <div class="input-season box-input">
       <label for="season">Season Name</label>
-      <input type="text" placeholder="Input Season..." />
+      <input type="text" 
+      placeholder="Input Season..."
+      [(ngModel)]="seasonForm.name"
+      name="seasonName"
+      />
     </div>
     <div class="input-date box-input">
       <label for="date">From date - To date</label>
       <p-date-picker 
+      name="fromtoDate"
       selectionMode="range" 
       showIcon="ture"
       dateFormat="dd/mm/yy"
       placeholder="dd/mm/yy - dd/mm/yy"
       showButtonBar="ture"
+      [(ngModel)]="seasonForm.fromtoDate"
       />
     </div>
+    <div *ngIf="seasonForm.fromtoDate[1]" class="preview-info">
+  <p>ລະບົບຈະສ້າງວັນຊ້ອມທັງໝົດ: <strong>{{ calculatePreview() }}</strong> ວັນ</p>
+  <small>(ສະເພາະ ວັນພຸດ, ວັນເສົາ ແລະ ວັນອາທິດ)</small>
+</div>
     </div>
 
     <div class="btn-con">
         <button type="button" class="btn btn-close" (click)="close.emit(false)">Cancel</button>
-        <button type="submit" class="btn btn-save">Save</button>
+        <button type="submit" class="btn btn-save" (click)="createSeason()">Save</button>
     </div>
   </form>
   </div>
-
-

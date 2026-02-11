@@ -40,9 +40,14 @@ loginByWhatsapp(whatsapp: string) {
   );
 }
 
-checkin(id: string) {
-  return this.http.post(`/api/members/${id}/checkin`, {});
+checkIn(memberId: string) {
+  return this.http.post<any>('http://localhost:3000/api/members/checkin', {
+    memberId
+  });
 }
 
-  
+  // member.service.ts
+getCard(id: string) {
+  return this.http.get<any>(`${this.api}/${id}/memberCard`); // ปรับ URL ให้ตรงกับ Backend
+}
 }

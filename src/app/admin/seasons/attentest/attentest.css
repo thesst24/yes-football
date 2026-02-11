@@ -1,0 +1,61 @@
+.training-card {
+  width: 320px;
+  padding: 20px;
+  border-radius: 15px;
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  color: white;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  font-family: 'Inter', sans-serif;
+  transition: transform 0.2s;
+}
+
+/* สไตล์เมื่อบัตรหมดอายุ */
+.training-card.expired {
+  background: linear-gradient(135deg, #6b7280 0%, #374151 100%);
+  opacity: 0.9;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.status-badge {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+}
+
+.progress-bar {
+  background: rgba(255, 255, 255, 0.2);
+  height: 8px;
+  border-radius: 10px;
+  margin: 10px 0;
+  overflow: hidden;
+}
+
+.progress {
+  background: #34d399; /* สีเขียวสดใส */
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+button {
+  margin-top: 15px;
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  background: #f59e0b; /* สีส้ม */
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #d97706;
+}

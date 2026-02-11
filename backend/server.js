@@ -13,7 +13,9 @@ app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api/members', require('./routes/member.routes'));
 app.use('/api/admin',adminRoute);
-app.use('/api/seasons',seasonRoutes)
+app.use('/api/seasons',seasonRoutes);
+app.use("/api/attendance", require("./routes/attendance.route"));
+app.use("/api/card", require("./routes/membercard.route"));
 
 
 // MongoDB

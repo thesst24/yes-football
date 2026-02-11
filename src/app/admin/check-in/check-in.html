@@ -38,5 +38,6 @@
 <app-card-checkin *ngIf="selectedMember"
 [member]="selectedMember"
 (close)="closePopup()"
+(refresh)="load()">
 ></app-card-checkin>
 

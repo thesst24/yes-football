@@ -21,13 +21,18 @@
 
         <div class="input-dateofbirth box-input">
           <label for="dateOfBirth">Date of Birth</label>
-          <input
+          <!-- <input
             type="date"
             [(ngModel)]="form.dateOfBirth"
             name="dateOfBirth"
             id="dateOfBirth"
             required
-          />
+          /> -->
+          <p-date-picker [(ngModel)]="form.dateOfBirth"
+          name="dateOfBirth"
+          [showIcon]="true"
+          dateFormat="dd/mm/yy"
+          placeholder="dd/mm/yyyy"></p-date-picker>
           <small *ngIf="f.submitted && f.controls['dateOfBirth']?.invalid" style="color: red">
             dateOfBirth is required
           </small>

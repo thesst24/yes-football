@@ -1,9 +1,11 @@
 /* Header Member */
-
+.container {
+    max-width: 100%;
+}
 header {
     display: flex;
     background-color: white;
-    width: 100%;
+    width: auto;
     height: 73px;
     justify-content: space-between;
     align-items: center;
