@@ -1,4 +1,5 @@
-<div class="container">
+<div class="con-all" *ngIf="!isOnEventsPage">
+<div class="container" >
   <div class="header flex justify-between items-center bg-white py-[14px] px-[10px] rounded-[15px] mb-6">
   <div class="season flex gap-8">
   <h2
@@ -32,29 +33,6 @@
     </div>
   </div>
 
-  <!-- <div class="session bg-white p-6 rounded-[15px] max-h-[700px]">
-    <div class="con-session flex flex-col gap-4 ml-20"><a
-      class="session1 w-[200px] h-[60px] rounded-[6px] bg-[#293690] text-white text-[16px] flex justify-center items-center"
-      routerLink="/attentest" routerLinkActive="active"
-    >
-      session10
-    </a>
-    <button
-      type="button"
-      class="session1 w-[200px] h-[60px] rounded-[6px] bg-[#293690] text-center text-white text-[16px]"
-    >
-      <p>session9</p>
-    </button>
-    <button
-      type="button"
-      class="session1 w-[200px] h-[60px] rounded-[6px] bg-[#293690] text-center text-white text-[16px]"
-    >
-      <p>session8</p>
-    </button>
-    </div>
-  </div> -->
-
-  
 </div>
 <div class="overlay" *ngIf="showList">
   <div class="modal-content">
@@ -114,7 +92,7 @@
   [disabled]="i !== 0"
   class="w-[140px] h-[55px] rounded-lg"
   [ngClass]="{
-    'bg-green-600 text-white': i === 0,
+    'bg-green-600 text-white cursor-pointer': i === 0,
     'bg-gray-300 text-gray-500 cursor-not-allowed': i !== 0
   }"
 >
@@ -129,3 +107,6 @@
 
 
 <app-manage-season *ngIf="showPopup" (close)="closePopup($event)"></app-manage-season>
+
+</div>
+<router-outlet></router-outlet>

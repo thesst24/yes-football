@@ -3,6 +3,7 @@ const router = express.Router();
 
 const Attendance = require("../models/attendance.model");
 const Card = require("../models/memberCard.model");
+const Member = require('../models/member.model');
 
 router.post("/checkin", async (req, res) => {
   try {
@@ -54,8 +55,18 @@ router.post("/checkin", async (req, res) => {
     card.usedSessions += 1;
     card.checkins.push({
   sessionId: sessionId,
-  date: new Date()
+  checkinDate: new Date()
 });
+
+// ✅ ถ้าเต็ม → inactive
+if (card.usedSessions >= card.totalSessions) {
+  card.status = "inactive";
+
+  // ✅ ทำให้ member inactive ด้วย
+  await Member.findByIdAndUpdate(memberId, {
+    status: false
+  });
+}
     await card.save();
 
     return res.json({

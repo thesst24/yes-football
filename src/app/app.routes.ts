@@ -15,9 +15,8 @@ import { Join } from './popup/join/join';
 import { Setting } from './admin/setting/setting';
 import { Report } from './admin/report/report';
 import { Seasons } from './admin/seasons/seasons';
-import { Attendence } from './admin/seasons/attendence/attendence';
-import { Attentest } from './admin/seasons/attentest/attentest';
 import { Events } from './admin/seasons/events/events';
+
 
 export const routes: Routes = [
   { path: '', redirectTo: 'user-login', pathMatch: 'full' },
@@ -37,12 +36,13 @@ export const routes: Routes = [
       { path: 'member', component: Members },
       { path: 'members/create', component: Members },
       { path: 'members/edit/:id', component: Members },
-      { path: 'season', component: Seasons}, 
-      { path: 'attendence', component: Attendence },
-      { path: 'attentest',component: Attentest},
+      { path: 'season', component: Seasons,
+        children:[
+          { path: 'events/:seasonId/:sessionId',component: Events },]
+       },
+      
       { path: 'checkin', component: CheckIn },
       { path: 'checkin/:seasonId/:sessionId', component: CheckIn },
-      { path: 'events', component: Events},
       { path: 'report', component: Report },
       { path: 'setting', component: Setting },
     ],

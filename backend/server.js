@@ -7,6 +7,7 @@ const adminRoute = require('./routes/admin.route');
 const seasonRoutes = require('./routes/season.route');
 const cardRoutes = require('./routes/cards.route');
 const sessionRoutes = require('./routes/sessions.route');
+const participants = require('./routes/participants.route.js');
 require('dotenv').config();
 
 const app = express();
@@ -19,6 +20,7 @@ app.use('/api/seasons',seasonRoutes);
 app.use("/api/attendance", require("./routes/attendance.route"));
 app.use("/api/cards", cardRoutes);
 app.use('/api/sessions',sessionRoutes);
+app.use("/api/participants", participants);
 
 
 // MongoDB

@@ -1,81 +1,64 @@
-<div class="overlay" >
-  <div class="card-checkin">
- <button type="button" class="close" (click)="closePopup()">✕</button>
+<div class="overlay">
+  <div class="card-checkin" [class.inactive-mode]="card?.status === 'inactive'">
+    <button type="button" class="close" (click)="closePopup()">✕</button>
 
-    <div class="active">
-      <p>active</p>
+    <div
+      class="status"
+      [class.active]="card?.status === 'active'"
+      [class.inactive]="card?.status === 'inactive'"
+    >
+      <p>{{ card?.status }}</p>
     </div>
 
     <div class="con-input">
-
       <div class="box-input">
         <div class="input-name input">
           <label for="name" class="">Name</label>
-           <div class="box">{{ member.fullname }}</div>
-           
+          <div class="box">{{ member.fullname }}</div>
         </div>
         <div class="input-expiry input">
-  <label>Expiry</label>
-  <div class="box">
-    {{ card?.expiryDate | date:'dd/MM/yyyy' }}
-  </div>
-</div>
+          <label>Expiry</label>
+          <div class="box">
+            {{ card?.expiryDate | date: 'dd/MM/yyyy' }}
+          </div>
+        </div>
       </div>
 
       <div class="image-profile">
-        <img [src]="'http://localhost:3000' + member.image">
+        <img [src]="'http://localhost:3000' + member.image" />
       </div>
     </div>
 
-<!-- ✅ ถ้า card inactive หรือเต็มแล้ว -->
-<div *ngIf="isCardFull || card?.status === 'inactive'" class="renew-box">
+    <!-- ✅ ถ้า card inactive หรือเต็มแล้ว -->
+    <div *ngIf="isCardFull || card?.status === 'inactive'" class="renew-box">
 
-  <p class="text-red-600 font-bold text-lg">
-    ❌ Card Expired (Inactive)
-  </p>
+      <button class="renew-btn" (click)="renewCard()"> Renew Card</button>
+    </div>
 
-  <button
-    class="renew-btn"
-    (click)="renewCard()"
-  >
-    🔄 Renew Card
-  </button>
+    <div class="con-grid-circle">
+      <div class="checkin-grid" *ngIf="card">
+        <div
+          class="circle"
+          *ngFor="let s of [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]; let i = index"
+          [class.disabled]="isCardFull || card?.status === 'inactive'"
+          [class.checked]="i < card.usedSessions"
+          [class.next-queue]="i === card.usedSessions"
+          (click)="onCheckInClick(i)"
+        >
+          <!-- ✅ ช่องที่เช็คแล้ว -->
+          <div *ngIf="i < card.usedSessions" class="checked-content">
+            <!-- ✅ แสดงวันที่ -->
+            <small class="check-date">
+              {{ card.checkins[i]?.date | date: 'dd/MM' }}
+            </small>
+          </div>
+          <!-- ✅ ช่องถัดไป -->
+          <span *ngIf="i === card.usedSessions">Check-in</span>
 
-</div>
-
-
-<div class="con-grid-circle">
-  <div class="checkin-grid" *ngIf="card">
-
-  <div
-    class="circle"
-    *ngFor="let s of [0,1,2,3,4,5,6,7,8,9]; let i = index"
-    
-    [class.disabled]="isCardFull || card?.status === 'inactive'"
-    [class.checked]="i < card.usedSessions"
-    [class.next-queue]="i === card.usedSessions"
-
-    (click)="onCheckInClick(i)"
-  >
-    
-    <!-- ✅ ช่องที่เช็คแล้ว -->
- <div *ngIf="i < card.usedSessions" class="checked-content">
-
-    <!-- ✅ แสดงวันที่ -->
-  <small class="check-date">
-    {{ card.checkins[i]?.date | date:'dd/MM' }}
-  </small>
-  
-  </div>
-    <!-- ✅ ช่องถัดไป -->
-    <span *ngIf="i === card.usedSessions">Check-in</span>
-
-    <!-- ช่องอนาคต -->
-    <span *ngIf="i > card.usedSessions">{{ i + 1 }}</span>
-
-  </div>
-</div>
-
-
+          <!-- ช่องอนาคต -->
+          <span *ngIf="i > card.usedSessions">{{ i + 1 }}</span>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const MemberCard = require("../models/memberCard.model");
 const Attendance = require('../models/attendance.model');
+const Member = require('../models/member.model');
 
 
 // ✅ GET Card by memberId
@@ -41,11 +42,17 @@ router.post("/renew", async (req, res) => {
     card.usedSessions = 0;
     card.status = "active";
     card.checkins = [];
+    card.expiryDate = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000);
 
     await card.save();
 
     // ✅ ลบ Attendance ของ member คนนี้ทั้งหมด
     await Attendance.deleteMany({ memberId });
+
+    // ✅ Member active กลับมาด้วย
+await Member.findByIdAndUpdate(memberId, {
+  status: true
+});
 
     res.json({ card });
 

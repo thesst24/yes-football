@@ -25,11 +25,8 @@ login() {
       const sessionId = localStorage.getItem("selectedSessionId");
 
       if (seasonId && sessionId) {
-        this.router.navigate(['/checkin', seasonId, sessionId]);
-      } else {
-        // ถ้ายังไม่เคยเลือก season/session
         this.router.navigate(['/season']);
-      }
+      } 
       },
       error: () => {
         alert(this.error = 'Password incorrect');

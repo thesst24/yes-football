@@ -1,40 +1,33 @@
 <div class="sidebar">
   <div class="top-sidebar">
-    <a class="logo" routerLink="/check-in">
+    <a class="logo" routerLink="/checkin">
       <img src="logo.png" alt="logo" width="150px" height="150px" />
     </a>
 
     <div class="menu">
       <nav class="link">
         <a
-           (click)="goCheckin()"
-           [class.active]="router.url.includes('/checkin')"
-          (click)="selectMenu('Check-in')"
+  routerLink="/season"
+  [class.active]="isSeasonActive()"
+  (click)="selectMenu('Season')"
+>
+  <i class="pi pi-calendar icon-menu"></i>
+  Seasons
+</a>
+
+        <a
+          (click)="goCheckin()"
+          [class.active]="router.url.includes('/checkin')"
           ><i class="pi pi-verified icon-menu"></i>Check-in</a
         >
-        <a routerLink="/season" 
-        routerLinkActive="active"
-        (click)="selectMenu('Season')"
-          ><i class="pi pi-calendar icon-menu"></i>Seasons</a
-        >
-        <a routerLink="/member" 
-        routerLinkActive="active"
-        (click)="selectMenu('Member')"
+
+        <a routerLink="/member" routerLinkActive="active" (click)="selectMenu('Member')"
           ><i class="pi pi-user-plus icon-menu"></i>Members</a
         >
-        <a routerLink="/events" 
-        routerLinkActive="active"
-        (click)="selectMenu('Event')"
-          ><i class="pi pi-user-plus icon-menu">Event</i></a
-        >
-        <a routerLink="/report"
-         routerLinkActive="active"
-         (click)="selectMenu('Report')"
+        <a routerLink="/report" routerLinkActive="active" (click)="selectMenu('Report')"
           ><i class="pi pi-chart-line icon-menu"></i>Report</a
         >
-        <a routerLink="/setting" 
-        routerLinkActive="active"
-        (click)="selectMenu('Setting')"
+        <a routerLink="/setting" routerLinkActive="active" (click)="selectMenu('Setting')"
           ><i class="pi pi-cog icon-menu"></i>Setting</a
         >
       </nav>

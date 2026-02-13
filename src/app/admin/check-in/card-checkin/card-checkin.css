@@ -2,6 +2,7 @@
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,.5);
+  backdrop-filter: blur(6px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -19,6 +20,45 @@
     position: relative;
 }
 
+.card-checkin.inactive-mode {
+  position: relative;
+}
+
+/* ทำให้ card เทาหม่น */
+.card-checkin.inactive-mode::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.75);
+  z-index: 5;
+  border-radius: 0px;
+}
+.renew-box,
+.close,
+.status {
+  position: relative;
+  z-index: 20;
+}
+
+.card-checkin.inactive-mode .circle {
+  background: #d1d5db !important;
+  color: #6b7280 !important;
+  border: 2px solid #9ca3af !important;
+}
+
+.card-checkin.inactive-mode img {
+  filter: grayscale(100%);
+}
+
+/* ✅ แต่ Renew + Status + Close ไม่โดนเทา */
+.card-checkin.inactive-mode .renew-box,
+.card-checkin.inactive-mode .renew-btn,
+.card-checkin.inactive-mode .status,
+.card-checkin.inactive-mode .close {
+  filter: none !important;
+  opacity: 1 !important;
+}
+
 .close {
   position: absolute;
   top: -50px;
@@ -31,14 +71,19 @@
   border-radius: 50%;
   cursor: pointer;
 }
-.active {
+.status {
     display: flex;
     justify-content: end;
     padding: 0px 10px;
     margin-top: 5px;
 }
-.active p {
-    color: #00ff29;
+
+.status.active {
+  color: rgb(0, 255, 0);
+}
+
+.status.inactive {
+  color: rgb(233, 45, 45);
 }
 .con-input {
     display: flex;
@@ -134,13 +179,29 @@
   opacity: 0.4;
 }
 
+.renew-box{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  z-index:10;
+}
+
 .renew-btn {
-  background: green;
-  padding: 10px 18px;
-  border-radius: 10px;
+ background: linear-gradient(135deg, #00c853, #009624);
+  padding: 14px 28px;
+  border-radius: 14px;
   color: white;
+  font-size: 18px;
   font-weight: bold;
   cursor: pointer;
+  border: none;
+  box-shadow: 0 6px 18px rgba(0, 200, 83, 0.5);
+  transition: 0.25s;
+}
+.renew-btn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 8px 25px rgba(0, 200, 83, 0.8);
 }
 
 .check-date {

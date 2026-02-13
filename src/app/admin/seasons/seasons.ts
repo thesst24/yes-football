@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, EventEmitter, Output } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { ManageSeason } from './manage-season/manage-season';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -10,7 +10,7 @@ import { Season } from '../../services/season';
 
 @Component({
   selector: 'app-seasons',
-  imports: [RouterLink, ManageSeason, FormsModule, TableModule, CommonModule, RouterLinkActive],
+  imports: [RouterLink, ManageSeason, FormsModule, TableModule, CommonModule, RouterLinkActive, RouterOutlet],
   templateUrl: './seasons.html',
   styleUrl: './seasons.css',
 })
@@ -34,7 +34,8 @@ export class Seasons {
     private http: HttpClient,
     private seasonService: Season,
     private cdr: ChangeDetectorRef,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {}
 
   openPopup() {
@@ -54,23 +55,20 @@ export class Seasons {
   }
 
   ngOnInit() {
+    
     this.loadSeasons();
+    
   }
   getLatestSessions() {
     this.http.get<any[]>('http://localhost:3000/api/latest-sessions ').subscribe({
       next: (data) => {
         this.latestSessions = data;
+
       },
       error: (err) => console.error(err),
     });
   }
 
-  // ฟังก์ชันเมื่อคลิกที่ Session เพื่อไปหน้าเช็คชื่อ
-  onSessionClick(sessionId: string) {
-    console.log('ไปที่หน้าเช็คชื่อ Session ID:', sessionId);
-    // เช่น: this.router.navigate(['/attendance', sessionId]);
-  }
-  
   loadSeasons() {
   this.http.get<any[]>('http://localhost:3000/api/seasons').subscribe({
     next: (data) => {
@@ -102,6 +100,7 @@ loadSessions(seasonId: string) {
 
       // ✅ filter ครั้งแรก
       this.applySessionFilter();
+        
     });
 }
 
@@ -162,26 +161,21 @@ selectSession(session:any) {
   // ✅ เปิดได้แค่ session แรก
   if (session._id !== this.sessions[0]._id) return;
 
-  // ไปหน้า checkin พร้อม seasonId + sessionId
-  this.router.navigate([
-    '/checkin',
-    this.selectedSeason._id,
-    session._id
-  ]);
+    // ✅ เก็บ session ที่เลือกไว้
+  localStorage.setItem("selectedSessionId", session._id);
+  localStorage.setItem("selectedSessionDate", session.date);
+
+ // ✅ เก็บชื่อ session ด้วย
+  localStorage.setItem("selectedSessionName", session.name);
+
+
+  this.router.navigate(
+    ['events', this.selectedSeason._id, session._id],
+    { relativeTo: this.route }
+  );
+  
 }
 
-openCheckIn(sessionId: string) {
-
-
-  // ✅ save session ล่าสุด
-  localStorage.setItem("selectedSessionId", sessionId);
-
-  this.router.navigate([
-    "/checkin",
-    this.selectedSeason._id,
-    sessionId
-  ]);
-}
 
 updateDisplaySessions() {
   if (this.showAllSessions) {
@@ -191,5 +185,11 @@ updateDisplaySessions() {
   }
 }
 
+get isOnEventsPage() {
+  
+  return this.router.url.includes('/season/events');
+  }
 
+
+  
 }

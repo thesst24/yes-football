@@ -153,9 +153,30 @@ router.patch('/:id/status', async (req, res) => {
   if (typeof status !== 'boolean') {
     return res.status(400).json({ error: 'status must be boolean' });
   }
+ // ✅ update member
+  const member = await Member.findByIdAndUpdate(
+    req.params.id,
+    { status },
+    { new: true }
+  );
 
-  const member = await Member.findByIdAndUpdate(req.params.id, { status }, { new: true });
-  res.json(member);
+  // ✅ update card ด้วย
+  await MemberCard.findOneAndUpdate(
+    { memberId: req.params.id },
+    { status: status ? "active" : "inactive" }
+  );
+
+  
+ const updatedCard = await MemberCard.findOneAndUpdate(
+  { memberId: req.params.id },
+  { status: status ? "active" : "inactive" },
+  { new: true }
+);
+
+res.json({
+  member,
+  card: updatedCard
+});
 });
 
 // MEMBER LOGIN (by whatsapp only)

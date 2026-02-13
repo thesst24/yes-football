@@ -62,4 +62,11 @@ ngOnInit() {
       }
     });
 }
+
+isSeasonActive(): boolean {
+  return (
+    this.router.url.startsWith('/season') ||
+    this.router.url.startsWith('/events')
+  );
+}
 }

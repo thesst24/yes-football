@@ -74,14 +74,15 @@ header {
 }
 .club-member {
     overflow: scroll;
+    max-height: 600px;
 }
 
-.title-member {
+.title {
     display: flex;
     align-items: center;
     gap: 15px;
 }
-.title-member p {
+.title h2 {
     font-size: var(--font-size-fc);
     font-weight: 700;
 }
@@ -91,7 +92,8 @@ header {
 }
 .list-member {
     display: grid;
-    grid-template-columns: repeat(16, 1fr);
+    grid-template-columns: repeat(auto-fill, 70px);
+    gap: 10px;
     margin-top: 24px;
 }
 .member {
@@ -106,6 +108,7 @@ header {
     width: 50px;
     height: 50px;
     border-radius: 50%;
+    object-fit: cover;
 }
 .list-member p {
     font-size: 12px;
@@ -142,4 +145,62 @@ header {
 .participants {
     height: 100%;
     overflow: scroll;
+}
+.content-par {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.btn-remove-all {
+  background: #ff3b3b;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.btn-remove-all:hover {
+  background: darkred;
+}
+.popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.popup-box {
+  background: white;
+  padding: 25px;
+  border-radius: 15px;
+  width: 320px;
+  text-align: center;
+}
+
+.btn-join {
+  background: green;
+  color: white;
+  padding: 10px;
+  margin-top: 15px;
+  width: 100%;
+  border-radius: 8px;
+}
+
+.btn-remove {
+  background: red;
+  color: white;
+  padding: 10px;
+  margin-top: 15px;
+  width: 100%;
+  border-radius: 8px;
+}
+
+.btn-close {
+  margin-top: 10px;
+  padding: 8px;
+  width: 100%;
 }
