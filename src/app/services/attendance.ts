@@ -18,4 +18,6 @@ export class Attendance {
   getMemberCard(memberId: string) {
     return this.http.get(`${this.apiUrl}/members/${memberId}/card`);
   }
+
+  
 }

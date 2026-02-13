@@ -47,7 +47,6 @@ export class UserLogin {
       next: (member) => {
         localStorage.setItem('member', JSON.stringify(member));
         this.router.navigate(['/card-check']);
-        alert('Login success');
       },
       error: (err) => alert(err.error.message),
     });

@@ -5,6 +5,8 @@ const path = require('path');
 const memberModel = require('./models/member.model');
 const adminRoute = require('./routes/admin.route');
 const seasonRoutes = require('./routes/season.route');
+const cardRoutes = require('./routes/cards.route');
+const sessionRoutes = require('./routes/sessions.route');
 require('dotenv').config();
 
 const app = express();
@@ -15,7 +17,8 @@ app.use('/api/members', require('./routes/member.routes'));
 app.use('/api/admin',adminRoute);
 app.use('/api/seasons',seasonRoutes);
 app.use("/api/attendance", require("./routes/attendance.route"));
-app.use("/api/card", require("./routes/membercard.route"));
+app.use("/api/cards", cardRoutes);
+app.use('/api/sessions',sessionRoutes);
 
 
 // MongoDB

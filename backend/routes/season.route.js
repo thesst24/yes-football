@@ -61,6 +61,10 @@ router.get('/', async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
+router.get("/:id", async (req, res) => {
+  const season = await Season.findById(req.params.id);
+  res.json(season);
+});
 
 // ดึง 3 Sessions ล่าสุด
 router.get('/latest-sessions', async (req, res) => {

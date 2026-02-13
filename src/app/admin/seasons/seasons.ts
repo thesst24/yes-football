@@ -18,13 +18,13 @@ export class Seasons {
   @Output() onSaveSuccess = new EventEmitter<void>();
 
   seasons: any[] = [];
+  filteredSessions: any[] = [];
   latestSessions: any[] = [];
 
   sessions: any[] = [];
   currentSessionId: string = '';
   selectedSeason: any;
   showAllSessions: boolean = false;
-  displaySessions: any[] = [];
 
   // ===== UI =====
   showPopup = false;
@@ -94,6 +94,35 @@ export class Seasons {
   });
 }
 
+loadSessions(seasonId: string) {
+  this.http.get<any[]>("http://localhost:3000/api/sessions/season/" + seasonId)
+    .subscribe(res => {
+
+      this.sessions = res;
+
+      // ✅ filter ครั้งแรก
+      this.applySessionFilter();
+    });
+}
+
+applySessionFilter() {
+
+  const today = new Date();
+
+  if (this.showAllSessions) {
+    // ✅ แสดงทั้งหมด
+    this.filteredSessions = [...this.sessions];
+  } else {
+    // ✅ แสดงเฉพาะ session วันนี้ขึ้นไป
+    this.filteredSessions = this.sessions.filter(s =>
+      new Date(s.date) >= today
+    );
+  }
+}
+toggleShowAllSessions() {
+  this.applySessionFilter();
+}
+
 selectSeason(season: any) {
 
   this.selectedSeason = season;
@@ -121,6 +150,7 @@ selectSeason(season: any) {
       if (this.sessions.length > 0) {
         this.currentSessionId = this.sessions[0]._id;
       }
+          this.cdr.detectChanges();
 
       // ปิด list popup
       this.showList = false;
@@ -140,15 +170,26 @@ selectSession(session:any) {
   ]);
 }
 
+openCheckIn(sessionId: string) {
+
+
+  // ✅ save session ล่าสุด
+  localStorage.setItem("selectedSessionId", sessionId);
+
+  this.router.navigate([
+    "/checkin",
+    this.selectedSeason._id,
+    sessionId
+  ]);
+}
+
 updateDisplaySessions() {
   if (this.showAllSessions) {
-    this.displaySessions = [...this.sessions]; // show all
+    this.sessions = [...this.sessions]; // show all
   } else {
-    this.displaySessions = this.sessions.slice(0, 3); // show only 3 latest
+    this.sessions = this.sessions.slice(0, 3); // show only 3 latest
   }
 }
 
-toggleShowAllSessions() {
-  this.updateDisplaySessions();
-}
+
 }

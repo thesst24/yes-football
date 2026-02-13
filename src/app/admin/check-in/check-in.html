@@ -1,5 +1,9 @@
 <div class="container">
   <header>
+     <div class="season-session-info">
+  <p><b>Season:</b> {{ season?.name }}</p>
+  <p><b>Session:</b> {{ session?.date | date:'EEE dd/MM/yyyy' }}</p>
+</div>
     <div class="search">
       <i class="pi pi-search icon-search"></i>
       <input type="text" 
@@ -7,6 +11,7 @@
       [(ngModel)]="searchText"
       (input)="filterMembers()" />
     </div>
+   
   </header>
 
   <div class="content">
@@ -35,9 +40,15 @@
   </div>
 </div>
 
-<app-card-checkin *ngIf="selectedMember"
-[member]="selectedMember"
-(close)="closePopup()"
-(refresh)="load()">
-></app-card-checkin>
+<app-card-checkin
+  *ngIf="selectedMember"
+  [member]="selectedMember"
+
+  [seasonId]="seasonId"
+  [sessionId]="sessionId"
+
+  (close)="closePopup()"
+  (refresh)="load()"
+>
+</app-card-checkin>
 

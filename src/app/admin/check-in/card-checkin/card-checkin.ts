@@ -1,24 +1,32 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Member } from '../../../services/member';
 import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-card-checkin',
-  imports: [ CommonModule],
+  imports: [CommonModule],
   templateUrl: './card-checkin.html',
   styleUrl: './card-checkin.css',
 })
 export class CardCheckin {
- @Input() member: any;
+  @Input() member: any;
+
+  // ✅ รับค่าจาก Season/Session ที่เลือก
+  @Input() seasonId!: string;
+  @Input() sessionId!: string;
+
   @Output() close = new EventEmitter<void>();
   @Output() refresh = new EventEmitter<void>();
 
   card: any = null;
-  loading = false;
-  checkinSlots = new Array(10);
+  checkinSlots = Array.from({ length: 10 }, (_, i) => i);
 
-  constructor(private memberService: Member) {}
+  constructor(
+    private memberService: Member,
+    private http: HttpClient,
+    private cdr: ChangeDetectorRef,
+  ) {}
 
   ngOnInit() {
     if (this.member?._id) {
@@ -29,57 +37,94 @@ export class CardCheckin {
   loadCard() {
     this.memberService.getCard(this.member._id).subscribe({
       next: (res) => {
+        console.log('✅ Card Loaded:', res); // 👈 เพิ่มตรงนี้
         this.card = res;
+        this.cdr.detectChanges();
       },
-      error: () => {
+      error: (err) => {
+        console.log('❌ Card Error:', err);
         alert('Failed to load card');
-      }
+      },
     });
   }
 
-  isExpired(): boolean {
-    if (!this.card?.expiryDate) return false;
-    return new Date() > new Date(this.card.expiryDate);
-  }
-
+  // ✅ กดได้แค่ช่องถัดไป
   onCheckInClick(index: number) {
 
-    if (!this.card) return;
+     // ❌ ถ้า card inactive หรือเต็มแล้ว ห้ามกด
+  if (this.isCardFull || this.card?.status === "inactive") return;
 
-    // กดได้เฉพาะช่องถัดไป
     if (index !== this.card.usedSessions) return;
 
-    if (this.isExpired()) {
-      alert('Card expired');
-      return;
-    }
+    if (!confirm('Confirm Check-in?')) return;
 
-    if (this.card.usedSessions >= this.card.totalSessions) {
-      alert('Card fully used');
-      return;
-    }
+    this.checkinNow();
+  }
 
-    this.loading = true;
-
-    this.memberService.checkIn(this.member._id)
+  checkinNow() {
+    this.http
+      .post('http://localhost:3000/api/attendance/checkin', {
+        memberId: this.member._id,
+        seasonId: this.seasonId,
+        sessionId: this.sessionId,
+      })
       .subscribe({
         next: (res: any) => {
-          this.card.usedSessions = res.usedSessions;
-          this.loading = false;
+          alert("✅ Check-in Success!");
 
-          // 🔥 บอกหน้าแม่ให้ refresh list
-          this.refresh.emit();
+  // ✅ ใช้ card ใหม่จาก backend
+  this.card = res.card;
+
+
+  // ✅ ถ้าเต็มแล้ว → inactive
+  if (this.card.usedSessions >= 10) {
+    this.card.status = "inactive";
+  }
+
+  alert("✅ Check-in Success!");
+  this.cdr.detectChanges();
+
+  // refresh list attendance
+  this.refresh.emit();
+
+  // close popup
+  this.close.emit();
         },
+
         error: (err) => {
-          this.loading = false;
-          alert(err?.error?.message || 'Check-in failed');
-        }
+          console.log('❌ Error Status:', err.status);
+          console.log('❌ Backend Message:', err.error);
+          alert(err.error.message);
+        },
       });
   }
+
+  get isCardFull(): boolean {
+  return this.card?.usedSessions >= 10;
+}
+
+renewCard() {
+  console.log("🔥 Renew memberId:", this.member._id);
+  this.http.post("http://localhost:3000/api/cards/renew", {
+    memberId: this.member._id
+  }).subscribe({
+    next: (res:any) => {
+      alert("✅ Renew success");
+      this.card = res.card;
+
+       // ✅ refresh attendance list
+      this.refresh.emit();
+
+      this.cdr.detectChanges();
+    },
+    error: (err) => {
+      console.log("❌ Renew Error:", err.error);
+      alert(err.error.message);
+    }
+  });
+}
 
   closePopup() {
     this.close.emit();
   }
-
 }
-

@@ -47,7 +47,9 @@ checkIn(memberId: string) {
 }
 
   // member.service.ts
-getCard(id: string) {
-  return this.http.get<any>(`${this.api}/${id}/memberCard`); // ปรับ URL ให้ตรงกับ Backend
+getCard(memberId: string) {
+  return this.http.get(
+    `http://localhost:3000/api/cards/${memberId}`
+  );
 }
 }

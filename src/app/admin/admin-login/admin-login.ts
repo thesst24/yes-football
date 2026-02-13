@@ -21,7 +21,15 @@ constructor(private adminService: Admin, private router: Router){}
 login() {
     this.adminService.login(this.password).subscribe({
       next: () => {
-        this.router.navigate(['/check-in']);
+        const seasonId = localStorage.getItem("selectedSeasonId");
+      const sessionId = localStorage.getItem("selectedSessionId");
+
+      if (seasonId && sessionId) {
+        this.router.navigate(['/checkin', seasonId, sessionId]);
+      } else {
+        // ถ้ายังไม่เคยเลือก season/session
+        this.router.navigate(['/season']);
+      }
       },
       error: () => {
         alert(this.error = 'Password incorrect');

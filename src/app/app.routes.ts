@@ -17,6 +17,7 @@ import { Report } from './admin/report/report';
 import { Seasons } from './admin/seasons/seasons';
 import { Attendence } from './admin/seasons/attendence/attendence';
 import { Attentest } from './admin/seasons/attentest/attentest';
+import { Events } from './admin/seasons/events/events';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'user-login', pathMatch: 'full' },
@@ -29,7 +30,6 @@ export const routes: Routes = [
 
   { path: 'event-user', component: EventUser },
   { path: 'popupjoin', component: Join },
-  { path: 'checkin/:seasonId/:sessionId',component: CheckIn},
   {
     path: '',
     component: Pages,
@@ -40,7 +40,9 @@ export const routes: Routes = [
       { path: 'season', component: Seasons}, 
       { path: 'attendence', component: Attendence },
       { path: 'attentest',component: Attentest},
-      { path: 'check-in', component: CheckIn },
+      { path: 'checkin', component: CheckIn },
+      { path: 'checkin/:seasonId/:sessionId', component: CheckIn },
+      { path: 'events', component: Events},
       { path: 'report', component: Report },
       { path: 'setting', component: Setting },
     ],

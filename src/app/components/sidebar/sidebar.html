@@ -7,9 +7,8 @@
     <div class="menu">
       <nav class="link">
         <a
-          routerLink="/check-in"
-          routerLinkActive="active"
-          [routerLinkActiveOptions]="{ exact: true }"
+           (click)="goCheckin()"
+           [class.active]="router.url.includes('/checkin')"
           (click)="selectMenu('Check-in')"
           ><i class="pi pi-verified icon-menu"></i>Check-in</a
         >
@@ -22,6 +21,11 @@
         routerLinkActive="active"
         (click)="selectMenu('Member')"
           ><i class="pi pi-user-plus icon-menu"></i>Members</a
+        >
+        <a routerLink="/events" 
+        routerLinkActive="active"
+        (click)="selectMenu('Event')"
+          ><i class="pi pi-user-plus icon-menu">Event</i></a
         >
         <a routerLink="/report"
          routerLinkActive="active"
