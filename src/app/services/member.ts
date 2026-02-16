@@ -52,4 +52,13 @@ getCard(memberId: string) {
     `http://localhost:3000/api/cards/${memberId}`
   );
 }
+
+
+renew(memberId: string) {
+  return this.http.patch(
+    `http://localhost:3000/api/members/renew/${memberId}`,
+    {}
+  );
+}
+
 }

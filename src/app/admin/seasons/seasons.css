@@ -16,6 +16,14 @@
 }
 
 
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 80%;
+  max-width: 800px;
+}
+
 .status-badge {
   padding: 4px 8px;
   border-radius: 4px;

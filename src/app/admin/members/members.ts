@@ -171,15 +171,37 @@ export class Members {
     }
   }
 
-  toggleStatus(member: any) {
-    
-    const newStatus = !!member.status;
-    this.service.updateStatus(member._id, newStatus).subscribe(() => {
-      member.status = newStatus;
-      this.updateMemberCount();
-      this.load();
+toggleStatus(member: any) {
+  const newStatus = !!member.status;
+
+  // ✅ เปิด Active
+  if (newStatus) {
+    this.service.renew(member._id).subscribe({
+      next: () => {
+        alert("✅ Member Activated + Card Renewed!");
+        this.load();
+      },
+      error: (err) => {
+        alert("❌ Renew failed: " + err.error.message);
+        member.status = false; // rollback toggle
+      },
     });
+
+    return;
   }
+
+  // ❌ ปิด inactive
+  this.service.updateStatus(member._id, false).subscribe({
+    next: () => {
+      alert("❌ Member Deactivated");
+      this.load();
+    },
+    error: () => {
+      alert("❌ Update failed");
+      member.status = true; // rollback toggle
+    },
+  });
+}
 
   // ===== UTIL =====
   getAgeGroup(date: string | Date) {

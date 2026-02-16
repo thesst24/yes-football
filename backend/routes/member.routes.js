@@ -213,6 +213,35 @@ router.post('/user-login', async (req, res) => {
   }
 });
 
+router.patch("/renew/:memberId", async (req, res) => {
+  try {
+    const memberId = req.params.memberId;
 
+    // ✅ Update Member Status → Active
+    await Member.findByIdAndUpdate(memberId, { status: true });
 
+    // ✅ Reset Card ใหม่ (ใช้ MemberCard)
+    const updatedCard = await MemberCard.findOneAndUpdate(
+      { memberId },
+      {
+        usedSessions: 0,
+        checkins: [],
+        status: "active",
+      },
+      { new: true }
+    );
+
+    res.json({
+      message: "✅ Member Renewed Successfully",
+      card: updatedCard,
+    });
+
+  } catch (err) {
+    console.error("Renew Error:", err);
+    res.status(500).json({
+      message: "Server error",
+      error: err.message,
+    });
+  }
+});
 module.exports = router;
