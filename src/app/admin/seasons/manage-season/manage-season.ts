@@ -21,6 +21,10 @@ export class ManageSeason {
 
   constructor(private http: HttpClient) {}
 
+  closeModal(){
+    this.close.emit();
+  }
+
   createSeason() {
     const dateRange = this.seasonForm.fromtoDate;
 

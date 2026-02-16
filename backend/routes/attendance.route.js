@@ -4,44 +4,35 @@ const router = express.Router();
 const Attendance = require("../models/attendance.model");
 const Card = require("../models/memberCard.model");
 const Member = require('../models/member.model');
+const Participant = require("../models/participant.model");
+
+
 
 router.post("/checkin", async (req, res) => {
   try {
-
     const { memberId, seasonId, sessionId } = req.body;
 
-
-    // 1) Validate input
     if (!memberId || !seasonId || !sessionId) {
-      console.log("❌ Missing Data");
       return res.status(400).json({ message: "Missing fields" });
     }
 
-    // 2) Prevent duplicate checkin
+    // ✅ Prevent duplicate checkin
     const already = await Attendance.findOne({ memberId, sessionId });
-    console.log("already:", already);
-
     if (already) {
-      console.log("❌ Duplicate Checkin");
       return res.status(400).json({ message: "Already checked in" });
     }
 
-    // 3) Find card
+    // ✅ Find card
     const card = await Card.findOne({ memberId });
-    console.log("card:", card);
-
     if (!card) {
-      console.log("❌ Card Not Found");
       return res.status(400).json({ message: "Card not found" });
     }
 
-    // 4) Card full?
     if (card.usedSessions >= card.totalSessions) {
-      console.log("❌ Card Full");
-      return res.status(400).json({ message: "Card full" });
+      return res.status(400).json({ message: "Card full, please renew card" });
     }
 
-    // 5) Save attendance
+    // ✅ Save attendance
     const attendance = new Attendance({
       memberId,
       seasonId,
@@ -51,22 +42,37 @@ router.post("/checkin", async (req, res) => {
 
     await attendance.save();
 
-    // 6) Update card usage
-    card.usedSessions += 1;
-    card.checkins.push({
-  sessionId: sessionId,
-  checkinDate: new Date()
-});
+ // ✅ Update Participant Status → Present (Auto Create)
+let participant = await Participant.findOne({ sessionId, memberId });
 
-// ✅ ถ้าเต็ม → inactive
-if (card.usedSessions >= card.totalSessions) {
-  card.status = "inactive";
-
-  // ✅ ทำให้ member inactive ด้วย
-  await Member.findByIdAndUpdate(memberId, {
-    status: false
+if (!participant) {
+  participant = await Participant.create({
+    sessionId,
+    memberId,
+    status: "present",
   });
+} else {
+  participant.status = "present";
+  await participant.save();
 }
+
+    // ✅ Update card usage
+    card.usedSessions += 1;
+
+    card.checkins.push({
+      sessionId,
+      checkinDate: new Date(),
+    });
+
+    // ✅ Full → inactive
+    if (card.usedSessions >= card.totalSessions) {
+      card.status = "inactive";
+
+      await Member.findByIdAndUpdate(memberId, {
+        status: false,
+      });
+    }
+
     await card.save();
 
     return res.json({
@@ -83,6 +89,12 @@ if (card.usedSessions >= card.totalSessions) {
   }
 });
 
+router.get("/session/:sessionId", async (req, res) => {
+  const data = await Attendance.find({ sessionId: req.params.sessionId })
+    .populate("memberId");
+
+  res.json(data);
+});
 
 
 module.exports = router;

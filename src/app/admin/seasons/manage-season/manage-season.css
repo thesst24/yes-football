@@ -1,10 +1,9 @@
-.overlay {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    inset: 0;
-    background-color: rgba(0,0,0,.5);
-    position: fixed;
+.manage-box {
+  background: white;
+  padding: 30px;
+  border-radius: 16px;
+  width: 500px;
+  max-width: 90%;
 }
 
 form {
@@ -27,6 +26,7 @@ form h2 {
 form label {
     font-size: 16px;
 }
+
 input {
     width: 300px;
     height: 38px;
@@ -70,3 +70,5 @@ input::placeholder, :host ::ng-deep .p-datepicker-input::placeholder {
     background-color: #0db328;
     color: white;
 }
+
+

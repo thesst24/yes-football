@@ -66,7 +66,7 @@
             <i class="pi pi-circle-on icon-roster"></i>Roster: {{ participants.length }} /
             {{ totalMembers }}
           </p>
-          <p class="btn-remove-all" (click)="confirmRemoveAll()">
+          <p class="btn-remove-all" *ngIf="!isPastSession" (click)="confirmRemoveAll()">
     Remove All
   </p>
   </div>
@@ -101,25 +101,35 @@
 <!-- ✅ POPUP -->
 <div class="popup-overlay" *ngIf="selectedMember">
   <div class="popup-box">
-    <h2>{{ selectedMember.fullname }}</h2>
-
-    <img
+   
+    <div class="box-img-popup">
+    <img class="img-popup"
       *ngIf="selectedMember.image"
       [src]="'http://localhost:3000' + selectedMember.image"
       width="120"
     />
-
+    </div>
+ <h2>{{ selectedMember.fullname }}</h2>
     <p>Whatsapp: {{ selectedMember.whatsapp }}</p>
 
     <!-- ✅ JOIN MODE -->
-    <button *ngIf="popupMode === 'join'" class="btn-join" (click)="joinMember()">✅ Join</button>
+    <button
+  *ngIf="popupMode === 'join' && !isPastSession"
+  class="btn-join"
+  (click)="joinMember()"
+>
+  ✅ JOIN
+</button>
 
+<p *ngIf="isPastSession" class="text-red-500 mt-2">
+  Past Session: Attendance Only
+</p>
     <!-- ✅ REMOVE MODE -->
     <button *ngIf="popupMode === 'remove'" class="btn-remove" (click)="removeMember()">
-      ❌ Remove
+       REMOVE
     </button>
 
-    <button class="btn-close" (click)="closePopup()">Close</button>
+    <button class="btn-close" (click)="closePopup()">✕</button>
   </div>
 </div>
 
@@ -134,7 +144,7 @@
     </p>
 
     <div class="popup-actions">
-      <button class="btn-remove" (click)="removeAllParticipants()">
+      <button class="btn-remove" *ngIf="!isPastSession" (click)="removeAllParticipants()">
         ✅ Yes, Remove All
       </button>
 

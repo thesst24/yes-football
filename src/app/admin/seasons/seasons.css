@@ -15,13 +15,6 @@
   z-index: 999;
 }
 
-.modal-content {
-  background: white;
-  padding: 20px;
-  border-radius: 8px;
-  width: 80%;
-  max-width: 800px;
-}
 
 .status-badge {
   padding: 4px 8px;
@@ -55,26 +48,8 @@
   margin-top: 15px;
 }
 
-.btn-session {
-  width: 100%;
-  padding: 15px;
-  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
-  color: white;
-  border: none;
-  border-radius: 12px;
-  cursor: pointer;
-  text-align: left;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-  transition: transform 0.2s;
-}
 
-.btn-session:hover {
-  transform: translateY(-2px);
-  background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%);
-}
+
 
 .session-list {
   background-color: white;

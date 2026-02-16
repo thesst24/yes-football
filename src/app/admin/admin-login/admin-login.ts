@@ -17,20 +17,15 @@ export class AdminLogin {
   error = '';
 
 constructor(private adminService: Admin, private router: Router){}
-
 login() {
-    this.adminService.login(this.password).subscribe({
-      next: () => {
-        const seasonId = localStorage.getItem("selectedSeasonId");
-      const sessionId = localStorage.getItem("selectedSessionId");
+  this.adminService.login(this.password).subscribe({
+    next: () => {
+      this.router.navigate(['/season']); // ไปเลย ไม่ต้องเช็ค localStorage
+    },
+    error: () => {
+      this.error = 'Password incorrect';
+    },
+  });
+}
 
-      if (seasonId && sessionId) {
-        this.router.navigate(['/season']);
-      } 
-      },
-      error: () => {
-        alert(this.error = 'Password incorrect');
-      },
-    });
-  }
 }

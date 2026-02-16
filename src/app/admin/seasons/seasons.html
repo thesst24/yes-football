@@ -1,112 +1,113 @@
 <div class="con-all" *ngIf="!isOnEventsPage">
-<div class="container" >
-  <div class="header flex justify-between items-center bg-white py-[14px] px-[10px] rounded-[15px] mb-6">
-  <div class="season flex gap-8">
-  <h2
-  class="text-[16px] font-bold cursor-pointer hover:underline"
-  (click)="openListSeasons()"
->
-  {{ selectedSeason?.name || "Select Season" }}
-  <span *ngIf="selectedSeason">
-    :
-    {{ selectedSeason.startDate | date:'yyyy/MM/dd' }}
-    -
-    {{ selectedSeason.endDate | date:'yyyy/MM/dd' }}
-  </span>
-</h2>
-<div class="show-past-event flex items-center gap-2">
-        <input type="checkbox" class=""
-        [(ngModel)]="showAllSessions"
-    (change)="toggleShowAllSessions()" />
-        <p class="text-[16px]">Show past Event</p>
+  <!-- ✅ MAIN CONTAINER -->
+  <div class="container">
+    <!-- HEADER -->
+    <div
+      class="header flex justify-between items-center bg-white py-[14px] px-[10px] rounded-[15px] mb-6"
+    >
+      <div class="season flex gap-8">
+        <h2
+          class="text-[16px] font-bold cursor-pointer hover:underline"
+          (click)="openListSeasons()"
+        >
+          {{ selectedSeason?.name || 'Select Season' }}
+
+          <span *ngIf="selectedSeason">
+            : {{ selectedSeason.startDate | date: 'yyyy/MM/dd' }} -
+            {{ selectedSeason.endDate | date: 'yyyy/MM/dd' }}
+          </span>
+        </h2>
+
+        <!-- ✅ CHECKBOX -->
+        <div class="show-past-event flex items-center gap-2">
+          <input type="checkbox" [(ngModel)]="showAllSessions" (change)="toggleShowAllSessions()" />
+          <p class="text-[16px]">Show past Event</p>
+        </div>
       </div>
-</div>
-    <div class="manage-season">
+
+      <!-- ✅ POPUP Manage Season -->
       <button
-        type="button"
         (click)="openPopup()"
-        class="bg-[#0db328] w-[214px] h-[45px] rounded-[6px] text-center text-white cursor-pointer"
+        class="bg-[#0db328] w-[215px] h-[45px] rounded-[6px] text-center text-white cursor-pointer"
       >
-        <i class="pi pi-plus-circle"></i>
         Manage Season
+      </button>
+
+      
+    </div>
+  </div>
+
+  <!-- ✅ Popup -->
+      <div class="overlay" *ngIf="showPopup">
+        <div class="modal-content">
+          <app-manage-season (close)="closePopup(true)"></app-manage-season>
+        </div>
+      </div>
+
+  <!-- ✅ POPUP LIST -->
+  <div class="overlay" *ngIf="showList">
+    <div class="modal-content">
+      <div class="header-container">
+        <h2>Season List</h2>
+        <button class="btn-close-icon" (click)="closeListSeasons()">X</button>
+      </div>
+
+      <p-table [value]="seasons" [tableStyle]="{ 'min-width': '50rem' }">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Season Name</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-season>
+          <tr
+            (click)="selectSeason(season)"
+            [class.selected-row]="selectedSeason?._id === season._id"
+            style="cursor: pointer"
+          >
+            <td>{{ season.name }}</td>
+            <td>{{ season.startDate | date: 'dd/MM/yyyy' }}</td>
+            <td>{{ season.endDate | date: 'dd/MM/yyyy' }}</td>
+
+            <td>
+              <span [class]="'status-badge ' + season.status">
+                {{ season.status }}
+              </span>
+            </td>
+
+            <td>
+              <span *ngIf="selectedSeason?._id === season._id">✅</span>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+
+  <!-- ✅ SESSION LIST -->
+  <div class="session-list" *ngIf="sessions.length > 0">
+    <h3 class="font-bold mb-2">Sessions for {{ selectedSeason?.name }}</h3>
+
+    <div class="flex flex-wrap gap-4">
+      <button
+        *ngFor="let s of sessions"
+        (click)="selectSession(s)"
+        class="w-[140px] h-[55px] rounded-lg font-semibold transition"
+        [ngClass]="{
+          'bg-green-600 text-white': isNextSession(s),
+          'bg-gray-400 text-white': isPastSession(s),
+          'bg-blue-500 text-white': isTodaySession(s),
+        }"
+      >
+        {{ s.date | date: 'EEE dd/MM' }}
       </button>
     </div>
   </div>
-
-</div>
-<div class="overlay" *ngIf="showList">
-  <div class="modal-content">
-    <div class="header-container">
-      <h2>Season List</h2>
-      <button class="btn-close-icon" (click)="closeListSeasons()">X</button>
-    </div>
-
-    <p-table [value]="seasons" [tableStyle]="{ 'min-width': '50rem' }">
-
-  <!-- ✅ HEADER -->
-  <ng-template pTemplate="header">
-    <tr>
-      <th>Season Name</th>
-      <th>Start Date</th>
-      <th>End Date</th>
-      <th>Status</th>
-      <th>Action</th>
-    </tr>
-  </ng-template>
-
-  <!-- ✅ BODY -->
-  <ng-template pTemplate="body" let-season>
-    <tr
-      (click)="selectSeason(season)"
-      [class.selected-row]="selectedSeason?._id === season._id"
-      style="cursor:pointer"
-    >
-      <td>{{ season.name }}</td>
-      <td>{{ season.startDate | date:'dd/MM/yyyy' }}</td>
-      <td>{{ season.endDate | date:'dd/MM/yyyy' }}</td>
-
-      <td>
-        <span [class]="'status-badge ' + season.status">
-          {{ season.status }}
-        </span>
-      </td>
-
-      <td>
-        <span *ngIf="selectedSeason?._id === season._id">✅</span>
-      </td>
-    </tr>
-  </ng-template>
-
-</p-table>
-  </div>
 </div>
 
-
-<div class="session-list" *ngIf="sessions.length > 0">
-  <h3 class="font-bold mb-2">Sessions for {{ selectedSeason?.name }}</h3>
-  
-  <div class="flex flex-wrap gap-4">
-    <button
-  *ngFor="let s of sessions; let i = index"
-  (click)="selectSession(s)"
-  [disabled]="i !== 0"
-  class="w-[140px] h-[55px] rounded-lg"
-  [ngClass]="{
-    'bg-green-600 text-white cursor-pointer': i === 0,
-    'bg-gray-300 text-gray-500 cursor-not-allowed': i !== 0
-  }"
->
-  {{ s.date | date:'EEE dd/MM' }}
-</button>
-  </div>
-</div>
-
-<div *ngIf="sessions.length === 0 && selectedSeason" class="p-4 bg-yellow-100 rounded">
-  ไม่มีรายการ Session ใน Season นี้
-</div>
-
-
-<app-manage-season *ngIf="showPopup" (close)="closePopup($event)"></app-manage-season>
-
-</div>
+<!-- ✅ ROUTER OUTLET -->
 <router-outlet></router-outlet>

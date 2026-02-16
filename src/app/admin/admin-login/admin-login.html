@@ -25,6 +25,10 @@
         <button type="submit" (click)="login()"
         class="btn-login rounded-[4px] text-white w-[356px] h-[55px] hover:bg-[#0F68C0] cursor-pointer text-center bg-[#1976d2] text-[15px]"
         >LOGIN</button>
+        <p *ngIf="error" class="text-red-500 text-center">
+  {{ error }}
+</p>
+
         
     </div>
 </div>
