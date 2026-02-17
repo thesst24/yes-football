@@ -20,10 +20,24 @@
     </div>
 
     <div class="add-trial">
-      <button class="btn-add-trial">
+      <button class="btn-add-trial" (click)="openTrialPopup()">
         <i class="pi pi-plus-circle"></i>
         Add Trial
       </button>
+    </div>
+    <!-- ✅ Trial Popup -->
+    <div class="popup-overlay" *ngIf="showTrialPopup">
+      <div class="popup-box">
+        <h2>Add Trial Player</h2>
+
+        <input type="text" placeholder="Full name..." [(ngModel)]="trialForm.fullname" readonly />
+
+        <input type="text" placeholder="Phone (optional)" [(ngModel)]="trialForm.phone" readonly />
+
+        <button class="btn-join" (click)="addTrialPlayer()">➕ Add Trial</button>
+
+        <button class="btn-close" (click)="closeTrialPopup()">✕</button>
+      </div>
     </div>
   </header>
 
@@ -40,11 +54,12 @@
               <div class="image-profile">
                 <img
                   *ngIf="list.image"
-                  [src]="'http://localhost:3000' + list.image"
+                  [src]="'http://localhost:3000' + list.image || '/logo.png'"
                   alt="profile"
                 />
               </div>
               <p>{{ list.fullname }}</p>
+              <span *ngIf="list.isTrial" class="badge trial"> Trial </span>
             </div>
           </div>
 
@@ -62,23 +77,26 @@
       <div class="participants">
         <div class="title-parti">
           <h2>Participants</h2>
-          <div class="content-par"><p class="roster">
-            <i class="pi pi-circle-on icon-roster"></i>Roster: {{ participants.length }} /
-            {{ totalMembers }}
-          </p>
-          <p class="btn-remove-all" *ngIf="!isPastSession" (click)="confirmRemoveAll()">
-    Remove All
-  </p>
-  </div>
+          <div class="content-par">
+            <p class="roster">
+              <i class="pi pi-circle-on icon-roster"></i>Roster: {{ participants.length }} /
+              {{ totalMembers }}
+            </p>
+            <p class="btn-remove-all" *ngIf="!isPastSession" (click)="confirmRemoveAll()">
+              Remove All
+            </p>
+          </div>
 
           <!-- ✅ Remove All Button -->
-  
         </div>
 
         <div class="list-member">
           <div class="member" *ngFor="let p of filteredParticipants" (click)="openParticipant(p)">
             <div class="image-profile">
-              <img *ngIf="p.image" [src]="'http://localhost:3000' + p.image" />
+              <img
+                [src]="p.image ? 'http://localhost:3000' + p.image : '/logo.png'"
+                alt="profile"
+              />
             </div>
             <p>{{ p.fullname }}</p>
 
@@ -101,32 +119,26 @@
 <!-- ✅ POPUP -->
 <div class="popup-overlay" *ngIf="selectedMember">
   <div class="popup-box">
-   
     <div class="box-img-popup">
-    <img class="img-popup"
-      *ngIf="selectedMember.image"
-      [src]="'http://localhost:3000' + selectedMember.image"
-      width="120"
-    />
+      <img
+        class="img-popup"
+        [src]="selectedMember.image ? 'http://localhost:3000' + selectedMember.image : '/logo.png'"
+        alt="profile"
+        width="120"
+      />
     </div>
- <h2>{{ selectedMember.fullname }}</h2>
-    <p>Whatsapp: {{ selectedMember.whatsapp }}</p>
+    <h2>{{ selectedMember.fullname }}</h2>
+    <p>{{ selectedMember.whatsapp }}</p>
 
     <!-- ✅ JOIN MODE -->
-    <button
-  *ngIf="popupMode === 'join' && !isPastSession"
-  class="btn-join"
-  (click)="joinMember()"
->
-  ✅ JOIN
-</button>
+    <button *ngIf="popupMode === 'join' && !isPastSession" class="btn-join" (click)="joinMember()">
+      JOIN
+    </button>
 
-<p *ngIf="isPastSession" class="text-red-500 mt-2">
-  Past Session: Attendance Only
-</p>
+    <p *ngIf="isPastSession" class="text-red-500 mt-2">Past Session: Attendance Only</p>
     <!-- ✅ REMOVE MODE -->
     <button *ngIf="popupMode === 'remove'" class="btn-remove" (click)="removeMember()">
-       REMOVE
+      REMOVE
     </button>
 
     <button class="btn-close" (click)="closePopup()">✕</button>
@@ -136,22 +148,15 @@
 <!-- ✅ Confirm Remove All Popup -->
 <div class="popup-overlay" *ngIf="showConfirmRemoveAll">
   <div class="popup-box">
-
-    <h2>⚠️ Remove All Participants?</h2>
-
-    <p>
-      คุณแน่ใจหรือไม่ว่าต้องการลบ Participants ทั้งหมดออกจาก Session นี้?
-    </p>
+    <img src="/exclamation.png" alt="failed" width="80" height="80" />
+    <p>Are you sure you want to remove all participants from this session?</p>
 
     <div class="popup-actions">
       <button class="btn-remove" *ngIf="!isPastSession" (click)="removeAllParticipants()">
-        ✅ Yes, Remove All
+        Yes, Remove All
       </button>
 
-      <button class="btn-close" (click)="showConfirmRemoveAll = false">
-        Cancel
-      </button>
+      <button class="btn-close" (click)="showConfirmRemoveAll = false">✕</button>
     </div>
-
   </div>
 </div>

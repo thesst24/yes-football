@@ -17,6 +17,10 @@ router.post("/join", async (req, res) => {
   const participant = await Participant.create({
     sessionId,
     memberId,
+
+     isTrial: true,
+  trialName: fullname,
+  trialPhone: phone
   });
 
   res.json(participant);
@@ -130,6 +134,32 @@ router.delete("/removeWithAttendance/:sessionId/:memberId", async (req, res) => 
   await Member.findByIdAndUpdate(memberId, { status: true });
 
   res.json({ message: "Removed + Attendance Rolled Back" });
+});
+
+
+router.delete("/removeTrial/:sessionId/:trialId", async (req, res) => {
+  try {
+    const { sessionId, trialId } = req.params;
+
+    // ✅ ลบ Trial Participant โดย _id
+    await Participant.deleteOne({
+      _id: trialId,
+      sessionId,
+      isTrial: true
+    });
+
+    // ✅ ลบ Attendance ด้วย
+    await Attendance.deleteOne({
+      sessionId,
+      isTrial: true,
+      _id: trialId
+    });
+
+    res.json({ message: "✅ Trial Removed Successfully" });
+
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 
 module.exports = router;

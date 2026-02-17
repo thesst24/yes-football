@@ -10,14 +10,21 @@ const participantSchema = new mongoose.Schema({
   memberId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Member",
-    required: true,
+    required: false,
+  },
+  isTrial: {
+    type: Boolean,
+    default: false
   },
 
-status: {
-  type: String,
-  enum: ["pending", "present", "absent"],
-  default: "pending",
-},
+  trialName: String,
+  trialPhone: String,
+
+  status: {
+    type: String,
+    enum: ["pending", "present", "absent"],
+    default: "pending",
+  },
 
   joinedAt: {
     type: Date,

@@ -83,7 +83,7 @@ export class Seasons {
   selectedSessionId: string = '';
 
   isPastSession(session: any) {
-    return new Date(session.date) < new Date();
+    return session.status === "completed";
   }
 
   isTodaySession(session: any) {

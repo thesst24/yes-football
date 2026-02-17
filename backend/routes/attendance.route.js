@@ -89,6 +89,32 @@ if (!participant) {
   }
 });
 
+
+router.post("/trial", async (req, res) => {
+  try {
+    const { fullname, phone, seasonId, sessionId } = req.body;
+
+    if (!fullname) {
+      return res.status(400).json({ message: "Trial name required" });
+    }
+
+    // ✅ Trial Attendance Record
+    const trialAttendance = await Attendance.create({
+      isTrial: true,
+      trialName: fullname,
+      trialPhone: phone,
+      seasonId,
+      sessionId,
+      status: "present"
+    });
+
+    res.json({ message: "Trial Added", data: trialAttendance });
+
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 router.get("/session/:sessionId", async (req, res) => {
   const data = await Attendance.find({ sessionId: req.params.sessionId })
     .populate("memberId");

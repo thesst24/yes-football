@@ -1,1 +1,33 @@
-<p>report works!</p>
+<div class="container">
+
+  <div class="header">
+    <!-- Month -->
+    <select [(ngModel)]="month" (change)="loadReport()">
+      <option *ngFor="let m of [1,2,3,4,5,6,7,8,9,10,11,12]" [value]="m">
+        {{ m }}
+      </option>
+    </select>
+
+    <!-- Year -->
+    <select [(ngModel)]="year" (change)="loadReport()">
+      <option *ngFor="let y of [2026,2025,2024,2023,2022,2021]" [value]="y">
+        {{ y }}
+      </option>
+    </select>
+  </div>
+
+  <div class="info-con">
+    <div class="member-new">
+      New Members: {{ report?.newMembers }}
+    </div>
+
+    <div class="member-renew">
+      Renewed Members: {{ report?.renewedMembers }}
+    </div>
+
+    <div class="total-member-all">
+      Total Growth: {{ report?.totalGrowth }}
+    </div>
+  </div>
+
+</div>

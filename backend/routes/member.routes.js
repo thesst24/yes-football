@@ -5,6 +5,7 @@ const multer = require('multer');
 const Member = require('../models/member.model');
 const MemberCard = require('../models/memberCard.model');
 const path = require('path');
+const Card = require('../models/memberCard.model');
 
 const phoneRegex = /^\d{10,12}$/;
 
@@ -120,7 +121,9 @@ router.delete('/:id', async (req, res) => {
     }
 
     // 🧨 ลบไฟล์รูป
-    if (member.image) {
+    if ( member.image &&
+  member.image !== "/logo.png" &&
+  !member.image.includes("logo.png")) {
       const filePath = path.join(__dirname, '..', member.image);
 
       fs.unlink(filePath, (err) => {
@@ -244,4 +247,48 @@ router.patch("/renew/:memberId", async (req, res) => {
     });
   }
 });
+
+
+router.post("/trial", async (req, res) => {
+  try {
+
+    // ✅ หา Trial ล่าสุด
+    const lastTrial = await Member.findOne({ isTrial: true })
+      .sort({ createdAt: -1 });
+
+    let nextNumber = 2000000000;
+
+    if (lastTrial && lastTrial.whatsapp) {
+      nextNumber = Number(lastTrial.whatsapp) + 1;
+    }
+
+    // ✅ สร้าง Member Trial
+    const trialMember = await Member.create({
+      fullname: `Trial-${nextNumber - 1999999999}`,
+      whatsapp: String(nextNumber),
+      guardian: "-",
+      isTrial: true,
+      image: "/uploads/logo.png",
+    });
+
+    // ✅🔥 สร้าง Card ให้ Trial ทันที
+    const newCard = await Card.create({
+      memberId: trialMember._id,
+      usedSessions: 0,
+      status: "active"
+    });
+
+    res.status(201).json({
+      message: "✅ Trial Member + Card Created",
+      member: trialMember,
+      card: newCard
+    });
+
+  } catch (err) {
+    console.error("❌ Trial Error:", err);
+    res.status(500).json({ message: err.message });
+  }
+});
+
+
 module.exports = router;

@@ -11,7 +11,8 @@ const cardSchema = new mongoose.Schema({
   }
 ],
   expiryDate: Date,
-  status: { type: String, default: 'active' }
+  status: { type: String, default: 'active' },
+  renewedAt: { type: Date},
 }, { timestamps: true });
 
 module.exports = mongoose.model('MemberCard', cardSchema);

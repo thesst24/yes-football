@@ -98,8 +98,8 @@
         (click)="selectSession(s)"
         class="w-[140px] h-[55px] rounded-lg font-semibold transition"
         [ngClass]="{
-          'bg-green-600 text-white': isNextSession(s),
-          'bg-gray-400 text-white': isPastSession(s),
+          'bg-[#0db328] text-white': isNextSession(s),
+          'bg-gray-400 text-white': s.status === 'completed',
           'bg-blue-500 text-white': isTodaySession(s),
         }"
       >

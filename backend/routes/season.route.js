@@ -20,16 +20,29 @@ router.post('/', async (req, res) => {
     });
 
     // 3. บันทึกอาเรย์ Sessions ลงใน Collection Session
-    if (sessions && sessions.length > 0) {
-      const sessionData = sessions.map((date, index) => ({
-        seasonId: newSeason._id, // ใช้ ID จาก newSeason ที่เพิ่งสร้าง
-        name: `Session ${index + 1}`,
-        date: new Date(date),
-        status: 'pending'
-      }));
 
-      await Session.insertMany(sessionData);
-    }
+    if (sessions && sessions.length > 0) {
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const sessionData = sessions.map((date, index) => {
+
+    const sessionDate = new Date(date);
+    sessionDate.setHours(0, 0, 0, 0);
+
+    return {
+      seasonId: newSeason._id,
+      name: `Session ${index + 1}`,
+      date: sessionDate,
+
+      // ✅ Past = completed
+      status: sessionDate < today ? "completed" : "pending"
+    };
+  });
+
+  await Session.insertMany(sessionData);
+}
 
     res.status(201).json({
       message: 'Season and Sessions created successfully',

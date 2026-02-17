@@ -24,6 +24,16 @@ export class Events {
   session: any = {};
   showConfirmRemoveAll = false;
 
+  // ===== Trial Player =====
+  showTrialPopup = false;
+
+  trialForm = {
+    fullname: '',
+    phone: '',
+  };
+  trialCount = 1;
+  trialPhoneBase = 2000000000;
+
   // ===== COUNT =====
   totalMembers = 0;
   activeMembers = 0;
@@ -64,11 +74,40 @@ loadParticipants() {
   this.http.get<any[]>(
     `http://localhost:3000/api/attendance/session/${this.sessionId}`
   ).subscribe(res => {
-    this.participants = res.map(a => ({
-      ...a.memberId,
-      status: "present"
-    }));
 
+    // ✅ map participants ก่อน
+    this.participants = res.map(a => {
+
+      // ✅ Trial Player
+      if (a.isTrial) {
+        return {
+          _id: a._id,
+          fullname: a.trialName,
+          whatsapp: a.trialPhone,
+          status: "trial",
+          isTrial: true,
+          image: "/logo.png" // ✅ default image
+        };
+      }
+
+      // ✅ Normal Member
+      return {
+        _id: a.memberId._id,
+        fullname: a.memberId.fullname,
+        whatsapp: a.memberId.whatsapp,
+        status: "present",
+        isTrial: false,
+        image: a.memberId.image || '/logo.png',
+      };
+    });
+
+    // ✅ นับ Trial หลังจาก participants ถูกสร้างแล้ว
+    const trialPlayers = this.participants.filter(p => p.isTrial);
+
+    // ✅ Trial Count ต่อจากของเดิม
+    this.trialCount = trialPlayers.length + 1;
+
+    // ✅ update filtered list
     this.filteredParticipants = [...this.participants];
     this.cdr.detectChanges();
   });
@@ -96,14 +135,19 @@ loadParticipants() {
   }
 
   // ===== LOAD =====
-  load() {
-    this.service.getAll().subscribe((res: any) => {
-      this.allMembers = res;
-      this.filteredMembers = [...this.allMembers];
-      this.updateMemberCount();
-      this.cdr.detectChanges();
-    });
-  }
+ load() {
+  this.service.getAll().subscribe((res: any) => {
+    this.allMembers = res;
+    this.filteredMembers = [...this.allMembers];
+
+    // ✅ Update Trial Count จาก DB จริง
+    const trialMembers = this.allMembers.filter(m => m.isTrial);
+    this.trialCount = trialMembers.length + 1;
+
+    this.updateMemberCount();
+    this.cdr.detectChanges();
+  });
+}
 
   filterMembers() {
     const text = this.searchText.toLowerCase().trim();
@@ -160,7 +204,7 @@ joinMember() {
     sessionId: this.sessionId,
   }).subscribe({
     next: () => {
-      alert("✅ Joined + Checked-in");
+      alert("✅ Joined");
       this.loadParticipants();
       this.closePopup();
     },
@@ -168,12 +212,27 @@ joinMember() {
   });
 }
 
-
 removeMember() {
+
+  // ✅ ถ้าเป็น Trial
+  if (this.selectedMember.isTrial) {
+
+    this.http.delete(
+      `http://localhost:3000/api/participants/removeTrial/${this.sessionId}/${this.selectedMember._id}`
+    ).subscribe(() => {
+      alert("✅ Trial Removed");
+      this.loadParticipants();
+      this.closePopup();
+    });
+
+    return;
+  }
+
+  // ✅ Member ปกติ
   this.http.delete(
     `http://localhost:3000/api/participants/removeWithAttendance/${this.sessionId}/${this.selectedMember._id}`
   ).subscribe(() => {
-    alert("✅ Removed + Undo Checkin");
+    alert("✅ Removed Member + Undo Checkin");
     this.loadParticipants();
     this.closePopup();
   });
@@ -187,19 +246,43 @@ removeMember() {
     this.showConfirmRemoveAll = true;
   }
 
-removeAllParticipants() {
-  if (!confirm("⚠️ Remove ALL participants + rollback checkins?")) return;
+  removeAllParticipants() {
+    if (!confirm('⚠️ Remove ALL participants + rollback checkins?')) return;
 
-  this.http.delete(
-    `http://localhost:3000/api/participants/removeAllWithAttendance/${this.sessionId}`
-  ).subscribe({
-    next: () => {
-      alert("✅ Removed All + Card Rollback Success");
+    this.http
+      .delete(`http://localhost:3000/api/participants/removeAllWithAttendance/${this.sessionId}`)
+      .subscribe({
+        next: () => {
+          alert('✅ Removed All + Card Rollback Success');
 
-      this.loadParticipants();
-      this.showConfirmRemoveAll = false;
-    },
-    error: (err) => alert(err.error.message)
-  });
+          this.loadParticipants();
+          this.showConfirmRemoveAll = false;
+        },
+        error: (err) => alert(err.error.message),
+      });
+  }
+
+  openTrialPopup() {
+    this.showTrialPopup = true;
+
+    // ✅ Auto Default Trial Name + Phone
+    this.trialForm.fullname = `Trial-${this.trialCount}`;
+    this.trialForm.phone = String(this.trialPhoneBase + (this.trialCount - 1));
+  }
+
+  closeTrialPopup() {
+    this.showTrialPopup = false;
+
+    // reset form เฉพาะ field
+    this.trialForm = { fullname: '', phone: '' };
+  }
+
+addTrialPlayer() {
+  this.http.post("http://localhost:3000/api/members/trial", {})
+    .subscribe(() => {
+      alert("✅ Trial Added");
+      this.load();
+      this.closeTrialPopup();
+    });
 }
 }

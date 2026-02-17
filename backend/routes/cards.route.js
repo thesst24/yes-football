@@ -43,6 +43,7 @@ router.post("/renew", async (req, res) => {
     card.status = "active";
     card.checkins = [];
     card.expiryDate = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000);
+    card.renewedAt = new Date();
 
     await card.save();
 

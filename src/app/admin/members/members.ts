@@ -174,23 +174,59 @@ export class Members {
 toggleStatus(member: any) {
   const newStatus = !!member.status;
 
+  // ==========================
   // ✅ เปิด Active
+  // ==========================
   if (newStatus) {
-    this.service.renew(member._id).subscribe({
-      next: () => {
-        alert("✅ Member Activated + Card Renewed!");
-        this.load();
+
+    // โหลด card ก่อน
+    this.service.getCard(member._id).subscribe({
+      next: (cardRes: any) => {
+
+        const used = cardRes.usedSessions;
+
+        // ✅ ถ้า card ยังไม่เต็ม → ไม่ renew
+        if (used < 10) {
+          this.service.updateStatus(member._id, true).subscribe({
+            next: () => {
+              alert("✅ Member Activated (Card Still Valid)");
+              this.load();
+            },
+            error: () => {
+              alert("❌ Activate failed");
+              member.status = false;
+            }
+          });
+
+          return;
+        }
+
+        // ✅ ถ้า card เต็มแล้ว → renew card ใหม่
+        this.service.renew(member._id).subscribe({
+          next: () => {
+            alert("✅ Member Activated + Card Renewed!");
+            this.load();
+          },
+          error: (err) => {
+            alert("❌ Renew failed: " + err.error.message);
+            member.status = false;
+          }
+        });
+
       },
-      error: (err) => {
-        alert("❌ Renew failed: " + err.error.message);
-        member.status = false; // rollback toggle
-      },
+
+      error: () => {
+        alert("❌ Cannot load card");
+        member.status = false;
+      }
     });
 
     return;
   }
 
+  // ==========================
   // ❌ ปิด inactive
+  // ==========================
   this.service.updateStatus(member._id, false).subscribe({
     next: () => {
       alert("❌ Member Deactivated");
@@ -198,8 +234,8 @@ toggleStatus(member: any) {
     },
     error: () => {
       alert("❌ Update failed");
-      member.status = true; // rollback toggle
-    },
+      member.status = true;
+    }
   });
 }
 
