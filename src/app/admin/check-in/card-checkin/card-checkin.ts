@@ -61,43 +61,22 @@ export class CardCheckin {
     this.checkinNow();
   }
 
-  checkinNow() {
-    this.http
-      .post('http://localhost:3000/api/attendance/checkin', {
-        memberId: this.member._id,
-        seasonId: this.seasonId,
-        sessionId: this.sessionId,
-      })
-      .subscribe({
-        next: (res: any) => {
-          alert("✅ Check-in Success!");
+checkinNow() {
+  this.http.post("http://localhost:3000/api/attendance/checkin", {
+    memberId: this.member._id,
+    seasonId: this.seasonId,
+    sessionId: this.sessionId,
+  }).subscribe({
+    next: (res:any) => {
+      alert("✅ Check-in Success");
+      this.card = res.card;
 
-  // ✅ ใช้ card ใหม่จาก backend
-  this.card = res.card;
-
-
-  // ✅ ถ้าเต็มแล้ว → inactive
-  if (this.card.usedSessions >= 10) {
-    this.card.status = "inactive";
-  }
-
-  alert("✅ Check-in Success!");
-  this.cdr.detectChanges();
-
-  // refresh list attendance
-  this.refresh.emit();
-
-  // close popup
-  this.close.emit();
-        },
-
-        error: (err) => {
-          console.log('❌ Error Status:', err.status);
-          console.log('❌ Backend Message:', err.error);
-          alert(err.error.message);
-        },
-      });
-  }
+      this.refresh.emit();
+      this.close.emit();
+    },
+    error: (err) => alert(err.error.message)
+  });
+}
 
   get isCardFull(): boolean {
   return this.card?.usedSessions >= 10;

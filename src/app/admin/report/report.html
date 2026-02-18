@@ -1,33 +1,70 @@
-<div class="container">
+<div class="dashboard">
 
-  <div class="header">
-    <!-- Month -->
+  <!-- Filters -->
+  <div class="filters">
     <select [(ngModel)]="month" (change)="loadReport()">
-      <option *ngFor="let m of [1,2,3,4,5,6,7,8,9,10,11,12]" [value]="m">
-        {{ m }}
+      <option *ngFor="let m of months" [value]="m.value">
+        {{ m.label }}
       </option>
     </select>
 
-    <!-- Year -->
     <select [(ngModel)]="year" (change)="loadReport()">
-      <option *ngFor="let y of [2026,2025,2024,2023,2022,2021]" [value]="y">
+      <option *ngFor="let y of years" [value]="y">
         {{ y }}
       </option>
     </select>
   </div>
 
-  <div class="info-con">
-    <div class="member-new">
-      New Members: {{ report?.newMembers }}
+  <!-- Cards -->
+  <div class="cards">
+
+    <div class="card blue">
+      <h3>New Members</h3>
+      <p>{{ report?.newMembers }}</p>
     </div>
 
-    <div class="member-renew">
-      Renewed Members: {{ report?.renewedMembers }}
+    <div class="card green">
+      <h3>Renewed Members</h3>
+      <p>{{ report?.renewedMembers }}</p>
     </div>
 
-    <div class="total-member-all">
-      Total Growth: {{ report?.totalGrowth }}
+    <div class="card purple">
+      <h3>Total Growth</h3>
+      <p>{{ report?.totalGrowth }}</p>
     </div>
+
+    <div class="card dark">
+      <h3>Total Members</h3>
+      <p>{{ report?.totalMembers }}</p>
+    </div>
+
+    <div class="card success">
+      <h3>Active Members</h3>
+      <p>{{ report?.activeMembers }}</p>
+    </div>
+
+    <div class="card danger">
+      <h3>Inactive Members</h3>
+      <p>{{ report?.inactiveMembers }}</p>
+    </div>
+
+  </div>
+
+  <!-- Compare -->
+  <div class="compare-box">
+    <h3>📈 Growth vs Last Month</h3>
+
+    <p>
+      Last Month: {{ report?.lastMonthGrowth }}
+    </p>
+
+    <p>
+      Difference:
+      <span [class.positive]="report?.growthDiff > 0"
+            [class.negative]="report?.growthDiff < 0">
+        {{ report?.growthDiff }}
+      </span>
+    </p>
   </div>
 
 </div>

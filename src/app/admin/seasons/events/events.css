@@ -181,6 +181,16 @@ header {
   text-align: center;
   position: relative;
 }
+.popup-box h2 {
+    font-size: var(--font-size-fc);
+    font-weight: 700;
+}
+.popup-box input {
+    background-color: rgb(216, 216, 216);
+    margin: 8px 0;
+    padding: 8px;
+    border-radius: 5px;
+}
 
 .popup-box img {
     margin: 0px auto 15px;

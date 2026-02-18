@@ -25,6 +25,7 @@ const participantSchema = new mongoose.Schema({
     enum: ["pending", "present", "absent"],
     default: "pending",
   },
+  
 
   joinedAt: {
     type: Date,
@@ -32,4 +33,7 @@ const participantSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("Participant", participantSchema);
+module.exports = mongoose.model("Participant", participantSchema.index(
+  {memberId: 1, sessionId: 1},
+  { unique: true}
+));

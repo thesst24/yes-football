@@ -76,33 +76,54 @@ loadNextSessionOfSeason() {
   this.http
     .get<any[]>("http://localhost:3000/api/sessions/season/" + this.seasonId)
     .subscribe({
+
       next: (sessions) => {
 
         const today = new Date();
+        today.setHours(0, 0, 0, 0);
 
-        // ✅ เอาเฉพาะ session ที่ยังไม่ถึง
-        const upcoming = sessions.filter(s =>
-          new Date(s.date) >= today
-        );
+        const todayDay = today.getDay(); // วันในสัปดาห์
 
-        // ✅ sort เอาอันใกล้สุด
-        upcoming.sort((a, b) =>
-          new Date(a.date).getTime() - new Date(b.date).getTime()
-        );
+        // ✅ เอา session ที่เป็นวันเดียวกัน (พุธ/เสาร์/อาทิตย์)
+        const sameWeekday = sessions.filter(s => {
+          const d = new Date(s.date);
+          return d.getDay() === todayDay;
+        });
 
-        if (upcoming.length > 0) {
+        // ✅ Sort ตามวันที่ใกล้วันนี้ที่สุด
+        sameWeekday.sort((a, b) => {
 
-          // ✅ session ใกล้สุด
-          this.session = upcoming[0];
+          const diffA = Math.abs(new Date(a.date).getTime() - today.getTime());
+          const diffB = Math.abs(new Date(b.date).getTime() - today.getTime());
+
+          return diffA - diffB;
+        });
+
+        // ✅ เลือก session ที่ใกล้วันนี้ที่สุด
+        if (sameWeekday.length > 0) {
+
+          this.session = sameWeekday[0];
           this.sessionId = this.session._id;
 
-          // ✅ Save ลง localStorage ให้ sidebar ใช้ได้
-          localStorage.setItem("selectedSessionId", this.sessionId);
-
-          console.log("✅ Auto Next Session:", this.session);
+          console.log("✅ Closest Session:", this.session);
 
         } else {
-          alert("❌ No upcoming sessions for this season");
+
+          // fallback → upcoming
+          const upcoming = sessions.filter(s =>
+            new Date(s.date) >= today
+          );
+
+          upcoming.sort((a, b) =>
+            new Date(a.date).getTime() - new Date(b.date).getTime()
+          );
+
+          if (upcoming.length > 0) {
+            this.session = upcoming[0];
+            this.sessionId = this.session._id;
+          } else {
+            alert("❌ No sessions found");
+          }
         }
 
         this.cdr.detectChanges();

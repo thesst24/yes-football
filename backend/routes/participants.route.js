@@ -1,41 +1,27 @@
 const express = require("express");
 const router = express.Router();
+const mongoose = require("mongoose");
+
+
 const Participant = require("../models/participant.model");
 const Attendance =require('../models/attendance.model');
 const Card = require('../models/memberCard.model');
 const Member = require('../models/member.model');
 
 
-// ✅ JOIN MEMBER
-router.post("/join", async (req, res) => {
-  const { sessionId, memberId } = req.body;
-
-  // กันซ้ำ
-  const exists = await Participant.findOne({ sessionId, memberId });
-  if (exists) return res.status(400).json({ message: "Already joined" });
-
-  const participant = await Participant.create({
-    sessionId,
-    memberId,
-
-     isTrial: true,
-  trialName: fullname,
-  trialPhone: phone
-  });
-
-  res.json(participant);
-});
-
 
 // ✅ GET Participants by Session
 router.get("/:sessionId", async (req, res) => {
+
   const participants = await Participant.find({
-    sessionId: req.params.sessionId,
+    sessionId: req.params.sessionId
   }).populate("memberId");
 
-  res.json(participants);
-});
+  // ✅ remove broken participants
+  const clean = participants.filter(p => p.isTrial || p.memberId);
 
+  res.json(clean);
+});
 
 
 // ✅ UPDATE Attendance Status
@@ -51,44 +37,42 @@ router.patch("/status", async (req, res) => {
   res.json(updated);
 });
 
+
 router.delete("/removeAllWithAttendance/:sessionId", async (req, res) => {
   try {
     const { sessionId } = req.params;
 
-    // 1) Find all attendance records in this session
-    const attendances = await Attendance.find({ sessionId });
-
-    // 2) Loop rollback card for each member
-    for (let a of attendances) {
-      const memberId = a.memberId;
-
-      const card = await Card.findOne({ memberId });
-
-      if (card) {
-        // ลด usedSessions
-        card.usedSessions = Math.max(0, card.usedSessions - 1);
-
-        // remove checkin history for this session
-        card.checkins = card.checkins.filter(
-          (c) => c.sessionId.toString() !== sessionId
-        );
-
-        // reactivate card
-        card.status = "active";
-        await card.save();
+    // 1️⃣ ลบ checkins ของ session นี้ออกจากทุก card
+    await Card.updateMany(
+      { "checkins.sessionId": sessionId },
+      {
+        $pull: { checkins: { sessionId } }
       }
+    );
 
-      // reactivate member
-      await Member.findByIdAndUpdate(memberId, { status: true });
+    // 2️⃣ sync usedSessions = checkins.length (loop แบบปลอดภัย)
+    const cards = await Card.find({});
+
+    for (let card of cards) {
+      card.usedSessions = card.checkins.length;
+      await card.save();
     }
 
-    // 3) Delete all attendance
-    await Attendance.deleteMany({ sessionId });
+    // 3️⃣ Reactivate members
+    const attendances = await Attendance.find({ sessionId });
+    const memberIds = attendances.map(a => a.memberId);
 
-    // 4) Delete all participants
+    await Member.updateMany(
+      { _id: { $in: memberIds } },
+      { status: true }
+    );
+
+    // 4️⃣ ลบ attendance + participant
+    await Attendance.deleteMany({ sessionId });
     await Participant.deleteMany({ sessionId });
 
-    res.json({ message: "✅ Removed All + Rollback Complete" });
+    res.json({ message: "✅ Removed All + Card Rolled Back" });
+
   } catch (err) {
     console.error("❌ RemoveAll Error:", err);
     res.status(500).json({ message: err.message });
@@ -105,35 +89,42 @@ router.delete("/:sessionId/:memberId", async (req, res) => {
 
   res.json({ message: "Removed successfully" });
 });
+
+
 router.delete("/removeWithAttendance/:sessionId/:memberId", async (req, res) => {
   const { sessionId, memberId } = req.params;
 
   // 1) Remove Participant
   await Participant.deleteOne({ sessionId, memberId });
 
-  // 2) Remove Attendance Record
+  // 2) Remove Attendance
   await Attendance.deleteOne({ sessionId, memberId });
 
   // 3) Rollback Card
   const card = await Card.findOne({ memberId });
 
-  if (card && card.usedSessions > 0) {
-    card.usedSessions -= 1;
+  if (card) {
+    const before = card.checkins.length;
 
     // remove checkin history
     card.checkins = card.checkins.filter(
       (c) => c.sessionId.toString() !== sessionId
     );
 
-    // reactivate card
+    const after = card.checkins.length;
+
+    // rollback usedSessions only if actually removed
+    if (before !== after) {
+      card.usedSessions = Math.max(0, card.usedSessions - 1);
+    }
+
+    // reactivate
     card.status = "active";
+
     await card.save();
   }
 
-  // 4) Reactivate Member
-  await Member.findByIdAndUpdate(memberId, { status: true });
-
-  res.json({ message: "Removed + Attendance Rolled Back" });
+  res.json({ message: "✅ Removed + Card Rolled Back" });
 });
 
 

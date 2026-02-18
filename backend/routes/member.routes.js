@@ -6,6 +6,8 @@ const Member = require('../models/member.model');
 const MemberCard = require('../models/memberCard.model');
 const path = require('path');
 const Card = require('../models/memberCard.model');
+const Participant = require('../models/participant.model');
+const Attendance = require('../models/attendance.model');
 
 const phoneRegex = /^\d{10,12}$/;
 
@@ -113,40 +115,53 @@ router.put('/:id', upload.single('image'), async (req, res) => {
 
 
 // DELETE
-router.delete('/:id', async (req, res) => {
+router.delete("/:id", async (req, res) => {
   try {
-    const member = await Member.findById(req.params.id);
+    const memberId = req.params.id;
+
+    const member = await Member.findById(memberId);
     if (!member) {
-      return res.status(404).json({ message: 'Member not found' });
+      return res.status(404).json({ message: "Member not found" });
     }
 
-    // 🧨 ลบไฟล์รูป
-    if ( member.image &&
-  member.image !== "/logo.png" &&
-  !member.image.includes("logo.png")) {
-      const filePath = path.join(__dirname, '..', member.image);
+    // 🧨 ลบไฟล์รูป (ถ้ามี)
+    if (
+      member.image &&
+      member.image !== "/logo.png" &&
+      !member.image.includes("logo.png")
+    ) {
+      const filePath = path.join(__dirname, "..", member.image);
 
       fs.unlink(filePath, (err) => {
-        if (err) {
-          console.error('❌ Delete image error:', err.message);
-        } else {
-          console.log('✅ Image deleted:', filePath);
-        }
+        if (err) console.error("❌ Delete image error:", err.message);
+        else console.log("✅ Image deleted:", filePath);
       });
     }
-      // 🔥 ลบ Card ก่อน
-    await MemberCard.deleteOne({ memberId: member._id });
 
-    // 🧹 ลบ member จาก DB
-    await Member.findByIdAndDelete(req.params.id);
+    // ===============================
+    // ✅ IMPORTANT: Cleanup Related Data
+    // ===============================
 
-    res.json({ message: 'Member + image deleted' });
+    // 1) ลบ participant ทั้งหมดของ member นี้
+    await Participant.deleteMany({ memberId });
+
+    // 2) ลบ attendance ทั้งหมดของ member นี้
+    await Attendance.deleteMany({ memberId });
+
+    // 3) ลบ card ของ member นี้
+    await MemberCard.deleteMany({ memberId });
+
+    // 4) ลบ member จริง
+    await Member.findByIdAndDelete(memberId);
+
+    res.json({
+      message: "✅ Member deleted + Participant + Attendance + Card cleaned",
+    });
 
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Server error' });
+    console.error("❌ Delete Member Error:", err);
+    res.status(500).json({ message: "Server error" });
   }
-
 });
 
 

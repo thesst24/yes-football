@@ -72,45 +72,46 @@ export class Events {
 
 loadParticipants() {
   this.http.get<any[]>(
-    `http://localhost:3000/api/attendance/session/${this.sessionId}`
+    `http://localhost:3000/api/participants/${this.sessionId}`
   ).subscribe(res => {
 
-    // ✅ map participants ก่อน
-    this.participants = res.map(a => {
+   this.participants = res.map(p => {
 
-      // ✅ Trial Player
-      if (a.isTrial) {
-        return {
-          _id: a._id,
-          fullname: a.trialName,
-          whatsapp: a.trialPhone,
-          status: "trial",
-          isTrial: true,
-          image: "/logo.png" // ✅ default image
-        };
-      }
+  // ✅ Trial
+  if (p.isTrial) {
+    return {
+      _id: p._id,
+      fullname: p.trialName,
+      whatsapp: p.trialPhone,
+      status: "trial",
+      isTrial: true,
+      image: "/logo.png"
+    };
+  }
 
-      // ✅ Normal Member
-      return {
-        _id: a.memberId._id,
-        fullname: a.memberId.fullname,
-        whatsapp: a.memberId.whatsapp,
-        status: "present",
-        isTrial: false,
-        image: a.memberId.image || '/logo.png',
-      };
-    });
+  // ✅ Member ถูกลบไปแล้ว → ข้าม record นี้
+  if (!p.memberId) {
+    return null;
+  }
 
-    // ✅ นับ Trial หลังจาก participants ถูกสร้างแล้ว
-    const trialPlayers = this.participants.filter(p => p.isTrial);
+  return {
+    _id: p.memberId._id,
+    fullname: p.memberId.fullname,
+    whatsapp: p.memberId.whatsapp,
+    status: p.status,
+    isTrial: false,
+    image: p.memberId.image || "/logo.png"
+  };
 
-    // ✅ Trial Count ต่อจากของเดิม
-    this.trialCount = trialPlayers.length + 1;
+}).filter(x => x !== null); // ✅ สำคัญมาก
 
-    // ✅ update filtered list
     this.filteredParticipants = [...this.participants];
     this.cdr.detectChanges();
   });
+}
+
+isAlreadyParticipant(memberId: string): boolean {
+  return this.participants.some(p => p._id === memberId);
 }
 
   loadSession() {
@@ -196,15 +197,13 @@ loadParticipants() {
   }
 
 joinMember() {
-  if (this.isPastSession) return;
-
   this.http.post("http://localhost:3000/api/attendance/checkin", {
     memberId: this.selectedMember._id,
     seasonId: this.seasonId,
     sessionId: this.sessionId,
   }).subscribe({
     next: () => {
-      alert("✅ Joined");
+      alert("✅ Joined + Checked in");
       this.loadParticipants();
       this.closePopup();
     },
@@ -212,9 +211,10 @@ joinMember() {
   });
 }
 
+
 removeMember() {
 
-  // ✅ ถ้าเป็น Trial
+  // ✅ Trial
   if (this.selectedMember.isTrial) {
 
     this.http.delete(
@@ -246,21 +246,21 @@ removeMember() {
     this.showConfirmRemoveAll = true;
   }
 
-  removeAllParticipants() {
-    if (!confirm('⚠️ Remove ALL participants + rollback checkins?')) return;
+ removeAllParticipants() {
+  if (!confirm('⚠️ Remove ALL participants + rollback checkins?')) return;
 
-    this.http
-      .delete(`http://localhost:3000/api/participants/removeAllWithAttendance/${this.sessionId}`)
-      .subscribe({
-        next: () => {
-          alert('✅ Removed All + Card Rollback Success');
+  this.http
+    .delete(`http://localhost:3000/api/participants/removeAllWithAttendance/${this.sessionId}`)
+    .subscribe({
+      next: () => {
+        alert('✅ Removed All + Card Rollback Success');
+        this.loadParticipants();
+        this.showConfirmRemoveAll = false;
+      },
+      error: (err) => alert(err.error.message),
+    });
+}
 
-          this.loadParticipants();
-          this.showConfirmRemoveAll = false;
-        },
-        error: (err) => alert(err.error.message),
-      });
-  }
 
   openTrialPopup() {
     this.showTrialPopup = true;

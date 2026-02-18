@@ -34,7 +34,7 @@
 
         <input type="text" placeholder="Phone (optional)" [(ngModel)]="trialForm.phone" readonly />
 
-        <button class="btn-join" (click)="addTrialPlayer()">➕ Add Trial</button>
+        <button class="btn-join" (click)="addTrialPlayer()"> Add Trial</button>
 
         <button class="btn-close" (click)="closeTrialPopup()">✕</button>
       </div>
@@ -131,10 +131,16 @@
     <p>{{ selectedMember.whatsapp }}</p>
 
     <!-- ✅ JOIN MODE -->
-    <button *ngIf="popupMode === 'join' && !isPastSession" class="btn-join" (click)="joinMember()">
+    <button *ngIf="popupMode === 'join' 
+    && !isPastSession
+    && !isAlreadyParticipant(selectedMember._id)" 
+    class="btn-join" 
+    (click)="joinMember()">
       JOIN
     </button>
-
+<p *ngIf="isAlreadyParticipant(selectedMember._id)">
+  ✅ Already Joined
+</p>
     <p *ngIf="isPastSession" class="text-red-500 mt-2">Past Session: Attendance Only</p>
     <!-- ✅ REMOVE MODE -->
     <button *ngIf="popupMode === 'remove'" class="btn-remove" (click)="removeMember()">

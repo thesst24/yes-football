@@ -7,85 +7,71 @@ const Member = require('../models/member.model');
 const Participant = require("../models/participant.model");
 
 
-
 router.post("/checkin", async (req, res) => {
   try {
-    const { memberId, seasonId, sessionId } = req.body;
+    const { memberId, sessionId, seasonId } = req.body;
 
-    if (!memberId || !seasonId || !sessionId) {
-      return res.status(400).json({ message: "Missing fields" });
-    }
-
-    // ✅ Prevent duplicate checkin
-    const already = await Attendance.findOne({ memberId, sessionId });
-    if (already) {
-      return res.status(400).json({ message: "Already checked in" });
-    }
-
-    // ✅ Find card
+    // ✅ 1) CHECK CARD ก่อน
     const card = await Card.findOne({ memberId });
-    if (!card) {
-      return res.status(400).json({ message: "Card not found" });
+    if (!card) return res.status(404).json({ message: "Card not found" });
+
+    const alreadyChecked = card.checkins.some(
+      (c) => c.sessionId.toString() === sessionId.toString()
+    );
+
+    if (alreadyChecked) {
+      return res.status(400).json({
+        message: "Already checked in this session",
+      });
     }
 
-    if (card.usedSessions >= card.totalSessions) {
-      return res.status(400).json({ message: "Card full, please renew card" });
+    // ✅ 2) JOIN PARTICIPANT (ถ้ายังไม่มี)
+    let participant = await Participant.findOne({ memberId, sessionId });
+
+    if (!participant) {
+      participant = await Participant.create({
+        memberId,
+        sessionId,
+        seasonId,
+        status: "present",
+      });
     }
 
-    // ✅ Save attendance
-    const attendance = new Attendance({
-      memberId,
-      seasonId,
-      sessionId,
-      checkinDate: new Date(),
-    });
+    // ✅ 3) JOIN ATTENDANCE (ถ้ายังไม่มี)
+    let attendance = await Attendance.findOne({ memberId, sessionId });
 
-    await attendance.save();
+    if (!attendance) {
+      attendance = await Attendance.create({
+        memberId,
+        sessionId,
+        seasonId,
+      });
+    }
 
- // ✅ Update Participant Status → Present (Auto Create)
-let participant = await Participant.findOne({ sessionId, memberId });
-
-if (!participant) {
-  participant = await Participant.create({
-    sessionId,
-    memberId,
-    status: "present",
-  });
-} else {
-  participant.status = "present";
-  await participant.save();
-}
-
-    // ✅ Update card usage
-    card.usedSessions += 1;
-
+    // ✅ 4) PUSH CHECKIN
     card.checkins.push({
       sessionId,
-      checkinDate: new Date(),
+      date: new Date(),
     });
 
-    // ✅ Full → inactive
-    if (card.usedSessions >= card.totalSessions) {
-      card.status = "inactive";
+    card.usedSessions = card.checkins.length;
 
-      await Member.findByIdAndUpdate(memberId, {
-        status: false,
-      });
+    if (card.usedSessions >= card.totalSessions) {
+
+      await Member.findByIdAndUpdate(memberId, { status: false });
+      card.status = "inactive";
     }
 
     await card.save();
 
-    return res.json({
-      message: "✅ Checkin Success",
+    res.json({
+      message: "Participant + Attendance + Checkin success",
+      participant,
       attendance,
       card,
     });
   } catch (err) {
-    console.error("❌ Checkin Error:", err);
-    return res.status(500).json({
-      message: "Server error",
-      error: err.message,
-    });
+    res.status(500).json({ message: err.message });
   }
 });
 

@@ -1,23 +1,17 @@
 <div class="sidebar">
   <div class="top-sidebar">
-    <a class="logo" routerLink="/checkin">
+    <a class="logo" routerLink="/season">
       <img src="logo.png" alt="logo" width="150px" height="150px" />
     </a>
 
     <div class="menu">
       <nav class="link">
-        <a
-  routerLink="/season"
-  [class.active]="isSeasonActive()"
-  (click)="selectMenu('Season')"
->
-  <i class="pi pi-calendar icon-menu"></i>
-  Seasons
-</a>
+        <a routerLink="/season" [class.active]="isSeasonActive()" (click)="selectMenu('Season')">
+          <i class="pi pi-calendar icon-menu"></i>
+          Seasons
+        </a>
 
-        <a
-          (click)="goCheckin()"
-          [class.active]="router.url.includes('/checkin')"
+        <a (click)="goCheckin()" [class.active]="router.url.includes('/checkin')"
           ><i class="pi pi-verified icon-menu"></i>Check-in</a
         >
 

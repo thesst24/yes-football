@@ -1,0 +1,53 @@
+.dashboard {
+  padding: 20px;
+  font-family: Arial;
+}
+
+.filters {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(180px,1fr));
+  gap: 15px;
+}
+
+.card {
+  padding: 15px;
+  border-radius: 15px;
+  color: white;
+  text-align: center;
+  font-size: 18px;
+}
+
+.card p {
+  font-size: 32px;
+  font-weight: bold;
+}
+
+.blue { background: #3498db; }
+.green { background: #2ecc71; }
+.purple { background: #9b59b6; }
+.dark { background: #34495e; }
+.success { background: #16a085; }
+.danger { background: #e74c3c; }
+
+.compare-box {
+  margin-top: 25px;
+  padding: 15px;
+  border-radius: 12px;
+  background: #f4f4f4;
+}
+
+.positive {
+  color: green;
+  font-weight: bold;
+}
+
+.negative {
+  color: red;
+  font-weight: bold;
+}
