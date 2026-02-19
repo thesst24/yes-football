@@ -3,9 +3,7 @@
     <div class="pre-title">
       <a routerLink="/season"><i class="pi pi-angle-left"></i></a>
       <p>
-        {{ sessionData.name }}
-        :
-        {{ sessionData.date | date: 'yyyy/MM/dd' }}
+        <strong>{{ sessionData.name }}</strong> : {{ sessionData.date | date: 'yyyy/MM/dd' }}
       </p>
     </div>
 
@@ -13,153 +11,98 @@
       <i class="pi pi-search icon-search"></i>
       <input
         type="text"
-        placeholder="Search..."
+        placeholder="Search member..."
         [(ngModel)]="searchText"
         (input)="filterMembers()"
       />
     </div>
 
-    <div class="add-trial">
-      <button class="btn-add-trial" (click)="openTrialPopup()">
-        <i class="pi pi-plus-circle"></i>
-        Add Trial
-      </button>
-    </div>
-    <!-- ✅ Trial Popup -->
-    <div class="popup-overlay" *ngIf="showTrialPopup">
-      <div class="popup-box">
-        <h2>Add Trial Player</h2>
-
-        <input type="text" placeholder="Full name..." [(ngModel)]="trialForm.fullname" readonly />
-
-        <input type="text" placeholder="Phone (optional)" [(ngModel)]="trialForm.phone" readonly />
-
-        <button class="btn-join" (click)="addTrialPlayer()"> Add Trial</button>
-
-        <button class="btn-close" (click)="closeTrialPopup()">✕</button>
-      </div>
-    </div>
+    <button class="btn-add-trial" (click)="openTrialPopup()">
+      <i class="pi pi-plus-circle"></i> Add Trial
+    </button>
   </header>
 
-  <div class="content-con">
-    <div class="content con-club-member">
-      <div class="club-member">
-        <div class="title">
-          <h2>Club Members:</h2>
-          <p>({{ activeMembers }} / {{ totalMembers }})</p>
-        </div>
-        <div class="all-member">
-          <div class="list-member">
-            <div class="member" *ngFor="let list of filteredMembers" (click)="open(list)">
-              <div class="image-profile">
-                <img
-                  *ngIf="list.image"
-                  [src]="'http://localhost:3000' + list.image || '/logo.png'"
-                  alt="profile"
-                />
-              </div>
-              <p>{{ list.fullname }}</p>
-              <span *ngIf="list.isTrial" class="badge trial"> Trial </span>
-            </div>
-          </div>
-
-          <!-- Scroll -->
-
-          <div class="scroll-con">
-                <div class="scroll"></div>
-                <div class="slide"></div>
-            </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="content">
-      <div class="participants">
-        <div class="title-parti">
-          <h2>Participants</h2>
-          <div class="content-par">
-            <p class="roster">
-              <i class="pi pi-circle-on icon-roster"></i>Roster: {{ participants.length }} /
-              {{ totalMembers }}
-            </p>
-            <p class="btn-remove-all" *ngIf="!isPastSession" (click)="confirmRemoveAll()">
-              Remove All
-            </p>
-          </div>
-
-          <!-- ✅ Remove All Button -->
-        </div>
-
-        <div class="list-member">
-          <div class="member" *ngFor="let p of filteredParticipants" (click)="openParticipant(p)">
-            <div class="image-profile">
-              <img
-                [src]="p.image ? 'http://localhost:3000' + p.image : '/logo.png'"
-                alt="profile"
-              />
-            </div>
-            <p>{{ p.fullname }}</p>
-
-          </div>
-        </div>
-
-        <!-- Scroll bar -->
-        <div class="scroll-con">
-                <div class="scroll"></div>
-                <div class="slide"></div>
-            </div>
-      </div>
+  <main class="content-con">
+  <section class="content-card">
+  <div class="title">
+    <h2>Club Members <span class="memberofall">({{ activeMembers }} / {{ totalMembers }})</span></h2>
+  </div>
+  
+  <div class="member-grid">
+    <div class="member-item" *ngFor="let list of filteredMembers" (click)="open(list)">
+      <img [src]="list.image ? 'http://localhost:3000' + list.image : '/logo.png'" class="member-avatar" />
+      <p class="member-name">{{ list.fullname }}</p>
+      <span *ngIf="list.isTrial" class="badge trial">Trial</span>
     </div>
   </div>
+</section>
+
+    <section class="content-card">
+      <div class="content-par">
+        <h2>Participants</h2>
+        <button
+          class="btn-remove-all"
+          *ngIf="!isPastSession && participants.length > 0"
+          (click)="confirmRemoveAll()"
+        >
+          Remove All
+        </button>
+      </div>
+      <p class="roster">
+        <i class="pi pi-circle-on icon-roster"></i> Roster: {{ participants.length }} /
+        {{ totalMembers }}
+      </p>
+
+      <div class="member-grid">
+        <div
+          class="member-item"
+          *ngFor="let p of filteredParticipants"
+          (click)="openParticipant(p)"
+        >
+          <img
+            [src]="p.image ? 'http://localhost:3000' + p.image : '/logo.png'"
+            class="member-avatar"
+          />
+          <p class="member-name">{{ p.fullname }}</p>
+        </div>
+      </div>
+    </section>
+  </main>
 </div>
 
-<!-- ✅ POPUP -->
 <div class="popup-overlay" *ngIf="selectedMember">
   <div class="popup-box">
-    <div class="box-img-popup">
-      <img
-        class="img-popup"
-        [src]="selectedMember.image ? 'http://localhost:3000' + selectedMember.image : '/logo.png'"
-        alt="profile"
-        width="120"
-      />
-    </div>
-    <h2>{{ selectedMember.fullname }}</h2>
-    <p>{{ selectedMember.whatsapp }}</p>
-
-    <!-- ✅ JOIN MODE -->
-    <button *ngIf="popupMode === 'join' 
-    && !isPastSession
-    && !isAlreadyParticipant(selectedMember._id)" 
-    class="btn-join" 
-    (click)="joinMember()">
-      JOIN
-    </button>
-<p *ngIf="isAlreadyParticipant(selectedMember._id)">
-  ✅ Already Joined
-</p>
-    <p *ngIf="isPastSession" class="text-red-500 mt-2">Past Session: Attendance Only</p>
-    <!-- ✅ REMOVE MODE -->
-    <button *ngIf="popupMode === 'remove'" class="btn-remove" (click)="removeMember()">
-      REMOVE
-    </button>
-
     <button class="btn-close" (click)="closePopup()">✕</button>
-  </div>
-</div>
 
-<!-- ✅ Confirm Remove All Popup -->
-<div class="popup-overlay" *ngIf="showConfirmRemoveAll">
-  <div class="popup-box">
-    <img src="/exclamation.png" alt="failed" width="80" height="80" />
-    <p>Are you sure you want to remove all participants from this session?</p>
-
-    <div class="popup-actions">
-      <button class="btn-remove" *ngIf="!isPastSession" (click)="removeAllParticipants()">
-        Yes, Remove All
-      </button>
-
-      <button class="btn-close" (click)="showConfirmRemoveAll = false">✕</button>
+    <div class="popup-header">
+      <img
+        [src]="selectedMember.image ? 'http://localhost:3000' + selectedMember.image : '/logo.png'"
+        class="popup-avatar"
+      />
+      <div class="popup-info">
+        <h2 class="popup-name">{{ selectedMember.fullname }}</h2>
+        <p class="popup-phone">{{ selectedMember.whatsapp }}</p>
+        <span *ngIf="popupMode === 'remove'" class="badge" [ngClass]="selectedMember.status">
+          {{ selectedMember.status }}
+        </span>
+      </div>
     </div>
+
+    <ng-container [ngSwitch]="popupMode">
+      <div *ngSwitchCase="'join'">
+        <button
+          *ngIf="!isAlreadyParticipant(selectedMember._id)"
+          class="btn-base btn-join"
+          (click)="joinMember()"
+        >
+          JOIN
+        </button>
+        <p *ngIf="isAlreadyParticipant(selectedMember._id)" class="already">✅ Already Joined</p>
+      </div>
+
+      <div *ngSwitchCase="'remove'">
+        <button class="btn-base btn-remove" (click)="removeMember()">REMOVE</button>
+      </div>
+    </ng-container>
   </div>
 </div>

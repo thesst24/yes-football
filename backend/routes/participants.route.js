@@ -153,4 +153,31 @@ router.delete("/removeTrial/:sessionId/:trialId", async (req, res) => {
   }
 });
 
+router.post("/join", async (req, res) => {
+  try {
+    const { memberId, sessionId, seasonId } = req.body;
+
+    // ถ้ามีอยู่แล้ว
+    const exists = await Participant.findOne({ memberId, sessionId });
+    if (exists) {
+      return res.status(400).json({ message: "Already joined" });
+    }
+
+    // ✅ Create Participant = pending
+    const participant = await Participant.create({
+      memberId,
+      sessionId,
+      seasonId,
+      status: "pending"
+    });
+
+    res.json({
+      message: "✅ Joined Event (Pending)",
+      participant
+    });
+
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
 module.exports = router;

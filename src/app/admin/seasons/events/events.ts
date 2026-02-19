@@ -196,14 +196,15 @@ isAlreadyParticipant(memberId: string): boolean {
     this.popupMode = 'remove';
   }
 
+  
 joinMember() {
-  this.http.post("http://localhost:3000/api/attendance/checkin", {
+  this.http.post("http://localhost:3000/api/participants/join", {
     memberId: this.selectedMember._id,
     seasonId: this.seasonId,
     sessionId: this.sessionId,
   }).subscribe({
     next: () => {
-      alert("✅ Joined + Checked in");
+      alert("✅ Joined Event (Pending)");
       this.loadParticipants();
       this.closePopup();
     },

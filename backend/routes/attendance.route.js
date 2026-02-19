@@ -7,25 +7,27 @@ const Member = require('../models/member.model');
 const Participant = require("../models/participant.model");
 
 
+
 router.post("/checkin", async (req, res) => {
   try {
     const { memberId, sessionId, seasonId } = req.body;
 
-    // ✅ 1) CHECK CARD ก่อน
+    // ✅ 1) Load Card
     const card = await Card.findOne({ memberId });
     if (!card) return res.status(404).json({ message: "Card not found" });
 
+    // ✅ 2) Prevent duplicate checkin
     const alreadyChecked = card.checkins.some(
       (c) => c.sessionId.toString() === sessionId.toString()
     );
 
     if (alreadyChecked) {
       return res.status(400).json({
-        message: "Already checked in this session",
+        message: "Already checked in this session"
       });
     }
 
-    // ✅ 2) JOIN PARTICIPANT (ถ้ายังไม่มี)
+    // ✅ 3) Auto Join Participant if missing
     let participant = await Participant.findOne({ memberId, sessionId });
 
     if (!participant) {
@@ -33,11 +35,15 @@ router.post("/checkin", async (req, res) => {
         memberId,
         sessionId,
         seasonId,
-        status: "present",
+        status: "present"
       });
+    } else {
+      // ✅ ถ้ามีแล้ว → update เป็น present
+      participant.status = "present";
+      await participant.save();
     }
 
-    // ✅ 3) JOIN ATTENDANCE (ถ้ายังไม่มี)
+    // ✅ 4) Attendance Record
     let attendance = await Attendance.findOne({ memberId, sessionId });
 
     if (!attendance) {
@@ -45,35 +51,39 @@ router.post("/checkin", async (req, res) => {
         memberId,
         sessionId,
         seasonId,
+        status: "present"
       });
     }
 
-    // ✅ 4) PUSH CHECKIN
+    // ✅ 5) Push Checkin into Card
     card.checkins.push({
       sessionId,
-      date: new Date(),
+      date: new Date()
     });
 
     card.usedSessions = card.checkins.length;
 
+    // ✅ 6) Full card → inactive
     if (card.usedSessions >= card.totalSessions) {
-
-      await Member.findByIdAndUpdate(memberId, { status: false });
       card.status = "inactive";
+      await Member.findByIdAndUpdate(memberId, { status: false });
     }
 
     await card.save();
 
     res.json({
-      message: "Participant + Attendance + Checkin success",
+      message: "✅ Checkin + Auto Join Success",
       participant,
       attendance,
-      card,
+      card
     });
+
   } catch (err) {
+    console.error("🔥 Checkin Error:", err);
     res.status(500).json({ message: err.message });
   }
 });
+
 
 
 router.post("/trial", async (req, res) => {
