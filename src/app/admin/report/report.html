@@ -1,19 +1,53 @@
 <div class="dashboard">
 
-  <!-- Filters -->
-  <div class="filters">
-    <select [(ngModel)]="month" (change)="loadReport()">
+<div class="filters-box">
+
+  <!-- Mode -->
+
+  <select [(ngModel)]="mode" (change)="loadReport()">
+    <option value="monthly">Monthly</option>
+    <option value="yearly">Yearly</option>
+  </select>
+
+  <!-- Month Filter -->
+  <div class="filter-item" *ngIf="mode === 'monthly'">
+    <p class="selected" (click)="monthSelect.click()">
+      Month: {{ selectedMonthLabel }}
+    </p>
+
+    <!-- hidden dropdown -->
+    <select
+      #monthSelect
+      [(ngModel)]="month"
+      (change)="loadReport()"
+      class="hidden-select"
+    >
       <option *ngFor="let m of months" [value]="m.value">
-        {{ m.label }}
+        {{ m.value }}
       </option>
     </select>
+  </div>
 
-    <select [(ngModel)]="year" (change)="loadReport()">
+  <!-- Year Filter -->
+  <div class="filter-item">
+    <p class="selected" (click)="yearSelect.click()">
+      Year: {{ year }}
+    </p>
+
+    <!-- hidden dropdown -->
+    <select
+      #yearSelect
+      [(ngModel)]="year"
+      (change)="loadReport()"
+      class="hidden-select"
+    >
       <option *ngFor="let y of years" [value]="y">
         {{ y }}
       </option>
     </select>
   </div>
+
+</div>
 
   <!-- Cards -->
   <div class="cards">
@@ -49,22 +83,4 @@
     </div>
 
   </div>
-
-  <!-- Compare -->
-  <div class="compare-box">
-    <h3>📈 Growth vs Last Month</h3>
-
-    <p>
-      Last Month: {{ report?.lastMonthGrowth }}
-    </p>
-
-    <p>
-      Difference:
-      <span [class.positive]="report?.growthDiff > 0"
-            [class.negative]="report?.growthDiff < 0">
-        {{ report?.growthDiff }}
-      </span>
-    </p>
-  </div>
-
 </div>

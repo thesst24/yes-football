@@ -1,0 +1,82 @@
+<div class="con-all">
+
+  <div class="container">
+    <header>
+      <a class="link-event" routerLink="/event-user">Event</a>
+      <a class="sign-out" routerLink="/user-login">
+        <p class="link-sign-out">Logout</p>
+        <i class="pi pi-sign-out"></i>
+      </a>
+    </header>
+    <div class="card-con">
+    <div class="card-checkin" [class.inactive-mode]="card?.status === 'inactive'">
+      <div
+        class="status"
+        [class.active]="card?.status === 'active'"
+        [class.inactive]="card?.status === 'inactive'"
+      >
+        <p>{{ card?.status }}</p>
+      </div>
+
+      <div class="con-input">
+        <div class="box-input">
+          <div class="input-name input">
+            <label for="name" class="">Name</label>
+            <div class="box">{{ member.fullname }}</div>
+          </div>
+          <div class="input-expiry input">
+            <label>Expiry</label>
+            <div class="box">
+              {{ card?.expiryDate | date: 'dd/MM/yyyy' }}
+            </div>
+          </div>
+        </div>
+
+        <div class="image-profile">
+          <img [src]="'http://localhost:3000' + member.image" />
+        </div>
+      </div>
+
+      <!-- ✅ ถ้า card inactive หรือเต็มแล้ว -->
+      <div *ngIf="isCardFull || card?.status === 'inactive'" class="renew-box">
+        <button class="renew-btn" (click)="showPopupRenew()">Renew Card</button>
+      </div>
+
+      <div class="con-grid-circle">
+        <div class="checkin-grid" *ngIf="card">
+          <div
+            class="circle"
+            *ngFor="let s of [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]; let i = index"
+            [class.disabled]="isCardFull || card?.status === 'inactive'"
+            [class.checked]="i < card.usedSessions"
+          >
+            <!-- ✅ ช่องที่เช็คแล้ว -->
+            <div *ngIf="i < card.usedSessions" class="checked-content">
+              <!-- ✅ แสดงวันที่ -->
+              <small class="check-date" *ngIf="i < card.usedSessions">
+                {{ card.checkins[i]?.date | date: 'dd/MM' }}
+              </small>
+            </div>
+
+            <!-- ช่องอนาคต -->
+            <span *ngIf="i >= card.usedSessions">{{ i + 1 }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+  </div>
+
+  <div class="overlay-popup" *ngIf="showRenew">
+    <div class="popup-renew">
+      <button type="button" class="btnclose" (click)="closePopupRenew()">✕</button>
+      <div class="renew-con">
+        <p>
+          ກະລຸນາຊຳລະເງີນມູນຄ່າ 1,000,000 ກີບ ເພຶ່ອຕໍ່ອາຍຸບັດ ແລ້ວສົ່ງຫຼັກຖານການໂອນໄປທີກຸ່ມ WhatsApp
+        </p>
+        <img src="/logo.png" alt="QRScan" />
+        <button class="btnok" (click)="closePopupRenew()">OK</button>
+      </div>
+    </div>
+  </div>
+</div>

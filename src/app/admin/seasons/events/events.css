@@ -1,14 +1,18 @@
 .container {
-    background-color: white;
     height: 100%;
     border-radius: 15px;
     padding: 24px;
+    max-width: 100%;
 }
 
 header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-bottom: 20px;
+    background-color: white;
+    padding: 24px;
+    border-radius: 15px;
 }
 
 .pre-title {
@@ -66,14 +70,23 @@ header {
 }
 
 /* content */
+
+.content-con {
+    background-color: white;
+    padding: 24px;
+    border-radius: 15px;
+}
+
 .content {
     border: 1px solid #b7b7b7;
     border-radius: 15px;
     padding: 24px;
-    margin: 24px 0;
+}
+.con-club-member {
+    margin-bottom: 24px;
 }
 .club-member {
-    overflow: scroll;
+
     max-height: 600px;
 }
 

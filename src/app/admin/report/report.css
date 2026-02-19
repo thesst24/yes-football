@@ -1,18 +1,50 @@
 .dashboard {
-  padding: 20px;
   font-family: Arial;
 }
 
-.filters {
+.filters-box {
   display: flex;
-  gap: 10px;
+  gap: 30px;
+  padding: 15px;
   margin-bottom: 20px;
+  background-color: white;
+  border-radius: 15px;
+}
+
+.filter-item {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+
+
+select {
+  border: none;
+  outline: none;
+  background: #f2f2f2;
+  padding: 8px 18px;
+  border-radius: 30px;
+  font-size: 14px;
+  color: gray;
+  cursor: pointer;
+}
+
+.selected {
+  font-size: 15px;
+  font-weight: bold;
+  color: green;
+  padding-left: 10px;
+  margin-top: 10px;
 }
 
 .cards {
   display: grid;
   grid-template-columns: repeat(auto-fit,minmax(180px,1fr));
   gap: 15px;
+  background-color: white;
+  padding: 24px;
+  border-radius: 15px;
 }
 
 .card {
@@ -26,6 +58,7 @@
 .card p {
   font-size: 32px;
   font-weight: bold;
+  margin-top: 16px;
 }
 
 .blue { background: #3498db; }
@@ -50,4 +83,36 @@
 .negative {
   color: red;
   font-weight: bold;
+}
+
+.renew-table {
+  margin-top: 30px;
+  background: white;
+  padding: 20px;
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.renew-table h2 {
+  font-size: 18px;
+  margin-bottom: 15px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead {
+  background: #f4f4f4;
+}
+
+th, td {
+  padding: 10px;
+  text-align: left;
+  font-size: 14px;
+}
+
+tbody tr:hover {
+  background: #fafafa;
 }

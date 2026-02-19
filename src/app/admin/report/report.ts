@@ -19,6 +19,8 @@ export class Report {
   year: number = new Date().getFullYear();
   month: number = new Date().getMonth() + 1;
 
+  mode: "monthly" | "yearly" = "monthly";
+
   // ✅ Months Dropdown
   months = [
     { value: 1, label: "Jan" },
@@ -36,7 +38,7 @@ export class Report {
   ];
 
   // ✅ Years Dropdown
-  years = [2026, 2025, 2024, 2023, 2022, 2021];
+  years: number[] = [];
 
   constructor(
     private http: HttpClient,
@@ -44,17 +46,44 @@ export class Report {
   ) {}
 
   ngOnInit() {
-    this.loadReport();
-  }
+  this.generateYears();
+  this.loadReport();
+}
+
+generateYears() {
+  const currentYear = new Date().getFullYear();
+
+  // ย้อนหลัง 5 ปี + ปีปัจจุบัน
+  this.years = Array.from({ length: 6 }, (_, i) => currentYear - i);
+}
 
   loadReport() {
-    this.http
-      .get<any>(
-        `http://localhost:3000/api/report/monthly?year=${this.year}&month=${this.month}`
-      )
-      .subscribe((res) => {
-        this.report = res;
-        this.cdr.detectChanges();
-      });
+
+  let url = "";
+
+  if (this.mode === "monthly") {
+    url = `http://localhost:3000/api/report/monthly?year=${this.year}&month=${this.month}`;
   }
+
+  if (this.mode === "yearly") {
+    url = `http://localhost:3000/api/report/yearly?year=${this.year}`;
+  }
+
+  this.http.get<any>(url).subscribe(res => {
+    this.report = res;
+    this.cdr.detectChanges();
+  });
+}
+
+    // ✅ helper show selected month label
+  get selectedMonthLabel() {
+    return this.months.find(m => m.value == this.month)?.label;
+  }
+
+  exportExcel() {
+  window.open(
+    `http://localhost:3000/api/report/export-excel?year=${this.year}&month=${this.month}`,
+    "_blank"
+  );
+}
 }

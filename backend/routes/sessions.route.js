@@ -1,62 +1,76 @@
 const express = require("express");
 const router = express.Router();
 const Session = require("../models/session.model");
+const dayjs = require("dayjs");
+const utc = require("dayjs/plugin/utc");
+const timezone = require("dayjs/plugin/timezone");
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
 
 // ===============================
 // ✅ Helper: Auto Mark Completed
 // ===============================
-async function autoCompleteSessions(sessions) {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+async function autoCompleteSessions() {
 
-  for (let s of sessions) {
-    const sessionDate = new Date(s.date);
-    sessionDate.setHours(0, 0, 0, 0);
+  const nowLaos = dayjs().tz("Asia/Vientiane");
+  const startOfTodayLaos = nowLaos.startOf("day");
+  const startOfTodayUTC = startOfTodayLaos.utc().toDate();
 
-    if (sessionDate < today && s.status !== "completed") {
-      s.status = "completed";
-      await s.save();
+  await Session.updateMany(
+    {
+      date: { $lt: startOfTodayUTC },
+      status: { $ne: "completed" }
+    },
+    {
+      $set: { status: "completed" }
     }
-  }
+  );
+
 }
+
 
 // ===============================
 // ✅ GET Sessions by SeasonId
 // ===============================
 router.get("/season/:seasonId", async (req, res) => {
   try {
+
+    await autoCompleteSessions();   // 🔥 update ก่อน
+
     const sessions = await Session.find({
       seasonId: req.params.seasonId,
     }).sort({ date: 1 });
 
-    // ✅ Auto mark completed
-    await autoCompleteSessions(sessions);
-
     res.json(sessions);
+
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 });
+
 
 // ===============================
 // ✅ GET Session by Id
 // ===============================
 router.get("/:id", async (req, res) => {
   try {
+
+    await autoCompleteSessions();
+
     const session = await Session.findById(req.params.id);
 
     if (!session) {
       return res.status(404).json({ message: "Session not found" });
     }
 
-    // ✅ Auto mark completed for single session
-    await autoCompleteSessions([session]);
-
     res.json(session);
+
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 });
+
 
 // ===============================
 // ✅ Latest Sessions

@@ -1,8 +1,10 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const cron = require('node-cron');
 const path = require('path');
 const memberModel = require('./models/member.model');
+
 const adminRoute = require('./routes/admin.route');
 const seasonRoutes = require('./routes/season.route');
 const cardRoutes = require('./routes/cards.route');
@@ -24,6 +26,16 @@ app.use('/api/sessions',sessionRoutes);
 app.use("/api/participants", participants);
 console.log("✅ Report Route Loaded");
 app.use('/api/report',reportRoute);
+
+
+
+// รันทุกวัน 23:59:59 เวลา Laos
+cron.schedule("59 59 23 * * *", async () => {
+  console.log("⏰ Running 23:59:59 session auto-complete");
+  await autoCompleteSessions();
+}, {
+  timezone: "Asia/Vientiane"
+});
 
 
 // MongoDB

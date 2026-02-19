@@ -1,0 +1,322 @@
+.con-all {
+  max-width: 100%;
+  height: 100vh;
+}
+.container {
+  max-width: 100%;
+}
+header {
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  padding: 33px;
+  gap: 33px;
+  max-width: 100%;
+}
+
+header a {
+  font-size: var(--font-size-fc);
+}
+.sign-out {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+.link-event {
+  font-weight: bold;
+}
+.link-sign-out {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+.link-event:hover,
+.link-sign-out:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.overlay-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+.card-con {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+
+}
+.card-checkin {
+  background-image: url('../../../../public/bgCard.jpg');
+  width: 600px;
+  height: 725px;
+  background-position: -510px -100px;
+  background-size: 210%;
+  color: white;
+  box-shadow: 0 0 0px 8px #b5b5b5;
+  position: relative;
+}
+
+.card-checkin.inactive-mode {
+  position: relative;
+}
+
+/* ทำให้ card เทาหม่น */
+.card-checkin.inactive-mode::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.75);
+  z-index: 5;
+  border-radius: 0px;
+}
+.renew-box,
+.close,
+.status {
+  position: relative;
+  z-index: 20;
+}
+
+.card-checkin.inactive-mode .circle {
+  background: #d1d5db !important;
+  color: #6b7280 !important;
+  border: 2px solid #9ca3af !important;
+}
+
+.card-checkin.inactive-mode img {
+  filter: grayscale(100%);
+}
+
+/* ✅ แต่ Renew + Status + Close ไม่โดนเทา */
+.card-checkin.inactive-mode .renew-box,
+.card-checkin.inactive-mode .renew-btn,
+.card-checkin.inactive-mode .status,
+.card-checkin.inactive-mode .close {
+  filter: none !important;
+  opacity: 1 !important;
+}
+
+
+.status {
+  display: flex;
+  justify-content: end;
+  padding: 0px 10px;
+  margin-top: 5px;
+}
+
+.status.active {
+  color: rgb(0, 255, 0);
+}
+
+.status.inactive {
+  color: rgb(233, 45, 45);
+}
+.con-input {
+  display: flex;
+}
+
+.input {
+  display: flex;
+  flex-direction: column;
+  margin-left: 33px;
+}
+.input label {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.box {
+  background: white;
+  color: black;
+  padding: 4px 8px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+  width: 140px;
+}
+.image-profile {
+  width: 120px;
+  height: 120px;
+  margin-left: 65px;
+}
+.image-profile img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* ✅ การจัดวาง Grid วงกลมให้เหมือนในรูป */
+.con-grid-circle {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+.checkin-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 คอลัมน์ */
+  gap: 15px;
+  justify-items: center;
+  padding: 10px;
+  width: 500px;
+}
+
+.circle {
+  width: 120px;
+  height: 120px;
+  background-color: rgba(255, 255, 255, 0.7); /* สีเทาอ่อนแบบโปร่งใส */
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  color: #333;
+  font-weight: bold;
+  border: 2px solid transparent;
+}
+
+/* จัดตำแหน่งวงกลมสุดท้าย (อันที่ 10) ให้มาอยู่ตรงกลาง */
+.circle:nth-child(10) {
+  grid-column: 2; /* บังคับให้อยู่คอลัมน์ที่ 2 (ตรงกลาง) */
+}
+
+/* สไตล์เมื่อเช็คอินแล้ว */
+.circle.checked {
+  background-image: url('../../../../public/seal.png');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 180px 180px;
+  color: white;
+  display: flex;
+  flex-direction: column; /* จัดเครื่องหมายถูกกับวันที่ให้อยู่คนละบรรทัด */
+  justify-content: center;
+  align-items: center;
+}
+.checked-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.circle.disabled {
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+.renew-box {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+}
+
+.renew-btn {
+  background: linear-gradient(135deg, #00c853, #009624);
+  padding: 14px 28px;
+  border-radius: 14px;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 6px 18px rgba(0, 200, 83, 0.5);
+  transition: 0.25s;
+}
+.renew-btn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 8px 25px rgba(0, 200, 83, 0.8);
+}
+
+.check-date {
+  font-size: 20px; /* ขนาดวันที่เล็กๆ ให้พอดีวงกลม */
+  margin-top: -2px;
+  color: #00ff2a;
+}
+
+/* สไตล์ปุ่มที่กำลังรอเช็คอิน (คิวถัดไป) */
+.circle.next-queue {
+  background-color: white;
+  border: 2px dashed #0db328;
+  color: #0db328;
+}
+
+.circle:hover {
+  transform: scale(1.1);
+  background-color: white;
+}
+
+.popup-renew {
+  width: 90%;
+  max-width: 400px;
+  height: 578px;
+  background-color: white;
+  border-radius: 30px;
+  padding: 30px 100px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  animation: fadeIn 0.3s ease-out; /* เพิ่ม Animation เล็กน้อย */
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.popup-renew .btnclose {
+  position: absolute;
+  top: -40px;
+  right: -10px;
+  border: none;
+  background: white;
+  color: red;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+.popup-renew p {
+  text-align: center;
+  color: #293690;
+  font-size: 20px;
+  margin-bottom: 40px;
+  line-height: 25px;
+  font-weight: 800;
+}
+.popup-renew img {
+  width: 200px;
+  height: 200px;
+  margin-bottom: 68px;
+}
+.popup-renew .btnok {
+  background-color: #293690;
+  width: 150px;
+  height: 48px;
+  border-radius: 15px;
+  font-weight: bold;
+  font-size: 20px;
+  color: white;
+}

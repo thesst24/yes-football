@@ -13,6 +13,7 @@
           name="phone"
           id="phone"
           [(ngModel)]="whatsapp"
+          (input)="error=''"
           placeholder="20 xxx-xxx-xx"
           maxlength="12"
           inputmode="numeric"
@@ -30,7 +31,7 @@
         LOGIN
       </button>
 
-      <p class="error" *ngIf="error">{{ error }}</p>
+      <p class="error text-red-500 text-sm" *ngIf="error">{{ error }}</p>
     </div>
   </div>
 

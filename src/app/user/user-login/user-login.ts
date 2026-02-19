@@ -45,10 +45,12 @@ export class UserLogin {
 
     this.memberService.loginByWhatsapp(this.whatsapp).subscribe({
       next: (member) => {
+        this.error = '';
         localStorage.setItem('member', JSON.stringify(member));
-        this.router.navigate(['/card-check']);
+        this.router.navigate(['/card-user']);
       },
       error: (err) => alert(err.error.message),
     });
   }
+
 }
