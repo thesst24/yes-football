@@ -6,7 +6,6 @@ import { Member } from '../../services/member';
 import { AddMember } from './add-member/add-member';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 
-
 @Component({
   selector: 'app-members',
   imports: [CommonModule, ToggleSwitchModule, DatePipe, FormsModule, AddMember],
@@ -14,7 +13,7 @@ import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
   styleUrl: './members.css',
 })
 export class Members {
- // ===== DATA =====
+  // ===== DATA =====
   allMembers: any[] = [];
   filteredMembers: any[] = [];
   members: any[] = [];
@@ -40,9 +39,10 @@ export class Members {
   activeMembers = 0;
 
   constructor(
-    private service: Member, 
-    private router:Router,
-  private cdr: ChangeDetectorRef ) {}
+    private service: Member,
+    private router: Router,
+    private cdr: ChangeDetectorRef,
+  ) {}
 
   ngOnInit() {
     this.load();
@@ -51,23 +51,25 @@ export class Members {
   // ===== LOAD =====
   load() {
     this.service.getAll().subscribe((res: any[]) => {
-      const mapped = res.map(m => ({
+      const mapped = res.map((m) => ({
         ...m,
         ageGroup: this.getAgeGroup(m.dateOfBirth),
       }));
 
-      this.allMembers = [...mapped];
+      // ใน load()
+      this.allMembers = [...mapped].sort((a, b) => {
+        // เรียงจากมากไปน้อย (ใหม่ไปเก่า)
+        return b._id.localeCompare(a._id);
+      });
       this.filteredMembers = [...this.allMembers];
       this.totalItems = this.filteredMembers.length;
       this.currentPage = 1;
 
       this.updatePage();
       this.updateMemberCount();
-      
+
       this.cdr.detectChanges();
-      
     });
-    
   }
 
   // ===== PAGINATION =====
@@ -106,10 +108,11 @@ export class Members {
     if (!text) {
       this.filteredMembers = [...this.allMembers];
     } else {
-      this.filteredMembers = this.allMembers.filter(m =>
-        m.fullname?.toLowerCase().includes(text) ||
-        m.guardian?.toLowerCase().includes(text) ||
-        m.whatsapp?.toString().includes(text)
+      this.filteredMembers = this.allMembers.filter(
+        (m) =>
+          m.fullname?.toLowerCase().includes(text) ||
+          m.guardian?.toLowerCase().includes(text) ||
+          m.whatsapp?.toString().includes(text),
       );
     }
     this.totalItems = this.filteredMembers.length;
@@ -121,7 +124,7 @@ export class Members {
   // ===== COUNT =====
   updateMemberCount() {
     this.totalMembers = this.filteredMembers.length;
-    this.activeMembers = this.filteredMembers.filter(m => m.status).length;
+    this.activeMembers = this.filteredMembers.filter((m) => m.status).length;
   }
 
   // ===== SORT =====
@@ -171,73 +174,70 @@ export class Members {
     }
   }
 
-toggleStatus(member: any) {
-  const newStatus = !!member.status;
+  toggleStatus(member: any) {
+    const newStatus = !!member.status;
 
-  // ==========================
-  // ✅ เปิด Active
-  // ==========================
-  if (newStatus) {
+    // ==========================
+    // ✅ เปิด Active
+    // ==========================
+    if (newStatus) {
+      // โหลด card ก่อน
+      this.service.getCard(member._id).subscribe({
+        next: (cardRes: any) => {
+          const used = cardRes.usedSessions;
 
-    // โหลด card ก่อน
-    this.service.getCard(member._id).subscribe({
-      next: (cardRes: any) => {
+          // ✅ ถ้า card ยังไม่เต็ม → ไม่ renew
+          if (used < 10) {
+            this.service.updateStatus(member._id, true).subscribe({
+              next: () => {
+                alert('✅ Member Activated (Card Still Valid)');
+                this.load();
+              },
+              error: () => {
+                alert('❌ Activate failed');
+                member.status = false;
+              },
+            });
 
-        const used = cardRes.usedSessions;
+            return;
+          }
 
-        // ✅ ถ้า card ยังไม่เต็ม → ไม่ renew
-        if (used < 10) {
-          this.service.updateStatus(member._id, true).subscribe({
+          // ✅ ถ้า card เต็มแล้ว → renew card ใหม่
+          this.service.renew(member._id).subscribe({
             next: () => {
-              alert("✅ Member Activated (Card Still Valid)");
+              alert('✅ Member Activated + Card Renewed!');
               this.load();
             },
-            error: () => {
-              alert("❌ Activate failed");
+            error: (err) => {
+              alert('❌ Renew failed: ' + err.error.message);
               member.status = false;
-            }
+            },
           });
+        },
 
-          return;
-        }
+        error: () => {
+          alert('❌ Cannot load card');
+          member.status = false;
+        },
+      });
 
-        // ✅ ถ้า card เต็มแล้ว → renew card ใหม่
-        this.service.renew(member._id).subscribe({
-          next: () => {
-            alert("✅ Member Activated + Card Renewed!");
-            this.load();
-          },
-          error: (err) => {
-            alert("❌ Renew failed: " + err.error.message);
-            member.status = false;
-          }
-        });
-
-      },
-
-      error: () => {
-        alert("❌ Cannot load card");
-        member.status = false;
-      }
-    });
-
-    return;
-  }
-
-  // ==========================
-  // ❌ ปิด inactive
-  // ==========================
-  this.service.updateStatus(member._id, false).subscribe({
-    next: () => {
-      alert("❌ Member Deactivated");
-      this.load();
-    },
-    error: () => {
-      alert("❌ Update failed");
-      member.status = true;
+      return;
     }
-  });
-}
+
+    // ==========================
+    // ❌ ปิด inactive
+    // ==========================
+    this.service.updateStatus(member._id, false).subscribe({
+      next: () => {
+        alert('❌ Member Deactivated');
+        this.load();
+      },
+      error: () => {
+        alert('❌ Update failed');
+        member.status = true;
+      },
+    });
+  }
 
   // ===== UTIL =====
   getAgeGroup(date: string | Date) {
@@ -247,7 +247,8 @@ toggleStatus(member: any) {
     if (
       today.getMonth() < dob.getMonth() ||
       (today.getMonth() === dob.getMonth() && today.getDate() < dob.getDate())
-    ) age--;
+    )
+      age--;
     return `U${age}`;
   }
 }

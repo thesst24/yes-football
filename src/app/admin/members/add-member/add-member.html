@@ -32,7 +32,9 @@
           name="dateOfBirth"
           [showIcon]="true"
           dateFormat="dd/mm/yy"
-          placeholder="dd/mm/yyyy"></p-date-picker>
+          placeholder="dd/mm/yyyy"
+          [required]="true">
+        </p-date-picker>
           <small *ngIf="f.submitted && f.controls['dateOfBirth']?.invalid" style="color: red">
             dateOfBirth is required
           </small>

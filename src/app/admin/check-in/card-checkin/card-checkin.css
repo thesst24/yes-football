@@ -11,10 +11,12 @@
 
 .card-checkin {
     background-image: url('../../../../../public/bgCard.jpg');
-    width: 600px;
-    height: 725px;
-    background-position: -510px -100px;
-    background-size: 210%;
+   width: 90%; 
+    max-width: 600px; 
+    height: auto; 
+    min-height: 725px;
+    background-position: center;
+    background-size: cover;
     color: white;
     box-shadow: 0 0 0px 8px #b5b5b5;
     position: relative;
@@ -220,4 +222,85 @@
 .circle:hover {
   transform: scale(1.1);
   background-color: white;
+}
+
+
+/* --- เพิ่มส่วน Responsive --- */
+
+@media (max-width: 650px) {
+    .card-checkin {
+        width: 90%;
+        min-height: auto;
+        box-shadow: 0 0 0px 4px #b5b5b5; 
+        padding-bottom: 0;
+    }
+
+    .close {
+        top: -45px; /* ย้ายปุ่มปิดมาไว้ข้างใน หรือมุมที่กดง่ายขึ้น */
+        right: 0px;
+    }
+    .con-grid-circle{
+      margin: 0;
+    }
+
+    .con-input {
+        flex-direction: column-reverse; /* เอารูปไว้ข้างบน หรือสลับตามความเหมาะสม */
+        align-items: center;
+        gap: 20px;
+    }
+
+    .image-profile {
+        margin-left: 0; /* ล้างค่า margin เดิม */
+        width: 100px;
+        height: 100px;
+    }
+
+    .input {
+        margin-left: 0;
+        align-items: center;
+    }
+
+    .box {
+        width: 200px; /* ขยายให้กว้างขึ้นในแนวตั้ง */
+        text-align: center;
+    }
+
+    /* ปรับ Grid วงกลม */
+    .checkin-grid {
+        grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); /* ให้วงกลมยืดหยุ่น */
+        width: 100%;
+        gap: 10px;
+        padding: 20px;
+    }
+
+    .circle {
+        width: 90px;  /* ลดขนาดวงกลมลงบนมือถือ */
+        height: 90px;
+        font-size: 14px;
+    }
+
+    .circle.checked {
+        background-size: 130px 130px; /* ลดขนาดตราปั๊ม */
+    }
+
+    .check-date {
+        font-size: 14px;
+    }
+
+    /* จัดการปุ่ม Renew ให้ใหญ่กดง่าย */
+    .renew-btn {
+        width: 80%;
+        white-space: nowrap;
+    }
+}
+
+/* สำหรับมือถือหน้าจอเล็กมาก (iPhone SE เป็นต้น) */
+@media (max-width: 380px) {
+    .checkin-grid {
+        grid-template-columns: repeat(3, 1fr); /* บังคับ 3 คอลัมน์เหมือนเดิมแต่ลดขนาด */
+    }
+    .circle {
+        width: 80px;
+        height: 80px;
+    }
 }

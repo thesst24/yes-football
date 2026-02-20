@@ -70,5 +70,8 @@ input::placeholder, :host ::ng-deep .p-datepicker-input::placeholder {
     background-color: #0db328;
     color: white;
 }
+.btn-save:hover{
+    background-color: var(--color-hover-btn);
+}
 
 

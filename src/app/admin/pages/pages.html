@@ -1,15 +1,25 @@
 <div class="container">
+
+    <!-- overlay แสดงเฉพาะตอน mobile และ sidebar เปิด -->
+    <div class="overlay" 
+        *ngIf="sidebarVisible && isMobile()"
+        (click)="sidebarVisible = false">
+    </div>
+
     <div class="sidebar" [ngClass]="{'hidden': !sidebarVisible}">
         <app-sidebar (menuSelect)="selectedMenu = $event"></app-sidebar>
     </div>
+
     <div class="main">
         <header>
             <i class="pi pi-align-justify"
-            (click)="sidebarVisible = !sidebarVisible"></i>
+               (click)="sidebarVisible = !sidebarVisible"></i>
             <p>{{selectedMenu}}</p>
-        </header>
+        </header> 
+
         <div class="main-content">
             <router-outlet></router-outlet>
         </div>
     </div>
+
 </div>

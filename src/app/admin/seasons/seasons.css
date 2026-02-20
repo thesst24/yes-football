@@ -4,25 +4,26 @@
 
 .overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   background: rgba(0,0,0,0.4);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 999;
+  overflow-y: auto; /* เพิ่มเพื่อให้ scroll ได้ */
+  padding: 20px;
 }
 
 
 .modal-content {
-  background: white;
+ background: white;
   padding: 20px;
-  border-radius: 8px;
-  width: 80%;
-  max-width: 800px;
+  border-radius: 15px;
+  width: 100%; /* เปลี่ยนจาก 80% เป็น 100% */
+  max-width: 850px;
+  margin: auto; /* ช่วยให้จัดกลางเวลา content ยาว */
 }
+
 
 .status-badge {
   padding: 4px 8px;
@@ -79,4 +80,23 @@
 .selected-row {
   background: #dfffe2 !important;
   font-weight: bold;
+}
+
+/* จัดการความสูงและ Scroll ภายใน Table */
+:host ::ng-deep .p-datatable {
+  width: 100%;
+  overflow-x: auto; /* ให้ตารางเลื่อนซ้ายขวาได้ถ้าล้น */
+}
+
+@media (max-width: 768px) {
+  .header-container h2 {
+    font-size: 1.2rem;
+  }
+  
+  /* ปรับแต่ง Table บนมือถือให้เลื่อนง่ายขึ้น */
+  :host ::ng-deep .p-datatable .p-datatable-thead > tr > th,
+  :host ::ng-deep .p-datatable .p-datatable-tbody > tr > td {
+    padding: 10px 5px;
+    font-size: 12px;
+  }
 }

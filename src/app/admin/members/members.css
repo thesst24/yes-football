@@ -6,14 +6,13 @@ header {
     display: flex;
     background-color: white;
     width: auto;
-    height: 73px;
     justify-content: space-between;
     align-items: center;
     border-radius: 15px;
     padding: 14px 10px;
 }
 .title-member {
-    font-size: 20px;
+    font-size: var(--font-size-fc);
     font-weight: 600;
 }
 .member-number {
@@ -59,19 +58,23 @@ header {
     gap: 8px;
 }
 .btn-new-member:hover {
-    background-color: #07941e;
+    background-color: var(--color-hover-btn);
 }
 
 /* Data Members */
 .data-member {
-    padding: 24px 0 0;
-    margin-top: 27px;
-    max-width: 100%;
-    height: auto;
-    background-color: white;
-    border-radius: 14px;
-    overflow: hidden;
+  margin-top: 20px;
+  background: white;
+  border-radius: 14px;
+  overflow-x: auto;
+  overflow-y: hidden;
 }
+
+.data-member table {
+  width: 100%;
+}
+
+
 table, tbody, tr {
     border-collapse: collapse;
 }
@@ -170,4 +173,105 @@ tbody tr:hover {
 .pre-next button:disabled {
   opacity: 0.4;
   cursor: not-allowed;
+}
+
+
+
+/* --- RESPONSIVE STRATEGY --- */
+
+@media (max-width: 1024px) {
+    .search {
+        width: 250px; /* ลดขนาดช่อง search ลงเล็กน้อยบน Tablet */
+    }
+    /* จัดการตารางให้เลื่อนได้ */
+    .data-member {
+        overflow-x: auto; /* เปิดการเลื่อนแนวนอน */
+        margin-top: 15px;
+    }
+
+    .table-member {
+        min-width: 800px; /* บังคับความกว้างขั้นต่ำของตารางเพื่อให้ข้อมูลไม่ซ้อนกัน */
+    }
+
+    .pagination {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+}
+
+@media (max-width: 768px) {
+    header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 16px;
+  }
+
+  .title-member {
+    text-align: left;
+    font-size: 18px;
+  }
+
+  .search {
+    width: 100%;
+  }
+
+  .btn-new-member {
+    width: 100%;
+  }
+
+    /* จัดการตารางให้เลื่อนได้ */
+    .data-member {
+        overflow-x: auto; /* เปิดการเลื่อนแนวนอน */
+    }
+
+    .table-member {
+        min-width: 650px; /* บังคับความกว้างขั้นต่ำของตารางเพื่อให้ข้อมูลไม่ซ้อนกัน */
+    }
+
+    .pagination {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+    .showing{
+        font-size: 13px;
+    }
+    .profile {
+  min-width: 200px;
+}
+
+.fullname {
+  font-weight: 600;
+}
+
+.nickname {
+  font-size: 12px;
+}
+.pi-pencil,
+  .pi-trash {
+    font-size: 20px;
+    margin-right: 14px;
+  }
+  .status-text {
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+td {
+  vertical-align: middle;
+}
+
+
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 10px;
+    }
+    
+    .header-data th, .data td {
+        padding: 12px 15px; /* ลด padding ในตารางลงอีกนิดสำหรับมือถือเล็ก */
+    }
 }

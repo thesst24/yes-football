@@ -3,17 +3,17 @@
   <div class="container">
     <!-- HEADER -->
     <div
-      class="header flex justify-between items-center bg-white py-[14px] px-[10px] rounded-[15px] mb-6"
+      class="header flex flex-col md:flex-row justify-between items-start md:items-center bg-white py-[14px] px-[15px] rounded-[15px] mb-6 gap-4"
     >
-      <div class="season flex gap-8">
+      <div class="season flex flex-col sm:flex-row gap-2 sm:gap-8 w-full">
         <h2
           class="text-[16px] font-bold cursor-pointer hover:underline"
           (click)="openListSeasons()"
         >
           {{ selectedSeason?.name || 'Select Season' }}
 
-          <span *ngIf="selectedSeason">
-            : {{ selectedSeason.startDate | date: 'yyyy/MM/dd' }} -
+          <span class="block sm:inline text-gray-500 font-normal" *ngIf="selectedSeason">
+            {{ selectedSeason.startDate | date: 'yyyy/MM/dd' }} -
             {{ selectedSeason.endDate | date: 'yyyy/MM/dd' }}
           </span>
         </h2>
@@ -21,14 +21,14 @@
         <!-- ✅ CHECKBOX -->
         <div class="show-past-event flex items-center gap-2">
           <input type="checkbox" [(ngModel)]="showAllSessions" (change)="toggleShowAllSessions()" />
-          <p class="text-[16px]">Show past Event</p>
+          <p class="text-[16px]">Show Past Sessions</p>
         </div>
       </div>
 
       <!-- ✅ POPUP Manage Season -->
       <button
         (click)="openPopup()"
-        class="bg-[#0db328] w-[215px] h-[45px] rounded-[6px] text-center text-white cursor-pointer"
+       class="bg-[#0db328] w-full md:w-[215px] h-[45px] rounded-[6px] text-white hover:bg-[#09771b] transition-colors"
       >
         Manage Season
       </button>
@@ -90,22 +90,19 @@
 
   <!-- ✅ SESSION LIST -->
   <div class="session-list" *ngIf="sessions.length > 0">
-    <h3 class="font-bold mb-2">Sessions for {{ selectedSeason?.name }}</h3>
+    <h3 class="font-bold mb-2 text-[#293690]">Sessions for {{ selectedSeason?.name }}</h3>
 
-    <div class="flex flex-wrap gap-4">
-      <button
-        *ngFor="let s of sessions"
-        (click)="selectSession(s)"
-        class="w-[140px] h-[55px] rounded-lg font-semibold transition"
-        [ngClass]="{
-          'bg-[#0db328] text-white': isNextSession(s),
-          'bg-gray-400 text-white': s.status === 'completed',
-          'bg-blue-500 text-white': isTodaySession(s),
-        }"
-      >
-        {{ s.date | date: 'EEE dd/MM' }}
-      </button>
-    </div>
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:flex md:flex-wrap gap-3">
+    <button *ngFor="let s of sessions" (click)="selectSession(s)"
+      class="w-full md:w-[140px] h-[55px] text-white rounded-lg text-sm md:text-base transition-transform active:scale-95"
+      [ngClass]="{
+        'bg-[#0db328]': isNextSession(s),
+        'bg-gray-400': s.status === 'completed',
+        'bg-[#293690]': isTodaySession(s)
+      }">
+      {{ s.date | date: 'EEE dd/MM' }}
+    </button>
+  </div>
   </div>
 </div>
 

@@ -1,18 +1,21 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { Sidebar } from "../../components/sidebar/sidebar";
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
-import { NgClass } from '@angular/common';
+import { CommonModule, NgClass } from '@angular/common';
 import { filter } from 'rxjs';
+
 
 @Component({
   selector: 'app-pages',
-  imports: [Sidebar, RouterOutlet, NgClass],
+  imports: [Sidebar, RouterOutlet, NgClass, CommonModule],
   templateUrl: './pages.html',
   styleUrl: './pages.css',
 })
 export class Pages {
   sidebarVisible: boolean = true;
 selectedMenu: string = '';
+
+  isMobileView = window.innerWidth <= 768;
 
 constructor(private router: Router){}
 
@@ -26,6 +29,10 @@ ngOnInit() {
     ).subscribe((event: any) => {
       this.updateTitleByUrl(event.urlAfterRedirects);
     });
+    // ถ้าความกว้างหน้าจอน้อยกว่าหรือเท่ากับ 768px ให้ปิด Sidebar ทันทีที่โหลด
+    if (window.innerWidth <= 768) {
+      this.sidebarVisible = false;
+    }
   }
 
   // ฟังก์ชันช่วยแปลง URL เป็นชื่อ Header
@@ -37,4 +44,24 @@ ngOnInit() {
     else if (url.includes('setting')) this.selectedMenu = 'Setting';
     else this.selectedMenu = 'Check-in'; // ค่า Default
   }
+
+  // เพิ่มเติม: ถ้าอยากให้กดเมนูแล้วปิด Sidebar อัตโนมัติ (เฉพาะมือถือ)
+  onMenuSelect() {
+    if (window.innerWidth <= 768) {
+      this.sidebarVisible = false;
+    }
+  }
+
+  // ✅ ฟังก์ชันเช็คว่าเป็นมือถือหรือไม่
+  isMobile(): boolean {
+    return window.innerWidth <= 768;
+  }
+
+
+
+@HostListener('window:resize')
+onResize() {
+  this.isMobileView = window.innerWidth <= 768;
+}
+  
 }

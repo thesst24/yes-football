@@ -1,47 +1,45 @@
 .container {
-    max-width: 100%;
+  max-width: 100%;
 }
 header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24px;
-    background-color: white;
-    padding: 14px 10px;
-    border-radius: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  background-color: white;
+  border-radius: 15px;
+  padding: 14px 10px;
 }
 
 /* Search */
 .search {
-    width: 332px;
-    height: 40px;
-    position: relative;
+  width: 332px;
+  height: 40px;
+  position: relative;
 }
 .icon-search {
-    position: absolute;
-    top:50%;
-    transform: translateY(-60%);
-    left: 15px;
-    color: #484848;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-60%);
+  left: 15px;
+  color: #484848;
 }
-.search input[type="text"] {
-    width: 100%;
-    height: 100%;
-    background-color: #F5F6FA;
-    border-radius: 20px;
-    border: 1px solid #d5d5d5;
-    padding: 0 40px;
-    outline: none;
+.search input[type='text'] {
+  width: 100%;
+  height: 100%;
+  background-color: #f5f6fa;
+  border-radius: 20px;
+  border: 1px solid #d5d5d5;
+  padding: 0 40px;
+  outline: none;
 }
-.search input[type="text"]:focus {
-    outline: 1px solid #b1b1b1;
+.search input[type='text']:focus {
+  outline: 1px solid #b1b1b1;
 }
 
 .season-session-info {
-  padding: 10px;
-  background: rgba(255,255,255,0.15);
   border-radius: 10px;
-  font-size: 15px;
+  font-size: var(--font-size-fc);
 }
 
 .season-session-info p {
@@ -50,70 +48,110 @@ header {
 }
 /*  */
 .content {
-    border-radius: 15px;
-    overflow: hidden;
-    padding: 20px;
-    background-color: white;
+  border-radius: 15px;
+  overflow: hidden;
+  padding: 20px;
+  background-color: white;
 }
-.club-member {
-    overflow: scroll;
-    max-height: 700px;
+.all-member {
+  margin-top: 24px;
+  overflow-y: hidden;
+  overflow-x: auto;
+  max-height: 700px;
 }
 .title {
-    display: flex;
-    align-items: center;
-    gap: 20px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
 }
 .title h2 {
-    font-size: var(--font-size-fc);
-    font-weight: bold;
+  font-size: var(--font-size-fc);
+  font-weight: bold;
 }
 .title p {
-    font-size: 14px;
+  font-size: 14px;
 }
 
 .list-member {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, 70px);
-    gap: 10px;
-    margin-top: 24px;
+  display: grid;
+
+  grid-auto-flow: column;
+  grid-template-rows: 1fr; /* ⭐ 1 แถว */
+  grid-auto-columns: 75px;
+
+  gap: 16px;
+
+  width: 100%;
+  min-width: max-content;
+}
+@media (max-width: 1200px) {
+  .list-member {
+    grid-template-rows: repeat(2, auto); /* ⭐ 2 แถว */
+  }
+}
+@media (max-width: 768px) {
+  .list-member {
+    grid-template-rows: repeat(3, auto); /* ⭐ 3 แถว */
+  }
+  header {
+    flex-direction: column;
+  }
+  .search {
+    width: 100%;
+  }
+}
+/* Scrollbar สวย ๆ */
+.list-member::-webkit-scrollbar {
+  height: 6px;
+}
+
+.list-member::-webkit-scrollbar-thumb {
+  background: #c5c5c5;
+  border-radius: 10px;
 }
 
 .member {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: start;
-    width: 60px;
-    height: 90px;
+  width: 75px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.member:hover {
+  transform: translateY(-3px);
 }
 .image-profile {
-    width: 50px;
-    height: 50px;
+  width: 50px;
+  height: 50px;
 }
 .list-member img {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    object-fit: cover;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
 }
 .list-member p {
-    font-size: 12px;
+  width: 75px;
+  font-size: 12px;
+  text-align: center;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .scroll-con {
-    margin-top: 24px;
-    position: relative;
+  margin-top: 24px;
+  position: relative;
 }
 .scroll {
-    width: 100%;
-    height: 7px;
-    background-color: #f5f5f5;
+  width: 100%;
+  height: 7px;
+  background-color: #f5f5f5;
 }
 .slide {
-    position: absolute;
-    top: 0;
-    width: 35px;
-    height: 7px;
-    background-color: #b5b5b5;
+  position: absolute;
+  top: 0;
+  width: 35px;
+  height: 7px;
+  background-color: #b5b5b5;
 }

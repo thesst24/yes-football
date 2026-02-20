@@ -1,152 +1,348 @@
-/* --- Shared Components --- */
-.popup-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.6);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-  backdrop-filter: blur(2px); /* เพิ่มความนวล */
-}
-
-.popup-box {
-  background: white;
-  padding: 30px;
-  border-radius: 20px;
-  width: 350px;
-  text-align: center;
-  position: relative;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-}
-
-.btn-base {
-  border: none;
-  border-radius: 10px;
-  padding: 12px;
-  width: 100%;
-  font-weight: bold;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.btn-join {
-  background: #0db328;
-  color: white;
-}
-.btn-remove {
-  background: #dd574b;
-  color: white;
-}
-.btn-close {
-  position: absolute;
-  top: -45px;
-  right: 0;
-  width: 35px;
-  height: 35px;
-  background: white;
-  border-radius: 50%;
-  color: red;
-  border: none;
-  cursor: pointer;
-}
-
-/* --- Layout --- */
 .container {
-  padding: 20px;
-  max-width: 1200px;
-  margin: auto;
+  height: 100%;
+  border-radius: 15px;
+  max-width: 100%;
 }
 
 header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: white;
-  padding: 20px 25px;
-  border-radius: 15px;
-  margin-bottom: 20px;
-}
-
-.content-card {
-  background: white;
+  background-color: white;
   padding: 24px;
   border-radius: 15px;
-  border: 1px solid #eee;
-  margin-bottom: 20px;
+  height: 100px;
+  margin-bottom: 24px;
+}
+.content-con {
+  background-color: white;
+  padding: 24px;
+  border-radius: 15px;
+}
 
-  /* ✅ เปิดการ Scroll แนวนอน */
+.pre-title {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.pre-title i {
+  margin-top: 3px;
+  font-size: 28px;
+}
+.pre-title p {
+  font-size: var(--font-size-fc);
+  color: #293690;
+  font-weight: bold;
+}
+/* Search */
+.search {
+  width: 332px;
+  height: 40px;
+  position: relative;
+}
+.icon-search {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-60%);
+  left: 15px;
+  color: #484848;
+}
+.search input[type='text'] {
+  width: 100%;
+  height: 100%;
+  background-color: #f5f6fa;
+  border-radius: 20px;
+  border: 1px solid #d5d5d5;
+  padding: 0 40px;
+  outline: none;
+}
+.search input[type='text']:focus {
+  outline: 1px solid #b1b1b1;
+}
+
+/* button add trial */
+.btn-add-trial {
+  width: 130px;
+  height: 40px;
+  background-color: #0db328;
+  border-radius: 10px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 16px;
+  cursor: pointer;
+}
+.btn-add-trial:hover {
+    background-color: var(--color-hover-btn);
+}
+
+.icon-trial {
+    margin-bottom: 5px;
+}
+
+/* content */
+.content {
+  border: 1px solid #b7b7b7;
+  border-radius: 15px;
+  padding: 24px;
+}
+.con-club-member {
+  margin-bottom: 24px;
+}
+
+.club-member,
+.participants {
   overflow-x: auto;
   overflow-y: hidden;
+  max-width: 100%;
+}
+.title {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+.title h2 {
+  font-size: var(--font-size-fc);
+  font-weight: 700;
+}
+.memberofall {
+  font-size: 14px;
+  color: #484848;
 }
 
-/* ✅ ตกแต่ง Scrollbar ให้ดู Clean (สำหรับ Chrome, Safari, Edge) */
-.content-card::-webkit-scrollbar {
-  width: 6px;
+.club-member .list-member,
+.participants .list-member {
+  display: grid;
+
+  grid-auto-flow: column;
+  grid-template-rows: 1fr; /* ⭐ 1 แถว */
+  grid-auto-columns: 75px;
+
+  gap: 16px;
+
+  width: 100%;
+  min-width: max-content;
+}
+@media (max-width: 1200px) {
+  .club-member .list-member,
+  .participants .list-member {
+    grid-template-rows: repeat(2, auto); /* ⭐ 2 แถว */
+  }
+}
+@media (max-width: 768px) {
+  .club-member .list-member,
+  .participants .list-member {
+    grid-template-rows: repeat(3, auto); /* ⭐ 3 แถว */
+  }
 }
 
-.content-card::-webkit-scrollbar-track {
-  background: transparent;
+/* Scrollbar สวย ๆ */
+.list-member::-webkit-scrollbar {
+  height: 6px;
 }
 
-.content-card::-webkit-scrollbar-thumb {
-  background: #ddd;
+.list-member::-webkit-scrollbar-thumb {
+  background: #c5c5c5;
   border-radius: 10px;
 }
 
-.content-card::-webkit-scrollbar-thumb:hover {
-  background: #ccc;
-}
-
-/* --- Member List --- */
-.member-grid {
-  display: grid;
-  /* ✅ กำหนดให้มี 2 แถวคงที่ (หรือปรับตามชอบ) */
-  grid-template-rows: repeat(2, 1fr); 
-  /* ✅ บังคับให้เพิ่มข้อมูลไปทางขวา (สร้างคอลัมน์ใหม่) */
-  grid-auto-flow: column; 
-  /* ✅ กำหนดความกว้างของแต่ละคอลัมน์ */
-  grid-auto-columns: 85px; 
-  
-  gap: 15px 10px;
-  padding: 10px 0;
-  width: max-content; /* ✅ สำคัญ: ให้กว้างตามเนื้อหาข้างใน */
-}
-
-.member-item {
+.member {
+  width: 75px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
-  cursor: pointer;
-  transition: transform 0.2s ease;
 }
-.member-item:hover {
-  transform: translateY(-5px); /* ให้ยกตัวขึ้นนิดนึงเวลาจี้เมาส์ */
+
+.member:hover {
+  transform: translateY(-3px);
 }
-.member-avatar {
-  width: 65px;
-  height: 65px;
+.list-member img {
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid #f8f9fa;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
-
-.member-item:hover .member-avatar {
-  transform: scale(1.05);
-}
-
-.member-name {
-  font-size: 13px;
-  margin-top: 8px;
+.list-member p {
+  width: 75px;
+  font-size: 12px;
   text-align: center;
-  color: #333;
-  width: 100%;
-  /* ตัดคำถ้าชื่อยาวเกินไป */
+
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+.scroll-con {
+  margin-top: 24px;
+  position: relative;
+}
+.scroll {
+  width: 100%;
+  height: 7px;
+  background-color: #f5f5f5;
+}
+.slide {
+  position: absolute;
+  top: 0;
+  width: 35px;
+  height: 7px;
+  background-color: #b5b5b5;
+}
+.title-content {
+  margin-bottom: 20px;
+}
+.title-parti h2 {
+  font-size: var(--font-size-fc);
+  font-weight: 700;
+}
+.roster {
+  font-size: 14px;
+  margin-top: 10px;
+}
+.icon-roster {
+  color: #0db328;
+  font-size: 10px;
+  margin-right: 5px;
+}
+
+.participants .list-member::-webkit-scrollbar {
+  height: 6px;
+}
+
+.participants .list-member::-webkit-scrollbar-thumb {
+  background: #c5c5c5;
+  border-radius: 10px;
+}
+.participants .member:hover {
+  background-color: #f7f8ff;
+  transform: translateY(-3px);
+}
+
+.content-par {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.btn-remove-all {
+  background: #ff3b3b;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  width: 130px;
+  height: 40px;
+}
+
+.btn-remove-all:hover {
+  background: darkred;
+}
+.popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.popup-box {
+  background: white;
+  padding: 20px 25px 25px;
+  border-radius: 15px;
+  width: 320px;
+  text-align: center;
+  position: relative;
+}
+.popup-box h2 {
+  font-size: var(--font-size-fc);
+  font-weight: 700;
+}
+.popup-box input {
+  background-color: rgb(216, 216, 216);
+  margin: 8px 0;
+  padding: 8px;
+  border-radius: 5px;
+}
+
+.popup-box img {
+  margin: 0px auto 15px;
+}
+
+.popup-box p {
+  font-weight: 700;
+}
+.box-img-popup {
+  width: 120px;
+  height: 120px;
+  margin: 0px auto 10px;
+}
+.img-popup {
+  border-radius: 50%;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.btn-join {
+  background: #0db328;
+  color: white;
+  padding: 10px;
+  margin-top: 15px;
+  width: 100%;
+  border-radius: 8px;
+  cursor: pointer;
+} 
+.btn-join:hover {
+  background-color: var(--color-hover-btn);
+}
+
+.btn-remove {
+  background: #dd574b;
+  color: white;
+  padding: 10px;
+  margin-top: 15px;
+  width: 100%;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.btn-close {
+  width: 35px;
+  height: 35px;
+  background-color: white;
+  border-radius: 50%;
+  color: red;
+  position: absolute;
+  top: -40px;
+  right: 0px;
+  cursor: pointer;
+}
+
+/* ===========================
+   Badge Status
+=========================== */
+.badge {
+  display: inline-block;
+  margin-top: 6px;
+
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 20px;
+
+  font-weight: bold;
+  text-transform: capitalize;
+}
+
+.pending {
+  background: orange;
+  color: white;
+}
+
+.present {
+  background: green;
+  color: white;
 }

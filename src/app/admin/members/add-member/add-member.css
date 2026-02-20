@@ -5,13 +5,18 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 20px;
+  overflow-y: auto; /* สำคัญมาก */
 }
 
 form {
-    width: 650px;
-    background-color: white;
-    border-radius: 47px;
-    padding: 20px 50px 50px;
+  width: 100%;
+  max-width: 650px; /* แทน width fix */
+  background: white;
+  border-radius: 24px;
+  padding: 30px;
+  max-height: 90vh; /* ป้องกันล้นแนวตั้ง */
+  overflow-y: auto;
 }
 .title {
     font-size: 20px;
@@ -19,9 +24,9 @@ form {
     margin-bottom: 20px;
 }
 .input-container {
-    display: flex;
-    width: 100%;
-    gap: 50px;
+  display: flex;
+  gap: 40px;
+  align-items: flex-start;
 }
 
 .avatar-wrapper {
@@ -81,6 +86,7 @@ form {
 
 
 .box-input {
+  width: 100%;
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -90,7 +96,7 @@ label {
     font-size: var(--font-size-fc);
 }
 input[type="text"], input[type="date"] {
-    width: 300px;
+  width: 100%;
     height: 38px;
     border: 1px solid rgb(211, 211, 211);
     border-radius: 4px;
@@ -154,4 +160,39 @@ input::placeholder {
     height: 48px;
     font-size: var(--font-size-fc);
     font-weight: bold;
+}
+.btnSave:hover {
+  background-color: var(--color-hover-btn);
+}
+
+
+@media (max-width: 768px) {
+
+  .input-container {
+    flex-direction: column;
+    gap: 20px;
+  }
+  .input-right {
+    display: flex;
+    justify-content: center;
+  }
+
+  .avatar {
+    width: 110px;
+    height: 110px;
+  }
+
+}
+@media (max-width: 480px) {
+
+  .btn {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .btnCancel,
+  .btnSave {
+    width: 100%;
+  }
+
 }
