@@ -36,7 +36,7 @@ router.post('/', upload.single('image'), async (req, res) => {
     }
 
 
-    const imagePath = req.file ? '/uploads/' + req.file.filename : null;
+    const imagePath = req.file ? '/uploads/' + req.file.filename : 'uploads/defaultprofile.png';
     const member = new Member({
       ...req.body,
       image: imagePath,
@@ -231,27 +231,50 @@ router.post('/user-login', async (req, res) => {
   }
 });
 
+
+
 router.patch("/renew/:memberId", async (req, res) => {
   try {
     const memberId = req.params.memberId;
 
-    // ✅ Update Member Status → Active
+    const card = await MemberCard.findOne({ memberId });
+
+    if (!card) {
+      return res.status(404).json({ message: "Card not found" });
+    }
+
+    const isFullUsed = card.usedSessions >= card.totalSessions;
+
+    // 🔥 ถ้า card ยังไม่เต็ม → แค่ activate
+    if (!isFullUsed) {
+      await Member.findByIdAndUpdate(memberId, { status: true });
+
+      await MemberCard.findOneAndUpdate(
+        { memberId },
+        { status: "active" }
+      );
+
+      return res.json({
+        message: "✅ Activated (Card Still Valid)",
+        card,
+      });
+    }
+
+    // 🔥 ถ้า card เต็ม → ถือว่า Renew ใหม่
+    card.usedSessions = 0;
+    card.checkins = [];
+    card.status = "active";
+
+    // ✅ เพิ่มเข้า Report
+    card.renewHistory.push(new Date());
+
+    await card.save();
+
     await Member.findByIdAndUpdate(memberId, { status: true });
 
-    // ✅ Reset Card ใหม่ (ใช้ MemberCard)
-    const updatedCard = await MemberCard.findOneAndUpdate(
-      { memberId },
-      {
-        usedSessions: 0,
-        checkins: [],
-        status: "active",
-      },
-      { new: true }
-    );
-
     res.json({
-      message: "✅ Member Renewed Successfully",
-      card: updatedCard,
+      message: "✅ Renewed + Added To Report",
+      card,
     });
 
   } catch (err) {

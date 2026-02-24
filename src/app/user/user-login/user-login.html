@@ -36,13 +36,13 @@
     </div>
   </div>
 
-  <div class="card-login-failed absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 w-[90%] max-w-[400px] h-auto rounded-[30px] sm:rounded-[40px] bg-white shadow-2xl py-8 px-6 sm:px-10 flex flex-col justify-center items-center gap-6 hidden">
+  <div *ngIf="showPopup" class="card-login-failed absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 w-[90%] max-w-[400px] h-auto rounded-[30px] sm:rounded-[40px] bg-white shadow-2xl py-8 px-6 sm:px-10 flex flex-col justify-center items-center gap-6">
     <div class="logo-failed text-center">
       <img src="failed.png" alt="failed" class="w-[60px] h-[60px] sm:w-[83px] sm:h-[83px] mx-auto" />
       <p class="text-[#f44336] text-xl sm:text-2xl font-bold mt-2">Failed</p>
     </div>
     <p class="text-lg sm:text-xl font-medium text-center">Invalid mobile number</p>
-    <button class="rounded-xl sm:rounded-2xl bg-[#f44336] w-full h-[48px] text-white font-bold text-lg sm:text-xl active:opacity-80">
+    <button (click)="closePopup()" class="rounded-xl sm:rounded-2xl bg-[#f44336] w-full h-[48px] text-white font-bold text-lg sm:text-xl active:opacity-80">
       OK
     </button>
   </div>

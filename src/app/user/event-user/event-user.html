@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container" [class.blur]="showSeasonPopup">
   <div class="overlay">
   <header *ngIf="sessionData">
     <div class="pre-title">
@@ -91,7 +91,8 @@
       *ngIf="popupMode === 'join' && 
       !isPastSession && 
       !isAlreadyParticipant(selectedMember._id) &&
-      isLoggedInUser(selectedMember)"
+      isLoggedInUser(selectedMember) && 
+       canJoin(selectedMember._id) "
       class="btn-join"
       (click)="joinMember()"
     >
@@ -100,6 +101,9 @@
     <span *ngIf="popupMode === 'remove'" class="badge" [ngClass]="selectedMember.status">
       {{ selectedMember.status }}
     </span>
+    <p *ngIf="popupMode === 'join' && !canJoin(selectedMember._id)" class="text-red-500">
+  Card Inactive or Fully Used (Please Renew)
+</p>
     <p *ngIf="isAlreadyParticipant(selectedMember._id)">✅ Already Joined</p>
     <p *ngIf="isPastSession" class="text-red-500 mt-2">Past Session: Attendance Only</p>
 <!-- ✅ REMOVE MODE -->
@@ -113,5 +117,17 @@
     </button>
     <button class="btn-close" (click)="closePopup()">✕</button>
   </div>
+  </div>
+</div>
+<!-- ✅ Season Popup -->
+<div class="popup-overlay" *ngIf="showSeasonPopup">
+  <div class="popup-box">
+    <img src="/exclamation.png" width="80" />
+    <h2>Event Unavailable</h2>
+    <p>{{ seasonPopupMessage }}</p>
+
+    <button class="btn-back" routerLink="/card-user">
+      Go ot Card
+    </button>
   </div>
 </div>

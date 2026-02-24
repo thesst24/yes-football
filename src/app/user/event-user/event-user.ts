@@ -51,6 +51,11 @@ export class EventUser {
   isPastSession: boolean = false;
 
   loggedInMember: any;
+    memberCards: { [key: string]: any } = {};
+
+    isEventClosed: boolean = false;
+    showSeasonPopup: boolean = false;
+seasonPopupMessage: string = '';
 
   constructor(
     private service: Member,
@@ -62,6 +67,7 @@ export class EventUser {
   ) {}
 
   ngOnInit() {
+    
     const data = localStorage.getItem('member');
     if(data) {
       const parsed = JSON.parse(data);
@@ -73,8 +79,10 @@ export class EventUser {
     this.sessionId = this.route.snapshot.paramMap.get('sessionId')!;
 
     // ✅ โหลด session จริงจาก database
+    this.checkEventStatus();
     this.loadLatestSeasonAndSession();
     this.load();
+    
   }
 
 loadParticipants() {
@@ -131,6 +139,15 @@ isAlreadyParticipant(memberId: string): boolean {
     this.allMembers = res;
     this.filteredMembers = [...this.allMembers];
 
+     // 🔥 โหลด card ของทุก member
+    this.allMembers.forEach(member => {
+      this.http
+        .get(`http://localhost:3000/api/cards/${member._id}`)
+        .subscribe((card: any) => {
+          this.memberCards[member._id] = card;
+        });
+    });
+
     // ✅ Update Trial Count จาก DB จริง
     const trialMembers = this.allMembers.filter(m => m.isTrial);
     this.trialCount = trialMembers.length + 1;
@@ -139,22 +156,43 @@ isAlreadyParticipant(memberId: string): boolean {
     this.cdr.detectChanges();
   });
 }
+canJoin(memberId: string): boolean {
+  const card = this.memberCards[memberId];
 
+  if (!card) return false;
+
+  const isInactive = card.status !== 'active';
+  const isFull = card.usedSessions >= card.totalSessions;
+
+  return !isInactive && !isFull;
+}
 
 loadLatestSeasonAndSession() {
   this.http.get<any[]>('http://localhost:3000/api/seasons')
     .subscribe(seasons => {
 
-      if (!seasons.length) return;
+      if (!seasons.length) {
+        this.seasonPopupMessage = "No season available.";
+        this.showSeasonPopup = true;
+        return;
+      }
 
       // ✅ เรียงตามปีล่าสุด
       const latestSeason = seasons.sort(
         (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       )[0];
 
-      this.seasonId = latestSeason._id;
+       // ❌ season inactive
+      if (latestSeason.status === false) {
+        this.seasonPopupMessage = "Season is currently inactive.";
+        this.showSeasonPopup = true;
+        return;
+      }
 
+      this.seasonId = latestSeason._id;
       this.loadNearestSession();
+      
+
     });
 }
 
@@ -165,19 +203,29 @@ loadNearestSession() {
     `http://localhost:3000/api/seasons/${this.seasonId}/sessions`
   ).subscribe(sessions => {
 
-    if (!sessions.length) return;
+   if (!sessions.length) {
+  this.seasonPopupMessage = "No session available.";
+  this.showSeasonPopup = true;
+  return;
+}
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
     // เอาเฉพาะ session ที่ยังไม่ผ่าน
     const upcoming = sessions
-      .filter(s => new Date(s.date) >= today)
+      .filter(s => 
+        s.status !== false &&
+        new Date(s.date) >= today)
       .sort((a, b) =>
         new Date(a.date).getTime() - new Date(b.date).getTime()
       );
 
-    if (!upcoming.length) return;
+    if (!upcoming.length) {
+  this.seasonPopupMessage = "No active session available.";
+  this.showSeasonPopup = true;
+  return;
+}
 
     const nearest = upcoming[0];
 
@@ -291,7 +339,7 @@ removeMember() {
   this.http.delete(
     `http://localhost:3000/api/participants/removeWithAttendance/${this.sessionId}/${this.selectedMember._id}`
   ).subscribe(() => {
-    alert("✅ Removed Member + Undo Checkin");
+    alert("✅ Removed Member");
     this.loadParticipants();
     this.closePopup();
   });
@@ -302,27 +350,66 @@ removeMember() {
   }
 
 
-  openTrialPopup() {
-    this.showTrialPopup = true;
 
-    // ✅ Auto Default Trial Name + Phone
-    this.trialForm.fullname = `Trial-${this.trialCount}`;
-    this.trialForm.phone = String(this.trialPhoneBase + (this.trialCount - 1));
-  }
+checkEventStatus() {
+  this.http.get<any[]>('http://localhost:3000/api/seasons')
+    .subscribe(seasons => {
 
-  closeTrialPopup() {
-    this.showTrialPopup = false;
+      // ❌ ไม่มี season
+      if (!seasons.length) {
+        this.seasonPopupMessage = "No season available.";
+        this.showSeasonPopup = true;
+        return;
+      }
 
-    // reset form เฉพาะ field
-    this.trialForm = { fullname: '', phone: '' };
-  }
+      const latestSeason = seasons.sort(
+        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      )[0];
 
-addTrialPlayer() {
-  this.http.post("http://localhost:3000/api/members/trial", {})
-    .subscribe(() => {
-      alert("✅ Trial Added");
-      this.load();
-      this.closeTrialPopup();
+      // ❌ season inactive
+      if (!latestSeason.status) {
+        this.seasonPopupMessage = "Season is currently inactive.";
+        this.showSeasonPopup = true;
+        return;
+      }
+
+      this.seasonId = latestSeason._id;
+
+      // ===== เช็ค session =====
+      this.http.get<any[]>(
+        `http://localhost:3000/api/seasons/${this.seasonId}/sessions`
+      ).subscribe(sessions => {
+
+        if (!sessions.length) {
+          this.seasonPopupMessage = "No session available.";
+          this.showSeasonPopup = true;
+          return;
+        }
+
+        const today = new Date();
+        today.setHours(0,0,0,0);
+
+        const upcoming = sessions
+          .filter(s => s.status !== false && new Date(s.date) >= today)
+          .sort((a,b) =>
+            new Date(a.date).getTime() - new Date(b.date).getTime()
+          );
+
+        if (!upcoming.length) {
+          this.seasonPopupMessage = "No active session available.";
+          this.showSeasonPopup = true;
+          return;
+        }
+
+        // ✅ มี session ใช้งานได้
+        this.sessionData = upcoming[0];
+        this.sessionId = upcoming[0]._id;
+
+        this.loadParticipants();
+        this.load();
+        this.cdr.detectChanges();
+      });
     });
 }
+
 }

@@ -27,7 +27,7 @@ router.get("/monthly", async (req, res) => {
     { $unwind: "$renewHistory" },
     {
       $match: {
-        "renewHistory.date": { $gte: start, $lt: end }
+       renewHistory: { $gte: start, $lt: end }
       }
     },
     { $count: "total" }
@@ -57,7 +57,7 @@ router.get("/monthly", async (req, res) => {
     { $unwind: "$renewHistory" },
     {
       $match: {
-        "renewHistory.date": { $gte: prevStart, $lt: prevEnd }
+        renewHistory: { $gte: prevStart, $lt: prevEnd }
       }
     },
     { $count: "total" }
@@ -117,7 +117,7 @@ router.get("/yearly", async (req, res) => {
     { $unwind: "$renewHistory" },
     {
       $match: {
-        "renewHistory.date": { $gte: start, $lt: end }
+        renewHistory: { $gte: start, $lt: end }
       }
     },
     { $count: "total" }

@@ -8,7 +8,14 @@
       <div class="input-left">
         <div class="input-fullname box-input">
           <label for="fullname">Full Name</label>
-          <input type="text" [(ngModel)]="form.fullname" placeholder="input fullname..." name="fullname" id="fullname" required />
+          <input
+            type="text"
+            [(ngModel)]="form.fullname"
+            placeholder="input fullname..."
+            name="fullname"
+            id="fullname"
+            required
+          />
           <small *ngIf="f.submitted && f.controls['fullname']?.invalid" style="color: red">
             Fullname is required
           </small>
@@ -16,7 +23,14 @@
 
         <div class="input-nickname box-input">
           <label for="nickname">Nick Name</label>
-          <input type="text" [(ngModel)]="form.nickname" placeholder="input nickname..." name="nickname" id="nickname" required />
+          <input
+            type="text"
+            [(ngModel)]="form.nickname"
+            placeholder="input nickname..."
+            name="nickname"
+            id="nickname"
+            required
+          />
         </div>
 
         <div class="input-dateofbirth box-input">
@@ -28,14 +42,16 @@
             id="dateOfBirth"
             required
           /> -->
-          <p-date-picker [(ngModel)]="form.dateOfBirth"
-          name="dateOfBirth"
-          inputId="dateOfBirth"
-          [showIcon]="true"
-          dateFormat="dd/mm/yy"
-          placeholder="dd/mm/yyyy"
-          [required]="true">
-        </p-date-picker>
+          <p-date-picker
+            [(ngModel)]="form.dateOfBirth"
+            name="dateOfBirth"
+            inputId="dateOfBirth"
+            [showIcon]="true"
+            dateFormat="dd/mm/yy"
+            placeholder="dd/mm/yyyy"
+            [required]="true"
+          >
+          </p-date-picker>
           <small *ngIf="f.submitted && f.controls['dateOfBirth']?.invalid" style="color: red">
             dateOfBirth is required
           </small>
@@ -43,7 +59,14 @@
 
         <div class="input-guardian box-input">
           <label for="guardian">Guardian</label>
-          <input type="text" [(ngModel)]="form.guardian" placeholder="input guardian..." name="guardian" id="guardian" required />
+          <input
+            type="text"
+            [(ngModel)]="form.guardian"
+            placeholder="input guardian..."
+            name="guardian"
+            id="guardian"
+            required
+          />
           <small *ngIf="f.submitted && f.controls['guardian']?.invalid" style="color: red">
             guardian is required
           </small>
@@ -51,38 +74,44 @@
 
         <div class="input-whatsapp box-input">
           <label for="whatsapp">WhatsApp (20xxxxxxxx)</label>
-          <input type="text" 
-          [(ngModel)]="form.whatsapp" 
-          pattern="^[0-9]{10}$"
-          placeholder="20 xxx-xxx-xx" name="whatsapp" id="whatsapp" required />
+          <input
+            type="text"
+            [(ngModel)]="form.whatsapp"
+            pattern="^[0-9]{10}$"
+            placeholder="20 xxx-xxx-xx"
+            name="whatsapp"
+            id="whatsapp"
+            required
+          />
           <small *ngIf="f.submitted && f.controls['whatsapp']?.invalid" style="color: red">
             Invalid WhatsApp number
           </small>
         </div>
       </div>
       <div class="input-right">
-
         <!-- AVATAR -->
         <div class="avatar-wrapper">
-
           <input #fileInput type="file" accept="image/*" hidden (change)="onFile($event)" />
 
           <div class="avatar" (click)="fileInput.click()">
-            <img *ngIf="imagePreview; else noImage" [src]="imagePreview" />
-
-            <ng-template #noImage>
-              <div class="placeholder">+</div>
-            </ng-template>
-            
+            <img [src]="imagePreview" alt="Avatar Preview" class="avatar-img" />
           </div>
 
-          <div class="avatar-actions" *ngIf="imagePreview">
-            <button type="button" (click)="fileInput.click()">Change</button>
-            <button type="button" class="danger" (click)="removeImage()">Remove</button>
+          <div class="avatar-actions">
+            <button type="button" (click)="fileInput.click()">
+              {{ imagePreview === defaultImage ? 'Upload Photo' : 'Change' }}
+            </button>
+
+            <button
+              *ngIf="imagePreview !== defaultImage"
+              type="button"
+              class="danger"
+              (click)="removeImage()"
+            >
+              Remove
+            </button>
           </div>
         </div>
-
-
       </div>
     </div>
 

@@ -9,7 +9,6 @@ import { AddMember } from './admin/members/add-member/add-member';
 import { CheckIn } from './admin/check-in/check-in';
 import { CardCheckin } from './admin/check-in/card-checkin/card-checkin';
 import { EventUser } from './user/event-user/event-user';
-import { Join } from './popup/join/join';
 
 import { Setting } from './admin/setting/setting';
 import { Report } from './admin/report/report';
@@ -27,7 +26,6 @@ export const routes: Routes = [
   { path: 'admin-login', component: AdminLogin },
 
   { path: 'event-user', component: EventUser },
-  { path: 'popupjoin', component: Join },
   {
     path: '',
     component: Pages,

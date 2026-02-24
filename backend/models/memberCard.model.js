@@ -12,11 +12,7 @@ const cardSchema = new mongoose.Schema({
 ],
   expiryDate: Date,
   status: { type: String, default: 'active' },
-  renewHistory: [
-  {
-    date: { type: Array, default: [] }
-  }
-],
+  renewHistory: [Date],
 }, { timestamps: true });
 
 module.exports = mongoose.model('MemberCard', cardSchema);

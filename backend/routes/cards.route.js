@@ -28,39 +28,40 @@ router.post("/renew", async (req, res) => {
   try {
     const { memberId } = req.body;
 
-    if (!memberId) {
-      return res.status(400).json({ message: "memberId is required" });
-    }
-
     const card = await MemberCard.findOne({ memberId });
 
     if (!card) {
-      return res.status(404).json({ message: "Card not found for this member" });
+      return res.status(404).json({ message: "Card not found" });
     }
 
-    // ✅ Reset card
+    const isFullUsed = card.usedSessions >= card.totalSessions;
+
+    if (!isFullUsed) {
+      await Member.findByIdAndUpdate(memberId, { status: true });
+      card.status = "active";
+      await card.save();
+
+      return res.json({
+        message: "Activated (No Renew)",
+        card,
+      });
+    }
+
     card.usedSessions = 0;
-    card.status = "active";
     card.checkins = [];
-    card.expiryDate = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000);
-    card.renewHistory.push({
-  date: new Date()
-});
+    card.status = "active";
+    card.renewHistory.push(new Date());
 
     await card.save();
+    await Member.findByIdAndUpdate(memberId, { status: true });
 
-    // ✅ ลบ Attendance ของ member คนนี้ทั้งหมด
-    await Attendance.deleteMany({ memberId });
-
-    // ✅ Member active กลับมาด้วย
-await Member.findByIdAndUpdate(memberId, {
-  status: true
-});
-
-    res.json({ card });
+    res.json({
+      message: "Renewed Successfully",
+      card,
+    });
 
   } catch (err) {
-    console.error("🔥 Renew Error:", err);
+    console.error("Renew Error:", err);
     res.status(500).json({ message: err.message });
   }
 });

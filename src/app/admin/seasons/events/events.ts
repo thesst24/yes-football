@@ -49,6 +49,8 @@ export class Events {
   sessionData: any;
   isPastSession: boolean = false;
 
+  memberCards: { [key: string]: any } = {};
+
   constructor(
     private service: Member,
     private route: ActivatedRoute,
@@ -139,6 +141,15 @@ isAlreadyParticipant(memberId: string): boolean {
     this.allMembers = res;
     this.filteredMembers = [...this.allMembers];
 
+    // 🔥 โหลด card ของทุก member
+    this.allMembers.forEach(member => {
+      this.http
+        .get(`http://localhost:3000/api/cards/${member._id}`)
+        .subscribe((card: any) => {
+          this.memberCards[member._id] = card;
+        });
+    });
+
     // ✅ Update Trial Count จาก DB จริง
     const trialMembers = this.allMembers.filter(m => m.isTrial);
     this.trialCount = trialMembers.length + 1;
@@ -146,6 +157,17 @@ isAlreadyParticipant(memberId: string): boolean {
     this.updateMemberCount();
     this.cdr.detectChanges();
   });
+}
+
+canJoin(memberId: string): boolean {
+  const card = this.memberCards[memberId];
+
+  if (!card) return false;
+
+  const isInactive = card.status !== 'active';
+  const isFull = card.usedSessions >= card.totalSessions;
+
+  return !isInactive && !isFull;
 }
 
   filterMembers() {
@@ -186,6 +208,7 @@ isAlreadyParticipant(memberId: string): boolean {
     this.activeMembers = this.filteredMembers.filter((m) => m.status).length;
   }
   open(member: any) {
+
     this.selectedMember = member;
     this.popupMode = 'join';
   }

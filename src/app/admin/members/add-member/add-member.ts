@@ -21,6 +21,8 @@ export class AddMember {
 
   whatsappInvalid = false;
 
+  defaultImage = '/defaultprofile.png';
+
   constructor(private service: Member,
     private cdr: ChangeDetectorRef
   ) {}
@@ -30,11 +32,15 @@ export class AddMember {
     if (this.data) {
       this.form = { ...this.data };
 
-      this.imagePreview = this.form.image ? 'http://localhost:3000' + this.form.image : null;
+      this.imagePreview = this.form.image 
+      ? 'http://localhost:3000' + this.form.image 
+      : this.defaultImage;
 
       if (this.form.image) {
         this.imagePreview = 'http://localhost:3000' + this.form.image;
       }
+    } else {
+      this.imagePreview = this.defaultImage;
     }
 
   }
@@ -57,7 +63,7 @@ export class AddMember {
   }
   removeImage() {
     this.image = undefined as any;
-    this.imagePreview = null;
+    this.imagePreview = this.defaultImage;
 
     // ถ้า edit แล้วลบรูปเดิม
     if (this.form.image) {

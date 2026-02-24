@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import { Member } from '../../services/member';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -13,6 +13,7 @@ import { CommonModule } from '@angular/common';
 export class UserLogin {
   whatsapp = '';
   error = '';
+  showPopup = false;
 
   private logoClickCount = 0;
   private clickTimer: any = null;
@@ -20,6 +21,7 @@ export class UserLogin {
   constructor(
     private memberService: Member,
     private router: Router,
+    private cdr: ChangeDetectorRef
   ) {}
 
   onLogoClick() {
@@ -38,7 +40,7 @@ export class UserLogin {
   }
   
   login() {
-    if (!this.whatsapp) {
+    if (!this.whatsapp.trim()) {
       this.error = 'Please enter whatsapp number';
       return;
     }
@@ -50,8 +52,17 @@ export class UserLogin {
         
         this.router.navigate(['/card-user']);
       },
-      error: (err) => alert(err.error.message),
-    });
+      error: () => {
+        this.showPopup = true;
+        this.error = ''; 
+        this.cdr.detectChanges();
+      },
+  });
+}
+
+  closePopup() {
+    this.showPopup = false;
+    this.whatsapp = ''; 
   }
 
 }

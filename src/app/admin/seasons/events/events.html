@@ -111,7 +111,8 @@
       *ngIf="
         popupMode === 'join' &&
         !isPastSession &&
-        !isAlreadyParticipant(selectedMember._id)
+        !isAlreadyParticipant(selectedMember._id) &&
+        canJoin(selectedMember._id)
       "
       class="btn-join"
       (click)="joinMember()"
@@ -121,6 +122,9 @@
     <span *ngIf="popupMode === 'remove'" class="badge" [ngClass]="selectedMember.status">
       {{ selectedMember.status }}
     </span>
+    <p *ngIf="popupMode === 'join' && !canJoin(selectedMember._id)" class="text-red-500">
+  Card Inactive or Fully Used (Please Renew)
+</p>
     <p *ngIf="isAlreadyParticipant(selectedMember._id)" class="text-green-600">Already Joined</p>
     <p *ngIf="isPastSession" class="text-red-500 mt-2">Past Session: Attendance Only</p>
     <!-- ✅ REMOVE MODE -->
