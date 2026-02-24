@@ -1,1 +1,42 @@
-<p>setting works!</p>
+<div class="setting-container">
+  <div class="setting-card">
+    <h2 class="title">Card Settings</h2>
+
+    <!-- Background -->
+    <div class="upload-section">
+      <h3>Card Background</h3>
+
+      <div class="preview-box">
+        @if (backgroundPreview) {
+    <img [src]="backgroundPreview" />
+  } @else {
+    <span class="empty-text">No Background Uploaded</span>
+  }
+      </div>
+
+      <label class="upload-btn">
+        Change Background
+        <input type="file" (change)="uploadBackground($event)" hidden />
+      </label>
+    </div>
+
+    <!-- QR -->
+    <div class="upload-section">
+      <h3>QR Image</h3>
+
+      <div class="preview-box small">
+        @if (qrPreview) {
+    <img [src]="qrPreview" />
+  } @else {
+    <span class="empty-text">No QR Uploaded</span>
+  }
+      </div>
+
+      <label class="upload-btn secondary">
+        Change QR
+        <input type="file" (change)="uploadQR($event)" hidden />
+      </label>
+    </div>
+
+  </div>
+</div>

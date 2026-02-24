@@ -57,10 +57,7 @@ export class Members {
       }));
 
       // ใน load()
-      this.allMembers = [...mapped].sort((a, b) => {
-        // เรียงจากมากไปน้อย (ใหม่ไปเก่า)
-        return b._id.localeCompare(a._id);
-      });
+      this.allMembers = [...mapped]
       this.filteredMembers = [...this.allMembers];
       this.totalItems = this.filteredMembers.length;
       this.currentPage = 1;

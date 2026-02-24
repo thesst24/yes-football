@@ -15,5 +15,6 @@ body {
     --bg-body: #f5f6fa;
     --font-size-fc: 16px;
     --color-active: #293690;
-    --color-hover-btn: #09771b;
+    --color-hover-btn: #34a11e;
+    --bg-color-btn: #13c431;
 }

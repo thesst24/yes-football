@@ -75,32 +75,30 @@ loadParticipants() {
     `http://localhost:3000/api/participants/${this.sessionId}`
   ).subscribe(res => {
 
-   this.participants = res.map(p => {
+  this.participants = res.map(p => {
 
-  // ✅ Trial
-  if (p.isTrial) {
+  // ✅ ถ้ามี memberId ใช้ข้อมูลจาก Member เสมอ
+  if (p.memberId) {
     return {
-      _id: p._id,
-      fullname: p.trialName,
-      whatsapp: p.trialPhone,
-      status: "trial",
-      isTrial: true,
-      image: "/logo.png"
+      _id: p.memberId._id,
+      fullname: p.memberId.fullname,
+      whatsapp: p.memberId.whatsapp,
+      status: p.status,
+      isTrial: p.memberId.isTrial === true,
+      image: p.memberId.image && p.memberId.image.trim() !== ""
+        ? p.memberId.image
+        : "upload/logo.png"
     };
   }
 
-  // ✅ Member ถูกลบไปแล้ว → ข้าม record นี้
-  if (!p.memberId) {
-    return null;
-  }
-
+  // ✅ กรณี Trial แบบ standalone (ไม่มี memberId)
   return {
-    _id: p.memberId._id,
-    fullname: p.memberId.fullname,
-    whatsapp: p.memberId.whatsapp,
-    status: p.status,
-    isTrial: false,
-    image: p.memberId.image || "/logo.png"
+    _id: p._id,
+    fullname: p.trialName || "Trial",
+    whatsapp: p.trialPhone || "-",
+    status: "trial",
+    isTrial: true,
+    image: "uploads/logo.png"
   };
 
 }).filter(x => x !== null); // ✅ สำคัญมาก
@@ -212,6 +210,15 @@ joinMember() {
   });
 }
 
+getImagePath(img: string) {
+  if (!img) return '/logo.png';
+
+  if (img.includes('/uploads')) {
+    return 'http://localhost:3000' + img;
+  }
+
+  return img;
+}
 
 removeMember() {
 

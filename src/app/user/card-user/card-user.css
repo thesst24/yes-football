@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@100..900&display=swap');
+
 .con-all {
   max-width: 100%;
   height: 100vh;
@@ -59,10 +61,11 @@ header a {
 }
 .card-checkin {
   background-image: url('../../../../public/bgCard.jpg');
-  width: 600px;
-  height: 725px;
-  background-position: -510px -100px;
-  background-size: 210%;
+ width: 90%;
+  max-width: 600px;
+  aspect-ratio: 600 / 725; /* คุมสัดส่วนแทน height fix */
+  background-position: center;
+  background-size: cover;
   color: white;
   box-shadow: 0 0 0px 8px #b5b5b5;
   position: relative;
@@ -87,6 +90,7 @@ header a {
   position: relative;
   z-index: 20;
 }
+
 
 .card-checkin.inactive-mode .circle {
   background: #d1d5db !important;
@@ -261,10 +265,10 @@ header a {
 .popup-renew {
   width: 90%;
   max-width: 400px;
-  height: 578px;
+  height: 508px;
   background-color: white;
   border-radius: 30px;
-  padding: 30px 100px;
+  padding: 0px 80px;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -273,6 +277,12 @@ header a {
   text-align: center;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   animation: fadeIn 0.3s ease-out; /* เพิ่ม Animation เล็กน้อย */
+}
+.renew-con {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
 }
 
 @keyframes fadeIn {
@@ -302,14 +312,14 @@ header a {
   text-align: center;
   color: #293690;
   font-size: 20px;
-  margin-bottom: 40px;
   line-height: 25px;
   font-weight: 800;
+ font-family: "Noto Sans Lao", sans-serif;
 }
 .popup-renew img {
   width: 200px;
   height: 200px;
-  margin-bottom: 68px;
+  margin: 24px auto;
 }
 .popup-renew .btnok {
   background-color: #293690;
@@ -319,4 +329,74 @@ header a {
   font-weight: bold;
   font-size: 20px;
   color: white;
+}
+
+/* ================= MOBILE ================= */
+@media (max-width: 768px) {
+
+  header {
+    padding: 15px;
+    gap: 15px;
+  }
+
+  .card-checkin {
+    width: 90%;
+    margin-top: 20px;
+
+  }
+
+  .con-input {
+    justify-content: center;
+    align-items: center;
+  }
+
+  .input {
+    margin-left: 0;
+    align-items: center;
+  }
+
+  .image-profile {
+    margin: 15px;
+    width: 100px;
+    height: 100px;
+  }
+  .con-grid-circle {
+    margin-top: 0;
+  }
+
+  .checkin-grid {
+    grid-template-columns: repeat(3, 1fr);
+    width: 100%;
+    gap: 10px;
+    margin-top: 0px;
+  }
+
+  .circle {
+    width: 80px;
+    height: 80px;
+    font-size: 14px;
+  }
+
+  .check-date {
+    font-size: 12px;
+  }
+
+  .popup-renew {
+    padding: 20px;
+    height: auto;
+    width: 80%;
+  }
+
+  .popup-renew p {
+    font-size: 16px;
+  }
+
+  .popup-renew img {
+    width: 150px;
+    height: 150px;
+  }
+  .renew-con {
+    padding: 0 20px;
+  }
+
 }

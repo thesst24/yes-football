@@ -1,87 +1,117 @@
 <div class="container">
-  <div class="box-event">
-
-    <!-- HEADER -->
-    <header>
-
-      <div class="pre-title">
-        <a routerLink="/events">
-          <i class="pi pi-angle-left"></i>
-        </a>
-      </div>
-
-      <div class="search">
-        <i class="pi pi-search icon-search"></i>
-        <input
-          type="text"
-          placeholder="Search members..."
-          [(ngModel)]="searchText"
-          (input)="filterMembers()"
-        />
-      </div>
-
-    </header>
-
-    <!-- CONTENT -->
-    <div class="content-con">
-
-      <!-- CLUB MEMBERS -->
-      <div class="content">
-
-        <div class="title-member">
-          <p>Club Members:</p>
-          <span class="memberofall">
-            ({{activeMembers}}/{{totalMembers}})
-          </span>
-        </div>
-
-        <div class="list-member">
-
-          <div
-            class="member"
-            *ngFor="let m of filteredMembers"
-            (click)="open(m)"
-          >
-            <img
-              *ngIf="m.image"
-              [src]="'http://localhost:3000' + m.image"
-            />
-            <p>{{ m.fullname }}</p>
-          </div>
-
-        </div>
-
-      </div>
-
-      <!-- PARTICIPANTS -->
-      <div class="content">
-
-        <div class="title-parti">
-          <h2>Participants</h2>
-
-          <p class="roster">
-            Roster: {{participants.length}}/{{session?.maxPlayers}}
-          </p>
-        </div>
-
-        <div class="list-member">
-
-          <div
-            class="member"
-            *ngFor="let p of participants"
-          >
-            <img
-              *ngIf="p.image"
-              [src]="'http://localhost:3000' + p.image"
-            />
-            <p>{{ p.fullname }}</p>
-          </div>
-
-        </div>
-
-      </div>
-
+  <div class="overlay">
+  <header *ngIf="sessionData">
+    <div class="pre-title">
+      <a routerLink="/card-user"><i class="pi pi-angle-left"></i></a>
+      <p>
+        {{ sessionData.name }}
+        :
+        {{ sessionData.date | date: 'yyyy/MM/dd' }}
+      </p>
     </div>
 
+    <div class="search">
+      <i class="pi pi-search icon-search"></i>
+      <input
+        type="text"
+        placeholder="Search..."
+        [(ngModel)]="searchText"
+        (input)="filterMembers()"
+      />
+    </div>
+  </header>
+
+  <div class="content-con">
+    <div class="content con-club-member">
+      <div class="club-member">
+        <div class="title-content">
+          <h2>Club Members:</h2>
+          <p>({{ activeMembers }} / {{ totalMembers }})</p>
+        </div>
+        <div class="all-member">
+          <div class="list-member">
+            <div class="member" *ngIf="loggedInMember; else noLogin" (click)="open(loggedInMember)">
+              <div class="image-profile">
+                <img [src]="getImagePath(loggedInMember.image)" alt="profile" />
+              </div>
+              <p>{{ loggedInMember.fullname }}</p>
+            </div>
+
+            <ng-template #noLogin>
+              <p>Please login first</p>
+            </ng-template>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="participants">
+        <div class="title-content">
+          <h2>Participants</h2>
+          <div class="content-par">
+            <p class="roster">
+              <i class="pi pi-circle-on icon-roster"></i>Roster: {{ participants.length }} /
+              {{ totalMembers }}
+            </p>
+          </div>
+
+        </div>
+        <div class="all-member">
+          <div class="list-member">
+            <div class="member" *ngFor="let p of filteredParticipants" (click)="openParticipant(p)">
+              <div class="image-profile">
+                <img [src]="getImagePath(p.image)" alt="profile" />
+              </div>
+              <p>{{ p.fullname }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ✅ POPUP -->
+<div class="popup-overlay" *ngIf="selectedMember">
+  <div class="popup-box">
+    <div class="box-img-popup">
+      <img
+        class="img-popup"
+        [src]="selectedMember.image ? 'http://localhost:3000' + selectedMember.image : '/logo.png'"
+        alt="profile"
+        width="120"
+      />
+    </div>
+    <h2>{{ selectedMember.fullname }}</h2>
+    <p>{{ selectedMember.whatsapp }}</p>
+
+    <!-- ✅ JOIN MODE -->
+    <button
+      *ngIf="popupMode === 'join' && 
+      !isPastSession && 
+      !isAlreadyParticipant(selectedMember._id) &&
+      isLoggedInUser(selectedMember)"
+      class="btn-join"
+      (click)="joinMember()"
+    >
+      JOIN
+    </button>
+    <span *ngIf="popupMode === 'remove'" class="badge" [ngClass]="selectedMember.status">
+      {{ selectedMember.status }}
+    </span>
+    <p *ngIf="isAlreadyParticipant(selectedMember._id)">✅ Already Joined</p>
+    <p *ngIf="isPastSession" class="text-red-500 mt-2">Past Session: Attendance Only</p>
+<!-- ✅ REMOVE MODE -->
+    <button 
+    *ngIf="popupMode === 'remove' &&
+    !isPastSession &&
+    selectedMember?.status === 'pending' &&
+    isLoggedInUser(selectedMember)" 
+    class="btn-remove" (click)="removeMember()">
+      REMOVE
+    </button>
+    <button class="btn-close" (click)="closePopup()">✕</button>
+  </div>
   </div>
 </div>

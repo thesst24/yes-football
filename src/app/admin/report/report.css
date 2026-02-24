@@ -188,6 +188,7 @@ tbody tr:hover {
   }
   .filters-box{
     gap: 0px;
+    flex-direction: column;
   }
 
   .filter-item {

@@ -47,6 +47,7 @@ export class UserLogin {
       next: (member) => {
         this.error = '';
         localStorage.setItem('member', JSON.stringify(member));
+        
         this.router.navigate(['/card-user']);
       },
       error: (err) => alert(err.error.message),

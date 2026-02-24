@@ -4,7 +4,8 @@ const cors = require('cors');
 const cron = require('node-cron');
 const path = require('path');
 const memberModel = require('./models/member.model');
-
+const Participant = require('./models/participant.model.js');
+const Session = require('./models/session.model.js');
 const adminRoute = require('./routes/admin.route');
 const seasonRoutes = require('./routes/season.route');
 const cardRoutes = require('./routes/cards.route');
@@ -24,8 +25,9 @@ app.use("/api/attendance", require("./routes/attendance.route"));
 app.use("/api/cards", cardRoutes);
 app.use('/api/sessions',sessionRoutes);
 app.use("/api/participants", participants);
-console.log("✅ Report Route Loaded");
 app.use('/api/report',reportRoute);
+app.use("/api/settings", require("./routes/setting.routes.js"));
+app.use("/uploads", express.static("uploads"));
 
 
 
@@ -37,6 +39,29 @@ cron.schedule("59 59 23 * * *", async () => {
   timezone: "Asia/Vientiane"
 });
 
+// update status participant pending => absent
+cron.schedule("0 1 * * *", async () => {
+  console.log("Running Absent Auto Update...");
+
+  const today = new Date();
+  today.setHours(0,0,0,0);
+
+  const pastSessions = await Session.find({
+    date: { $lt: today }
+  });
+
+  for (const session of pastSessions) {
+    await Participant.updateMany(
+      {
+        sessionId: session._id,
+        status: "pending"
+      },
+      { status: "absent" }
+    );
+  }
+
+  console.log("Absent Updated.");
+});
 
 // MongoDB
 mongoose.connect(process.env.MONGO_URL)

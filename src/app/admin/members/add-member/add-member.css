@@ -1,12 +1,15 @@
 .overlay {
   position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  overflow-y: auto; /* สำคัญมาก */
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; 
+    pointer-events: auto;
 }
 
 form {
@@ -167,7 +170,9 @@ input::placeholder {
 
 
 @media (max-width: 768px) {
-
+  form {
+    width: 90%;
+  }
   .input-container {
     flex-direction: column;
     gap: 20px;
@@ -175,6 +180,7 @@ input::placeholder {
   .input-right {
     display: flex;
     justify-content: center;
+    width: 100%;
   }
 
   .avatar {
@@ -186,9 +192,11 @@ input::placeholder {
 @media (max-width: 480px) {
 
   .btn {
-    flex-direction: column;
+    flex-direction: column-reverse;
     gap: 12px;
+    margin-top: 8px;
   }
+
 
   .btnCancel,
   .btnSave {

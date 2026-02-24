@@ -21,6 +21,7 @@ export class CardUser {
  member: any = null;
   card: any = null;
   showRenew = false;
+  setting: any = {};
 
   constructor(private memberService: Member,
     private cdr: ChangeDetectorRef,
@@ -36,6 +37,15 @@ export class CardUser {
       this.member = JSON.parse(stored).member;
       this.loadCard();
     }
+    this.settings();
+  }
+  settings() {
+    this.http.get("http://localhost:3000/api/settings")
+  .subscribe(res => {
+    this.setting = res;
+
+    this.cdr.detectChanges();
+  });
   }
 showPopupRenew(){
   this.showRenew = true;

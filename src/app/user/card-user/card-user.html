@@ -9,7 +9,13 @@
       </a>
     </header>
     <div class="card-con">
-    <div class="card-checkin" [class.inactive-mode]="card?.status === 'inactive'">
+    <div class="card-checkin" 
+    [class.inactive-mode]="card?.status === 'inactive'"
+    [ngStyle]="{
+      'background-image': setting?.cardBackground 
+       ? 'url(http://localhost:3000' + setting.cardBackground + ')'
+       : 'none'
+    }">
       <div
         class="status"
         [class.active]="card?.status === 'active'"
@@ -74,7 +80,8 @@
         <p>
           ກະລຸນາຊຳລະເງີນມູນຄ່າ 1,000,000 ກີບ ເພຶ່ອຕໍ່ອາຍຸບັດ ແລ້ວສົ່ງຫຼັກຖານການໂອນໄປທີກຸ່ມ WhatsApp
         </p>
-        <img src="/logo.png" alt="QRScan" />
+        <img *ngIf="setting?.qrImage"
+     [src]="'http://localhost:3000' + setting.qrImage" />
         <button class="btnok" (click)="closePopupRenew()">OK</button>
       </div>
     </div>

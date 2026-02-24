@@ -34,7 +34,7 @@
 
         <input type="text" placeholder="Phone (optional)" [(ngModel)]="trialForm.phone" readonly />
 
-        <button class="btn-join" (click)="addTrialPlayer()"> Add Trial</button>
+        <button class="btn-join" (click)="addTrialPlayer()">Add Trial</button>
 
         <button class="btn-close" (click)="closeTrialPopup()">✕</button>
       </div>
@@ -52,16 +52,11 @@
           <div class="list-member">
             <div class="member" *ngFor="let list of filteredMembers" (click)="open(list)">
               <div class="image-profile">
-                <img
-                  *ngIf="list.image"
-                  [src]="'http://localhost:3000' + list.image || '/logo.png'"
-                  alt="profile"
-                />
+                <img [src]="getImagePath(list.image)" alt="profile" />
               </div>
               <p>{{ list.fullname }}</p>
             </div>
           </div>
-
         </div>
       </div>
     </div>
@@ -82,20 +77,16 @@
 
           <!-- ✅ Remove All Button -->
         </div>
-
-        <div class="list-member">
-          <div class="member" *ngFor="let p of filteredParticipants" (click)="openParticipant(p)">
-            <div class="image-profile">
-              <img
-                [src]="p.image ? 'http://localhost:3000' + p.image : '/logo.png'"
-                alt="profile"
-              />
+        <div class="all-member">
+          <div class="list-member">
+            <div class="member" *ngFor="let p of filteredParticipants" (click)="openParticipant(p)">
+              <div class="image-profile">
+                <img [src]="getImagePath(p.image)" alt="profile" />
+              </div>
+              <p>{{ p.fullname }}</p>
             </div>
-            <p>{{ p.fullname }}</p>
-
           </div>
         </div>
-
       </div>
     </div>
   </div>
@@ -116,22 +107,28 @@
     <p>{{ selectedMember.whatsapp }}</p>
 
     <!-- ✅ JOIN MODE -->
-    <button *ngIf="popupMode === 'join' 
-    && !isPastSession
-    && !isAlreadyParticipant(selectedMember._id)" 
-    class="btn-join" 
-    (click)="joinMember()">
+    <button
+      *ngIf="
+        popupMode === 'join' &&
+        !isPastSession &&
+        !isAlreadyParticipant(selectedMember._id)
+      "
+      class="btn-join"
+      (click)="joinMember()"
+    >
       JOIN
     </button>
-     <span *ngIf="popupMode === 'remove'" class="badge" [ngClass]="selectedMember.status">
-          {{ selectedMember.status }}
-        </span>
-<p *ngIf="isAlreadyParticipant(selectedMember._id)">
-  ✅ Already Joined
-</p>
+    <span *ngIf="popupMode === 'remove'" class="badge" [ngClass]="selectedMember.status">
+      {{ selectedMember.status }}
+    </span>
+    <p *ngIf="isAlreadyParticipant(selectedMember._id)" class="text-green-600">Already Joined</p>
     <p *ngIf="isPastSession" class="text-red-500 mt-2">Past Session: Attendance Only</p>
     <!-- ✅ REMOVE MODE -->
-    <button *ngIf="popupMode === 'remove'" class="btn-remove" (click)="removeMember()">
+    <button
+      *ngIf="popupMode === 'remove' && !isPastSession"
+      class="btn-remove"
+      (click)="removeMember()"
+    >
       REMOVE
     </button>
 

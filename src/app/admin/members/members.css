@@ -1,64 +1,71 @@
 /* Header Member */
 .container {
-    max-width: 100%;
+  max-width: 100%;
+}
+.disabled-content {
+  pointer-events: none;
+  user-select: none;
+  filter: blur(2px) grayscale(30%);
+  opacity: 0.6;
+  transition: all 0.3s ease;
 }
 header {
-    display: flex;
-    background-color: white;
-    width: auto;
-    justify-content: space-between;
-    align-items: center;
-    border-radius: 15px;
-    padding: 14px 10px;
+  display: flex;
+  background-color: white;
+  width: auto;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 15px;
+  padding: 14px 10px;
 }
 .title-member {
-    font-size: var(--font-size-fc);
-    font-weight: 600;
+  font-size: var(--font-size-fc);
+  font-weight: 600;
 }
 .member-number {
-    font-size: 14px;
-    color: #484848;
+  font-size: 14px;
+  color: #484848;
 }
 /* Search */
 .search {
-    width: 332px;
-    height: 40px;
-    position: relative;
+  width: 332px;
+  height: 40px;
+  position: relative;
 }
 .icon-search {
-    position: absolute;
-    top:50%;
-    transform: translateY(-60%);
-    left: 15px;
-    color: #484848;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-60%);
+  left: 15px;
+  color: #484848;
 }
-.search input[type="text"] {
-    width: 100%;
-    height: 100%;
-    background-color: #F5F6FA;
-    border-radius: 20px;
-    border: 1px solid #d5d5d5;
-    padding: 0 40px;
-    outline: none;
+.search input[type='text'] {
+  width: 100%;
+  height: 100%;
+  background-color: #f5f6fa;
+  border-radius: 20px;
+  border: 1px solid #d5d5d5;
+  padding: 0 40px;
+  outline: none;
 }
-.search input[type="text"]:focus {
-    outline: 1px solid #b1b1b1;
+.search input[type='text']:focus {
+  outline: 1px solid #b1b1b1;
 }
 /*  */
 .btn-new-member {
-    background-color: #0DB328;
-    padding: 12px 17px;
-    color: white;
-    border-radius: 6px;
-    cursor: pointer;
-    text-wrap: nowrap;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
+  background-color: var(--bg-color-btn);
+  padding: 12px 17px;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  text-wrap: nowrap;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
 }
 .btn-new-member:hover {
-    background-color: var(--color-hover-btn);
+  background-color: var(--color-hover-btn);
 }
 
 /* Data Members */
@@ -74,85 +81,85 @@ header {
   width: 100%;
 }
 
-
-table, tbody, tr {
-    border-collapse: collapse;
+table,
+tbody,
+tr {
+  border-collapse: collapse;
 }
 .table-member {
-    width: 100%;
-    background-color: white;
+  width: 100%;
+  background-color: white;
 }
 .table-member .sort {
-    cursor: pointer;
+  cursor: pointer;
 }
 .header-data {
-    border-collapse: collapse;
+  border-collapse: collapse;
 }
 
 .header-data th {
-    font-size: 16px;
-    color: #202224;
-    text-align: left;
-    padding:0 24px 24px;
+  font-size: 16px;
+  color: #202224;
+  text-align: left;
+  padding: 0 24px 24px;
 }
 
 .data td {
-    padding: 8px 24px;
+  padding: 8px 24px;
 }
 
 tbody tr:hover {
-    background-color: #f1f1f1;
+  background-color: #f1f1f1;
 }
 
-.profile{
-    display: flex;
-    align-items: center;
-    gap:8px;
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 .image-profile {
-    width: 50px;
-    height: 50px;
+  width: 50px;
+  height: 50px;
 }
 .image-profile img {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    object-fit: cover;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
 }
 .fullname {
-    white-space: nowrap;
+  white-space: nowrap;
 }
 .nickname {
-    color: #737373;
+  color: #737373;
 }
 
 .toggle-active {
-   transform: scale(0.8);
+  transform: scale(0.8);
 }
 .status-text {
-    margin-left: 8px;
-    font-size: 13px;
-    font-weight: 500;
+  margin-left: 8px;
+  font-size: 13px;
+  font-weight: 500;
 }
 .status-text.active {
-    color: #16a34a;
+  color: #16a34a;
 }
 .status-text.inactive {
-    color: #dc2626;
+  color: #dc2626;
 }
 .pi-pencil {
-    font-size: 18px;
-    color: #293690;
-    margin-right: 10px;
-    cursor: pointer;
+  font-size: 18px;
+  color: #293690;
+  margin-right: 10px;
+  cursor: pointer;
 }
 
 .pi-trash {
-    font-size: 18px;
-    color: #FF0000;
-    cursor: pointer;
+  font-size: 18px;
+  color: #ff0000;
+  cursor: pointer;
 }
-
 
 .pagination {
   display: flex;
@@ -175,33 +182,31 @@ tbody tr:hover {
   cursor: not-allowed;
 }
 
-
-
 /* --- RESPONSIVE STRATEGY --- */
 
 @media (max-width: 1024px) {
-    .search {
-        width: 250px; /* ลดขนาดช่อง search ลงเล็กน้อยบน Tablet */
-    }
-    /* จัดการตารางให้เลื่อนได้ */
-    .data-member {
-        overflow-x: auto; /* เปิดการเลื่อนแนวนอน */
-        margin-top: 15px;
-    }
+  .search {
+    width: 250px; /* ลดขนาดช่อง search ลงเล็กน้อยบน Tablet */
+  }
+  /* จัดการตารางให้เลื่อนได้ */
+  .data-member {
+    overflow-x: auto; /* เปิดการเลื่อนแนวนอน */
+    margin-top: 15px;
+  }
 
-    .table-member {
-        min-width: 800px; /* บังคับความกว้างขั้นต่ำของตารางเพื่อให้ข้อมูลไม่ซ้อนกัน */
-    }
+  .table-member {
+    min-width: 800px; /* บังคับความกว้างขั้นต่ำของตารางเพื่อให้ข้อมูลไม่ซ้อนกัน */
+  }
 
-    .pagination {
-        flex-direction: column;
-        gap: 15px;
-        text-align: center;
-    }
+  .pagination {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+  }
 }
 
 @media (max-width: 768px) {
-    header {
+  header {
     flex-direction: column;
     align-items: stretch;
     gap: 12px;
@@ -221,57 +226,57 @@ tbody tr:hover {
     width: 100%;
   }
 
-    /* จัดการตารางให้เลื่อนได้ */
-    .data-member {
-        overflow-x: auto; /* เปิดการเลื่อนแนวนอน */
-    }
+  /* จัดการตารางให้เลื่อนได้ */
+  .data-member {
+    overflow-x: auto; /* เปิดการเลื่อนแนวนอน */
+  }
 
-    .table-member {
-        min-width: 650px; /* บังคับความกว้างขั้นต่ำของตารางเพื่อให้ข้อมูลไม่ซ้อนกัน */
-    }
+  .table-member {
+    min-width: 650px; /* บังคับความกว้างขั้นต่ำของตารางเพื่อให้ข้อมูลไม่ซ้อนกัน */
+  }
 
-    .pagination {
-        flex-direction: column;
-        gap: 15px;
-        text-align: center;
-    }
-    .showing{
-        font-size: 13px;
-    }
-    .profile {
-  min-width: 200px;
-}
+  .pagination {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+  }
+  .showing {
+    font-size: 13px;
+  }
+  .profile {
+    min-width: 200px;
+  }
 
-.fullname {
-  font-weight: 600;
-}
+  .fullname {
+    font-weight: 600;
+  }
 
-.nickname {
-  font-size: 12px;
-}
-.pi-pencil,
+  .nickname {
+    font-size: 12px;
+  }
+  .pi-pencil,
   .pi-trash {
     font-size: 20px;
     margin-right: 14px;
   }
   .status-text {
-  margin-left: 6px;
-  vertical-align: middle;
-}
+    margin-left: 6px;
+    vertical-align: middle;
+  }
 
-td {
-  vertical-align: middle;
-}
-
-
+  td {
+    vertical-align: middle;
+  }
 }
 
 @media (max-width: 480px) {
-    .container {
-        padding: 10px;
-    }
+  .container {
+    padding: 10px;
+  }
+
+  .header-data th,
+  .data td {
+    padding: 12px 15px;
     
-    .header-data th, .data td {
-        padding: 12px 15px; /* ลด padding ในตารางลงอีกนิดสำหรับมือถือเล็ก */
-    }
+  }
 }

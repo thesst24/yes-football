@@ -153,22 +153,48 @@ router.delete("/removeTrial/:sessionId/:trialId", async (req, res) => {
   }
 });
 
+
 router.post("/join", async (req, res) => {
   try {
     const { memberId, sessionId, seasonId } = req.body;
 
-    // ถ้ามีอยู่แล้ว
+    const member = await Member.findById(memberId);
+    if (!member) {
+      return res.status(400).json({ message: "Member not found" });
+    }
+
+    if (!member.status) {
+      return res.status(400).json({ message: "Member inactive" });
+    }
+
     const exists = await Participant.findOne({ memberId, sessionId });
     if (exists) {
       return res.status(400).json({ message: "Already joined" });
     }
 
-    // ✅ Create Participant = pending
+    // ✅ ถ้าไม่ใช่ trial ต้องมี card
+    if (!member.isTrial) {
+      const card = await Card.findOne({ memberId });
+
+      if (!card) {
+        return res.status(400).json({ message: "No card found" });
+      }
+
+      if (card.status !== "active") {
+        return res.status(400).json({ message: "Card inactive" });
+      }
+
+      if (card.usedSessions >= 10) {
+        return res.status(400).json({ message: "Card fully used. Please renew." });
+      }
+    }
+
     const participant = await Participant.create({
       memberId,
       sessionId,
       seasonId,
-      status: "pending"
+      status: "pending",
+      isTrial: member.isTrial,
     });
 
     res.json({
@@ -180,4 +206,5 @@ router.post("/join", async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
+
 module.exports = router;

@@ -12,7 +12,7 @@
         >
           {{ selectedSeason?.name || 'Select Season' }}
 
-          <span class="block sm:inline text-gray-500 font-normal" *ngIf="selectedSeason">
+          <span class="block sm:inline text-gray-700 font-normal" *ngIf="selectedSeason">
             {{ selectedSeason.startDate | date: 'yyyy/MM/dd' }} -
             {{ selectedSeason.endDate | date: 'yyyy/MM/dd' }}
           </span>
@@ -28,7 +28,7 @@
       <!-- ✅ POPUP Manage Season -->
       <button
         (click)="openPopup()"
-       class="bg-[#0db328] w-full md:w-[215px] h-[45px] rounded-[6px] text-white hover:bg-[#09771b] transition-colors"
+       class="bg-[#0db328] w-full md:w-[215px] h-[45px] rounded-[6px] text-white hover:bg-[var(--color-hover-btn)] transition-colors cursor-pointer"
       >
         Manage Season
       </button>
