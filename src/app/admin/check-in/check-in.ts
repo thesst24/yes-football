@@ -54,6 +54,7 @@ export class CheckIn {
 
     // ✅ โหลด session ที่ใกล้สุดของ season นี้
     this.loadNextSessionOfSeason();
+
   }
 
  loadSeason() {
@@ -68,23 +69,6 @@ export class CheckIn {
     });
 }
 
-loadLatestSeasonAndSession() {
-  this.http.get<any>(`${environment.apiUrl}/checkin/latest-session`)
-    .subscribe({
-      next: (res) => {
-        console.log('✅ Latest Season + Session:', res);
-        this.season = res.season;
-        this.session = res.session;
-        this.seasonId = res.season._id;
-        this.sessionId = res.session._id;
-        this.cdr.detectChanges();
-      },
-      error: (err) => {
-        console.log('❌ Latest Season/Session Error:', err);
-        alert(err.error?.message || 'Failed to load latest season/session');
-      }
-    });
-}
 
 loadNextSessionOfSeason() {
   this.http

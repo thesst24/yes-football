@@ -13,6 +13,7 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 
 
+
 router.post("/checkin", async (req, res) => {
   try {
     const { memberId, sessionId, seasonId } = req.body;
@@ -124,39 +125,36 @@ router.get("/session/:sessionId", async (req, res) => {
 });
 
 
-
-// ===============================
-// GET latest active season + nearest upcoming session
-// ===============================
+// GET latest season + next upcoming session
 router.get("/latest-session", async (req, res) => {
   try {
-    // 1️⃣ หา season ล่าสุดที่ active
-    const latestSeason = await Season.findOne({ status: true }).sort({ createdAt: -1 });
-    if (!latestSeason) {
-      return res.status(404).json({ message: "No active season found" });
+    // 1️⃣ Find the latest active season
+    const season = await Season.findOne({ status: { $ne: "inactive" } })
+      .sort({ createdAt: -1 });
+
+    if (!season) {
+      return res.status(404).json({ message: "No active seasons found" });
     }
 
-    // 2️⃣ หา session ของ season นี้
-    const sessions = await Session.find({ seasonId: latestSeason._id, status: { $ne: "completed" } }).sort({ date: 1 });
-
-    if (!sessions || sessions.length === 0) {
-      return res.status(404).json({ message: "No upcoming session found for this season" });
-    }
-
-    // 3️⃣ หา session ใกล้ที่สุด (วันที่วันนี้หรือหลังวันนี้)
+    // 2️⃣ Find the next session of this season
     const today = dayjs().tz("Asia/Vientiane").startOf("day").toDate();
-    let nearestSession = sessions.find(s => s.date >= today);
 
-    // ถ้าไม่มี session หลังวันนี้ → เอา session ล่าสุดที่ยังไม่ complete
-    if (!nearestSession) nearestSession = sessions[sessions.length - 1];
+    const session = await Session.findOne({
+      seasonId: season._id,
+      date: { $gte: today }
+    })
+    .sort({ date: 1 }); // nearest upcoming session
+
+    if (!session) {
+      return res.status(404).json({ message: "No upcoming sessions found" });
+    }
 
     res.json({
-      season: latestSeason,
-      session: nearestSession
+      season,
+      session
     });
-
   } catch (err) {
-    console.error("🔥 Latest session error:", err);
+    console.error("🔥 latest-session error:", err);
     res.status(500).json({ message: err.message });
   }
 });
