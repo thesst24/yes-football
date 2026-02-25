@@ -1,5 +1,4 @@
 import { Routes } from '@angular/router';
-import { Card } from './components/card/card';
 import { UserLogin } from './user/user-login/user-login';
 import { Sidebar } from './components/sidebar/sidebar';
 import { Members } from './admin/members/members';
@@ -19,7 +18,6 @@ import { CardUser } from './user/card-user/card-user';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'user-login', pathMatch: 'full' },
-  { path: 'card', component: Card },
   { path: 'user-login', component: UserLogin },
   { path: 'card-user', component: CardUser},
   { path: 'card-checkin', component: CardCheckin },
