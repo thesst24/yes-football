@@ -2,6 +2,8 @@ import { Component, Input, Output, EventEmitter, ChangeDetectorRef } from '@angu
 import { CommonModule } from '@angular/common';
 import { Member } from '../../../services/member';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../../environments/environment';
+
 
 @Component({
   selector: 'app-card-checkin',
@@ -36,13 +38,19 @@ export class CardCheckin {
     this.settings();
   }
 
-  settings() {
-    this.http.get('http://localhost:3000/api/settings').subscribe((res) => {
-      this.setting = res;
-
-      this.cdr.detectChanges();
+settings() {
+  this.http
+    .get(environment.apiUrl + '/api/settings')
+    .subscribe({
+      next: (res) => {
+        this.setting = res;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.log('Settings error:', err);
+      }
     });
-  }
+}
 
   loadCard() {
     this.memberService.getCard(this.member._id).subscribe({
@@ -70,53 +78,51 @@ export class CardCheckin {
     this.checkinNow();
   }
 
-  checkinNow() {
-    this.http
-      .post('http://localhost:3000/api/attendance/checkin', {
-        memberId: this.member._id,
-        seasonId: this.seasonId,
-        sessionId: this.sessionId,
-      })
-      .subscribe({
-        next: (res: any) => {
-          alert('✅ Check-in Success');
-          this.card = res.card;
-
-          this.refresh.emit();
-          this.close.emit();
-        },
-        error: (err) => alert(err.error.message),
-      });
-  }
+ checkinNow() {
+  this.http
+    .post(environment.apiUrl + '/api/attendance/checkin', {
+      memberId: this.member._id,
+      seasonId: this.seasonId,
+      sessionId: this.sessionId,
+    })
+    .subscribe({
+      next: (res: any) => {
+        alert('✅ Check-in Success');
+        this.card = res.card;
+        this.refresh.emit();
+        this.close.emit();
+      },
+      error: (err) => alert(err.error?.message || 'Check-in failed'),
+    });
+}
 
   get isCardFull(): boolean {
     return this.card?.usedSessions >= 10;
   }
 
-  renewCard() {
-    console.log('🔥 Renew memberId:', this.member._id);
-    this.http
-      .post('http://localhost:3000/api/cards/renew', {
-        memberId: this.member._id,
-      })
-      .subscribe({
-        next: (res: any) => {
-          alert('✅ Renew success');
-          this.card = res.card;
-
-          // ✅ refresh attendance list
-          this.refresh.emit();
-
-          this.cdr.detectChanges();
-        },
-        error: (err) => {
-          console.log('❌ Renew Error:', err.error);
-          alert(err.error.message);
-        },
-      });
-  }
+renewCard() {
+  this.http
+    .post(environment.apiUrl + '/api/cards/renew', {
+      memberId: this.member._id,
+    })
+    .subscribe({
+      next: (res: any) => {
+        alert('✅ Renew success');
+        this.card = res.card;
+        this.refresh.emit();
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        alert(err.error?.message || 'Renew failed');
+      },
+    });
+}
 
   closePopup() {
     this.close.emit();
   }
+  getImagePath(img?: string) {
+  if (!img) return '/logo.png'; // default
+  return environment.apiUrl + img;
+}
 }

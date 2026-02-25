@@ -3,6 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { ChangeDetectorRef, Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DatePickerModule } from 'primeng/datepicker';
+import { environment } from '../../../../environments/environment';
+
 
 @Component({
   selector: 'app-manage-season',
@@ -25,57 +27,56 @@ export class ManageSeason {
     this.close.emit();
   }
 
-  createSeason() {
-    const dateRange = this.seasonForm.fromtoDate;
+createSeason() {
+  const dateRange = this.seasonForm.fromtoDate;
 
-    if (!this.seasonForm.name) {
-      alert('Please enter the season name.');
-      return;
+  if (!this.seasonForm.name) {
+    alert('Please enter the season name.');
+    return;
+  }
+
+  if (!dateRange || dateRange.length < 2 || !dateRange[1]) {
+    alert(
+      'Please select both start and end dates.'
+    );
+    return;
+  }
+
+  // --- Auto Generate Sessions ---
+  const sessions: Date[] = [];
+  let currentDate = new Date(dateRange[0]);
+  const endDate = new Date(dateRange[1]);
+
+  while (currentDate <= endDate) {
+    const dayOfWeek = currentDate.getDay();
+
+    if (dayOfWeek === 0 || dayOfWeek === 3 || dayOfWeek === 6) {
+      sessions.push(new Date(currentDate));
     }
 
-    if (!dateRange || dateRange.length < 2 || !dateRange[1]) {
-      alert(
-        'Please select a date range that includes both "start" and "end" dates (you need to select it twice in the calendar).',
-      );
-      return;
-    }
+    currentDate.setDate(currentDate.getDate() + 1);
+  }
 
-    // --- ส่วน Logic การคำนวณวันซ้อมอัตโนมัติ (Auto Sessions) ---
-    const sessions = [];
-    let currentDate = new Date(dateRange[0]);
-    const endDate = new Date(dateRange[1]);
+  const payload = {
+    name: this.seasonForm.name,
+    startDate: dateRange[0],
+    endDate: dateRange[1],
+    sessions: sessions
+  };
 
-    while (currentDate <= endDate) {
-      const dayOfWeek = currentDate.getDay(); // 0 = อาทิตย์, 3 = พุธ, 6 = เสาร์
-      
-      if (dayOfWeek === 0 || dayOfWeek === 3 || dayOfWeek === 6) {
-        // เพิ่มสำเนาของวันที่ปัจจุบันลงในอาเรย์
-        sessions.push(new Date(currentDate));
-      }
-      
-      // ขยับไปวันถัดไป (+1 วัน)
-      currentDate.setDate(currentDate.getDate() + 1);
-    }
-    // -------------------------------------------------------
-    const payload = {
-      name: this.seasonForm.name,
-      startDate: dateRange[0],
-      endDate: dateRange[1],
-      sessions: sessions
-    };
-
-    this.http.post('http://localhost:3000/api/seasons', payload).subscribe({
-      next: (res) => {
+  this.http
+    .post(`${environment.apiUrl}/api/seasons`, payload)
+    .subscribe({
+      next: () => {
         alert('Season created successfully!');
-
         this.close.emit(true);
       },
       error: (err) => {
         console.error('Error:', err);
-        alert('Error: ' + err.error.message);
+        alert(err.error?.message || 'Create season failed');
       },
     });
-  }
+}
 
 
   calculatePreview(): number {

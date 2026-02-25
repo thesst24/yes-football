@@ -1,12 +1,15 @@
-<div class="container"[class.disabled-content]="showPopup">
+<div class="container" [class.disabled-content]="showPopup">
   <header>
-    <h2 class="title-member">Members: <span class="member-number">({{activeMembers}} / {{totalMembers}})</span></h2>
+    <h2 class="title-member">
+      Members: <span class="member-number">({{ activeMembers }} / {{ totalMembers }})</span>
+    </h2>
     <div class="search">
       <i class="pi pi-search icon-search"></i>
-      <input type="text" 
-      placeholder="Search..."
-      [(ngModel)]="searchText"
-      (input)="filterMembers()"
+      <input
+        type="text"
+        placeholder="Search..."
+        [(ngModel)]="searchText"
+        (input)="filterMembers()"
       />
     </div>
     <a class="btn-new-member" (click)="openAdd()">
@@ -22,7 +25,7 @@
           <th>Account</th>
           <th>Guardian</th>
           <th (click)="sortByDate()" class="sort">Date of birth <i class="pi pi-sort-alt"></i></th>
-          <th (click)="sortByU()"  class="sort">U <i class="pi pi-sort-alt"></i></th>
+          <th (click)="sortByU()" class="sort">U <i class="pi pi-sort-alt"></i></th>
           <th>Phone</th>
           <th>Status</th>
           <th>Action</th>
@@ -31,7 +34,9 @@
       <tbody class="data">
         <tr *ngFor="let list of members">
           <td class="profile">
-            <div class="image-profile"><img *ngIf="list.image" [src]="'http://localhost:3000' + list.image" alt="profile" /></div>
+            <div class="image-profile">
+              <img *ngIf="list.image" [src]="getImagePath(list.image)" alt="profile" />
+            </div>
             <div class="name">
               <p class="fullname">{{ list.fullname }}</p>
               <p class="nickname">{{ list.nickname }}</p>
@@ -63,27 +68,22 @@
     </table>
   </div>
   <div class="pagination">
-  <div class="showing">
-    Showing {{ startItem }}-{{ endItem }} of {{ totalMembers }}
+    <div class="showing">Showing {{ startItem }}-{{ endItem }} of {{ totalMembers }}</div>
+
+    <div class="pre-next">
+      <button class="btn-pre" (click)="prevPage()" [disabled]="currentPage === 1">
+        <i class="pi pi-angle-left"></i>
+      </button>
+
+      <button
+        class="btn-next"
+        (click)="nextPage()"
+        [disabled]="currentPage * pageSize >= totalMembers"
+      >
+        <i class="pi pi-angle-right"></i>
+      </button>
+    </div>
   </div>
-
-  <div class="pre-next">
-    <button
-      class="btn-pre"
-      (click)="prevPage()"
-      [disabled]="currentPage === 1">
-      <i class="pi pi-angle-left"></i>
-    </button>
-
-    <button
-      class="btn-next"
-      (click)="nextPage()"
-      [disabled]="currentPage * pageSize >= totalMembers">
-      <i class="pi pi-angle-right"></i>
-    </button>
-  </div>
-</div>
-
 </div>
 
 <app-add-member *ngIf="showPopup" [data]="editData" (close)="closePopup($event)"> </app-add-member>

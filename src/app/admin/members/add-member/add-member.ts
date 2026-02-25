@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Member } from '../../../services/member';
 import { DatePickerModule } from 'primeng/datepicker';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-add-member',
@@ -23,26 +24,25 @@ export class AddMember {
 
   defaultImage = '/defaultprofile.png';
 
-  constructor(private service: Member,
-    private cdr: ChangeDetectorRef
+  constructor(
+    private service: Member,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit() {
-        this.cdr.detectChanges(); 
     if (this.data) {
       this.form = { ...this.data };
 
-      this.imagePreview = this.form.image 
-      ? 'http://localhost:3000' + this.form.image 
-      : this.defaultImage;
-
       if (this.form.image) {
-        this.imagePreview = 'http://localhost:3000' + this.form.image;
+        this.imagePreview = environment.apiUrl + this.form.image;
+      } else {
+        this.imagePreview = this.defaultImage;
       }
     } else {
       this.imagePreview = this.defaultImage;
     }
 
+    this.cdr.detectChanges();
   }
 
   onFile(event: Event) {
@@ -59,7 +59,6 @@ export class AddMember {
       this.cdr.detectChanges();
     };
     reader.readAsDataURL(this.image);
-
   }
   removeImage() {
     this.image = undefined as any;

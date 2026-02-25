@@ -1,31 +1,33 @@
 <div class="container">
   <header>
-     <div class="season-session-info">
-  <p><b>Season:</b> {{ season?.name }}</p>
-  <p><b>Session:</b> {{ session?.date | date:'EEE dd/MM/yyyy' }}</p>
-</div>
+    <div class="season-session-info">
+      <p><b>Season:</b> {{ season?.name }}</p>
+      <p><b>Session:</b> {{ session?.date | date: 'EEE dd/MM/yyyy' }}</p>
+    </div>
     <div class="search">
       <i class="pi pi-search icon-search"></i>
-      <input type="text" 
-      placeholder="Search..." 
-      [(ngModel)]="searchText"
-      (input)="filterMembers()" />
+      <input
+        type="text"
+        placeholder="Search..."
+        [(ngModel)]="searchText"
+        (input)="filterMembers()"
+      />
     </div>
-   
   </header>
 
   <div class="content">
     <div class="club-member">
       <div class="title">
         <h2>Club Members</h2>
-        <p>({{activeMembers}} / {{totalMembers}})</p>
+        <p>({{ activeMembers }} / {{ totalMembers }})</p>
       </div>
       <div class="all-member">
-        
-        <div class="list-member" >
-          <div class="member"  *ngFor="let list of filteredMembers" (click)="open(list)">
-            <div class="image-profile"><img *ngIf="list.image" [src]="'http://localhost:3000' + list.image" alt="profile" /></div>
-            <p>{{list.fullname}}</p>
+        <div class="list-member">
+          <div class="member" *ngFor="let list of filteredMembers" (click)="open(list)">
+            <div class="image-profile">
+              <img *ngIf="list.image" [src]="getImagePath(list.image)" alt="profile" />
+            </div>
+            <p>{{ list.fullname }}</p>
           </div>
         </div>
 
@@ -43,12 +45,9 @@
 <app-card-checkin
   *ngIf="selectedMember"
   [member]="selectedMember"
-
   [seasonId]="seasonId"
   [sessionId]="sessionId"
-
   (close)="closePopup()"
   (refresh)="load()"
 >
 </app-card-checkin>
-

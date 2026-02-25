@@ -1,11 +1,13 @@
 <div class="overlay">
-  <div class="card-checkin" 
-  [class.inactive-mode]="card?.status === 'inactive'"
-   [ngStyle]="{
-      'background-image': setting?.cardBackground 
-       ? 'url(http://localhost:3000' + setting.cardBackground + ')'
-       : 'none'
-    }">
+  <div
+    class="card-checkin"
+    [class.inactive-mode]="card?.status === 'inactive'"
+    [ngStyle]="{
+      'background-image': setting?.cardBackground
+        ? 'url(' + getImagePath(setting.cardBackground) + ')'
+        : 'none',
+    }"
+  >
     <button type="button" class="close" (click)="closePopup()">✕</button>
 
     <div
@@ -31,14 +33,13 @@
       </div>
 
       <div class="image-profile">
-        <img [src]="'http://localhost:3000' + member.image" />
+        <img [src]="getImagePath(member.image)" alt="profile" />
       </div>
     </div>
 
     <!-- ✅ ถ้า card inactive หรือเต็มแล้ว -->
     <div *ngIf="isCardFull || card?.status === 'inactive'" class="renew-box">
-
-      <button class="renew-btn" (click)="renewCard()"> Renew Card</button>
+      <button class="renew-btn" (click)="renewCard()">Renew Card</button>
     </div>
 
     <div class="con-grid-circle">

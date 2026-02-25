@@ -2,6 +2,8 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { ChangeDetectorRef, Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { environment } from '../../../environments/environment';
+
 
 
 
@@ -57,33 +59,32 @@ generateYears() {
   this.years = Array.from({ length: 6 }, (_, i) => currentYear - i);
 }
 
-  loadReport() {
+loadReport() {
 
   let url = "";
 
   if (this.mode === "monthly") {
-    url = `http://localhost:3000/api/report/monthly?year=${this.year}&month=${this.month}`;
+    url = `${environment.apiUrl}/api/report/monthly?year=${this.year}&month=${this.month}`;
   }
 
   if (this.mode === "yearly") {
-    url = `http://localhost:3000/api/report/yearly?year=${this.year}`;
+    url = `${environment.apiUrl}/api/report/yearly?year=${this.year}`;
   }
 
-  this.http.get<any>(url).subscribe(res => {
-    this.report = res;
-    this.cdr.detectChanges();
+  this.http.get<any>(url).subscribe({
+    next: (res) => {
+      this.report = res;
+      this.cdr.detectChanges();
+    },
+    error: (err) => {
+      console.log('Report error:', err);
+    }
   });
+
 }
 
     // ✅ helper show selected month label
   get selectedMonthLabel() {
     return this.months.find(m => m.value == this.month)?.label;
   }
-
-  exportExcel() {
-  window.open(
-    `http://localhost:3000/api/report/export-excel?year=${this.year}&month=${this.month}`,
-    "_blank"
-  );
-}
 }

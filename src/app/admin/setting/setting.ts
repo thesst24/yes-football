@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { ChangeDetectorRef, Component } from '@angular/core';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-setting',
@@ -13,7 +14,7 @@ export class Setting {
   backgroundPreview: string = '';
   qrPreview: string = '';
 
-  baseUrl = "http://localhost:3000";
+baseUrl = environment.apiUrl;
 
   constructor(private http: HttpClient,
     private cdr: ChangeDetectorRef

@@ -6,6 +6,7 @@ import { Member } from '../../../services/member';
 import { FormsModule } from '@angular/forms';
 import { Participant } from '../../../services/participant';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-events',
@@ -73,9 +74,8 @@ export class Events {
   }
 
 loadParticipants() {
-  this.http.get<any[]>(
-    `http://localhost:3000/api/participants/${this.sessionId}`
-  ).subscribe(res => {
+  this.http.get<any[]>(`${environment.apiUrl}/api/participants/${this.sessionId}`)
+  .subscribe(res => {
 
   this.participants = res.map(p => {
 
@@ -143,8 +143,7 @@ isAlreadyParticipant(memberId: string): boolean {
 
     // 🔥 โหลด card ของทุก member
     this.allMembers.forEach(member => {
-      this.http
-        .get(`http://localhost:3000/api/cards/${member._id}`)
+      this.http.get(`${environment.apiUrl}/api/cards/${member._id}`)
         .subscribe((card: any) => {
           this.memberCards[member._id] = card;
         });
@@ -219,11 +218,11 @@ canJoin(memberId: string): boolean {
 
   
 joinMember() {
-  this.http.post("http://localhost:3000/api/participants/join", {
-    memberId: this.selectedMember._id,
-    seasonId: this.seasonId,
-    sessionId: this.sessionId,
-  }).subscribe({
+  this.http.post(`${environment.apiUrl}/api/participants/join`, {
+  memberId: this.selectedMember._id,
+  seasonId: this.seasonId,
+  sessionId: this.sessionId,
+}).subscribe({
     next: () => {
       alert("✅ Joined Event (Pending)");
       this.loadParticipants();
@@ -237,7 +236,7 @@ getImagePath(img: string) {
   if (!img) return '/logo.png';
 
   if (img.includes('/uploads')) {
-    return 'http://localhost:3000' + img;
+    return environment.apiUrl + img;
   }
 
   return img;
@@ -248,9 +247,8 @@ removeMember() {
   // ✅ Trial
   if (this.selectedMember.isTrial) {
 
-    this.http.delete(
-      `http://localhost:3000/api/participants/removeTrial/${this.sessionId}/${this.selectedMember._id}`
-    ).subscribe(() => {
+    this.http.delete(`${environment.apiUrl}/api/participants/removeTrial/${this.sessionId}/${this.selectedMember._id}`)
+    .subscribe(() => {
       alert("✅ Trial Removed");
       this.loadParticipants();
       this.closePopup();
@@ -260,9 +258,8 @@ removeMember() {
   }
 
   // ✅ Member ปกติ
-  this.http.delete(
-    `http://localhost:3000/api/participants/removeWithAttendance/${this.sessionId}/${this.selectedMember._id}`
-  ).subscribe(() => {
+  this.http.delete(`${environment.apiUrl}/api/participants/removeWithAttendance/${this.sessionId}/${this.selectedMember._id}`)
+  .subscribe(() => {
     alert("✅ Removed Member + Undo Checkin");
     this.loadParticipants();
     this.closePopup();
@@ -280,8 +277,7 @@ removeMember() {
  removeAllParticipants() {
   if (!confirm('⚠️ Remove ALL participants + rollback checkins?')) return;
 
-  this.http
-    .delete(`http://localhost:3000/api/participants/removeAllWithAttendance/${this.sessionId}`)
+  this.http.delete(`${environment.apiUrl}/api/participants/removeAllWithAttendance/${this.sessionId}`)
     .subscribe({
       next: () => {
         alert('✅ Removed All + Card Rollback Success');
@@ -309,11 +305,12 @@ removeMember() {
   }
 
 addTrialPlayer() {
-  this.http.post("http://localhost:3000/api/members/trial", {})
+  this.http.post(`${environment.apiUrl}/api/members/trial`, {})
     .subscribe(() => {
       alert("✅ Trial Added");
       this.load();
       this.closeTrialPopup();
     });
 }
+
 }

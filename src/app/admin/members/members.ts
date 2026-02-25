@@ -5,6 +5,7 @@ import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { Member } from '../../services/member';
 import { AddMember } from './add-member/add-member';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-members',
@@ -248,4 +249,9 @@ export class Members {
       age--;
     return `U${age}`;
   }
+
+  getImagePath(img?: string) {
+  if (!img) return '/logo.png'; // default image
+  return environment.apiUrl + img;
+}
 }

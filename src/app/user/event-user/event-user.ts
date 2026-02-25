@@ -6,6 +6,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Member } from '../../services/member';
 import { Season } from '../../services/season';
 import { Participant } from '../../services/participant';
+import { environment } from '../../../environments/environment';
 
 
 @Component({
@@ -15,8 +16,7 @@ import { Participant } from '../../services/participant';
   styleUrl: './event-user.css',
 })
 export class EventUser {
-// ===== DATA =====
-  allMembers: any[] = [];
+allMembers: any[] = [];
   filteredMembers: any[] = [];
   participants: any[] = [];
   filteredParticipants: any[] = [];
@@ -25,37 +25,27 @@ export class EventUser {
   session: any = {};
   showConfirmRemoveAll = false;
 
-  // ===== Trial Player =====
   showTrialPopup = false;
-
-  trialForm = {
-    fullname: '',
-    phone: '',
-  };
+  trialForm = { fullname: '', phone: '' };
   trialCount = 1;
   trialPhoneBase = 2000000000;
 
-  // ===== COUNT =====
   totalMembers = 0;
   activeMembers = 0;
-  // ==== Search ====
   searchText = '';
-  // ===== UI =====
   selectedMember: any = null;
   popupMode: 'join' | 'remove' = 'join';
 
   seasonId!: string;
   sessionId!: string;
-
   sessionData: any;
   isPastSession: boolean = false;
 
   loggedInMember: any;
-    memberCards: { [key: string]: any } = {};
-
-    isEventClosed: boolean = false;
-    showSeasonPopup: boolean = false;
-seasonPopupMessage: string = '';
+  memberCards: { [key: string]: any } = {};
+  isEventClosed: boolean = false;
+  showSeasonPopup: boolean = false;
+  seasonPopupMessage: string = '';
 
   constructor(
     private service: Member,
@@ -67,341 +57,191 @@ seasonPopupMessage: string = '';
   ) {}
 
   ngOnInit() {
-    
     const data = localStorage.getItem('member');
-    if(data) {
-      const parsed = JSON.parse(data);
-
-      this.loggedInMember = parsed.member;
-    }
+    if (data) this.loggedInMember = JSON.parse(data).member;
 
     this.seasonId = this.route.snapshot.paramMap.get('seasonId')!;
     this.sessionId = this.route.snapshot.paramMap.get('sessionId')!;
 
-    // ✅ โหลด session จริงจาก database
     this.checkEventStatus();
     this.loadLatestSeasonAndSession();
     this.load();
-    
   }
 
-loadParticipants() {
-  
-  if (!this.sessionId) {
-    console.log("SessionId not ready");
-    return;
+  // ================== PARTICIPANTS ==================
+  loadParticipants() {
+    if (!this.sessionId) return;
+
+    this.http.get<any[]>(`${environment.apiUrl}/api/participants/${this.sessionId}`)
+      .subscribe(res => {
+        this.participants = res.map(p => {
+          if (p.memberId) return {
+            _id: p.memberId._id,
+            fullname: p.memberId.fullname,
+            whatsapp: p.memberId.whatsapp,
+            status: p.status,
+            isTrial: p.memberId.isTrial === true,
+            image: p.memberId.image?.trim() ? p.memberId.image : "uploads/logo.png"
+          };
+          return {
+            _id: p._id,
+            fullname: p.trialName || "Trial",
+            whatsapp: p.trialPhone || "-",
+            status: "trial",
+            isTrial: true,
+            image: "uploads/logo.png"
+          };
+        }).filter(x => x !== null);
+
+        this.filteredParticipants = [...this.participants];
+        this.cdr.detectChanges();
+      });
   }
-  this.http.get<any[]>(
-    `http://localhost:3000/api/participants/${this.sessionId}`
-  ).subscribe(res => {
 
-  this.participants = res.map(p => {
-
-  // ✅ ถ้ามี memberId ใช้ข้อมูลจาก Member เสมอ
-  if (p.memberId) {
-    return {
-      _id: p.memberId._id,
-      fullname: p.memberId.fullname,
-      whatsapp: p.memberId.whatsapp,
-      status: p.status,
-      isTrial: p.memberId.isTrial === true,
-      image: p.memberId.image && p.memberId.image.trim() !== ""
-        ? p.memberId.image
-        : "uploads/logo.png"
-    };
+  isAlreadyParticipant(memberId: string): boolean {
+    return this.participants.some(p => p._id === memberId);
   }
 
-  // ✅ กรณี Trial แบบ standalone (ไม่มี memberId)
-  return {
-    _id: p._id,
-    fullname: p.trialName || "Trial",
-    whatsapp: p.trialPhone || "-",
-    status: "trial",
-    isTrial: true,
-    image: "uploads/logo.png"
-  };
-
-}).filter(x => x !== null); // ✅ สำคัญมาก
-
-    this.filteredParticipants = [...this.participants];
-    this.cdr.detectChanges();
-  });
-}
-
-isAlreadyParticipant(memberId: string): boolean {
-  return this.participants.some(p => p._id === memberId);
-}
-
-
-  // ===== LOAD =====
- load() {
-  this.service.getAll().subscribe((res: any) => {
-    this.allMembers = res;
-    this.filteredMembers = [...this.allMembers];
-
-     // 🔥 โหลด card ของทุก member
-    this.allMembers.forEach(member => {
-      this.http
-        .get(`http://localhost:3000/api/cards/${member._id}`)
-        .subscribe((card: any) => {
-          this.memberCards[member._id] = card;
-        });
-    });
-
-    // ✅ Update Trial Count จาก DB จริง
-    const trialMembers = this.allMembers.filter(m => m.isTrial);
-    this.trialCount = trialMembers.length + 1;
-
-    this.updateMemberCount();
-    this.cdr.detectChanges();
-  });
-}
-canJoin(memberId: string): boolean {
-  const card = this.memberCards[memberId];
-
-  if (!card) return false;
-
-  const isInactive = card.status !== 'active';
-  const isFull = card.usedSessions >= card.totalSessions;
-
-  return !isInactive && !isFull;
-}
-
-loadLatestSeasonAndSession() {
-  this.http.get<any[]>('http://localhost:3000/api/seasons')
-    .subscribe(seasons => {
-
-      if (!seasons.length) {
-        this.seasonPopupMessage = "No season available.";
-        this.showSeasonPopup = true;
-        return;
-      }
-
-      // ✅ เรียงตามปีล่าสุด
-      const latestSeason = seasons.sort(
-        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      )[0];
-
-       // ❌ season inactive
-      if (latestSeason.status === false) {
-        this.seasonPopupMessage = "Season is currently inactive.";
-        this.showSeasonPopup = true;
-        return;
-      }
-
-      this.seasonId = latestSeason._id;
-      this.loadNearestSession();
-      
-
-    });
-}
-
-
-
-loadNearestSession() {
-  this.http.get<any[]>(
-    `http://localhost:3000/api/seasons/${this.seasonId}/sessions`
-  ).subscribe(sessions => {
-
-   if (!sessions.length) {
-  this.seasonPopupMessage = "No session available.";
-  this.showSeasonPopup = true;
-  return;
-}
-
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    // เอาเฉพาะ session ที่ยังไม่ผ่าน
-    const upcoming = sessions
-      .filter(s => 
-        s.status !== false &&
-        new Date(s.date) >= today)
-      .sort((a, b) =>
-        new Date(a.date).getTime() - new Date(b.date).getTime()
-      );
-
-    if (!upcoming.length) {
-  this.seasonPopupMessage = "No active session available.";
-  this.showSeasonPopup = true;
-  return;
-}
-
-    const nearest = upcoming[0];
-
-    this.sessionId = nearest._id;
-    this.sessionData = nearest;
-
-    this.loadParticipants();
-  });
-}
-
-isLoggedInUser(member: any): boolean {
-  if (!this.loggedInMember) return false;
-  return member.whatsapp === this.loggedInMember.whatsapp;
-}
-
-  filterMembers() {
-    const text = this.searchText.toLowerCase().trim();
-
-    // ============================
-    // ✅ Filter Club Members
-    // ============================
-    if (!text) {
+  // ================== MEMBERS ==================
+  load() {
+    this.service.getAll().subscribe((res: any) => {
+      this.allMembers = res;
       this.filteredMembers = [...this.allMembers];
-    } else {
-      this.filteredMembers = this.allMembers.filter(
-        (m) =>
-          (m.fullname || '').toLowerCase().includes(text) ||
-          (m.guardian || '').toLowerCase().includes(text) ||
-          String(m.whatsapp ?? '').includes(text),
-      );
-    }
 
-    // ============================
-    // ✅ Filter Participants ด้วย
-    // ============================
-    if (!text) {
-      this.filteredParticipants = [...this.participants];
-    } else {
-      this.filteredParticipants = this.participants.filter(
-        (p) =>
-          (p.fullname || '').toLowerCase().includes(text) ||
-          String(p.whatsapp ?? '').includes(text),
-      );
-    }
+      this.allMembers.forEach(member => {
+        this.http.get(`${environment.apiUrl}/api/cards/${member._id}`)
+          .subscribe(card => this.memberCards[member._id] = card);
+      });
 
-    this.updateMemberCount();
-  }
+      const trialMembers = this.allMembers.filter(m => m.isTrial);
+      this.trialCount = trialMembers.length + 1;
 
-  updateMemberCount() {
-    this.totalMembers = this.filteredMembers.length;
-    this.activeMembers = this.filteredMembers.filter((m) => m.status).length;
-  }
-  open(member: any) {
-    this.selectedMember = member;
-    this.popupMode = 'join';
-  }
-  openParticipant(member: any) {
-    this.selectedMember = member;
-    this.popupMode = 'remove';
-  }
-
-  
-joinMember() {
-
-  if (!this.loggedInMember) {
-    alert("❌ Please login first");
-    return;
-  }
-
-  this.http.post("http://localhost:3000/api/participants/join", {
-    memberId: this.loggedInMember._id,   // ✅ บังคับใช้ member ที่ login
-    seasonId: this.seasonId,
-    sessionId: this.sessionId,
-  }).subscribe({
-    next: () => {
-      alert("✅ Joined Event");
-      this.loadParticipants();
-      this.closePopup();
-    },
-    error: (err) => alert(err.error.message)
-  });
-}
-
-getImagePath(img: string) {
-  if (!img) return '/logo.png';
-
-  if (img.includes('/uploads')) {
-    return 'http://localhost:3000' + img;
-  }
-
-  return img;
-}
-
-removeMember() {
-
-  // ✅ Trial
-  if (this.selectedMember.isTrial) {
-
-    this.http.delete(
-      `http://localhost:3000/api/participants/removeTrial/${this.sessionId}/${this.selectedMember._id}`
-    ).subscribe(() => {
-      alert("✅ Trial Removed");
-      this.loadParticipants();
-      this.closePopup();
+      this.updateMemberCount();
+      this.cdr.detectChanges();
     });
-
-    return;
   }
 
-  // ✅ Member ปกติ
-  this.http.delete(
-    `http://localhost:3000/api/participants/removeWithAttendance/${this.sessionId}/${this.selectedMember._id}`
-  ).subscribe(() => {
-    alert("✅ Removed Member");
-    this.loadParticipants();
-    this.closePopup();
-  });
-}
-
-  closePopup() {
-    this.selectedMember = null;
+  canJoin(memberId: string): boolean {
+    const card = this.memberCards[memberId];
+    if (!card) return false;
+    return card.status === 'active' && card.usedSessions < card.totalSessions;
   }
 
+  // ================== SEASON & SESSION ==================
+  loadLatestSeasonAndSession() {
+    this.http.get<any[]>(`${environment.apiUrl}/api/seasons`)
+      .subscribe(seasons => {
+        if (!seasons.length) return this.showSeasonError("No season available.");
 
+        const latestSeason = seasons.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0];
+        if (!latestSeason.status) return this.showSeasonError("Season is currently inactive.");
 
-checkEventStatus() {
-  this.http.get<any[]>('http://localhost:3000/api/seasons')
-    .subscribe(seasons => {
+        this.seasonId = latestSeason._id;
+        this.loadNearestSession();
+      });
+  }
 
-      // ❌ ไม่มี season
-      if (!seasons.length) {
-        this.seasonPopupMessage = "No season available.";
-        this.showSeasonPopup = true;
-        return;
-      }
-
-      const latestSeason = seasons.sort(
-        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      )[0];
-
-      // ❌ season inactive
-      if (!latestSeason.status) {
-        this.seasonPopupMessage = "Season is currently inactive.";
-        this.showSeasonPopup = true;
-        return;
-      }
-
-      this.seasonId = latestSeason._id;
-
-      // ===== เช็ค session =====
-      this.http.get<any[]>(
-        `http://localhost:3000/api/seasons/${this.seasonId}/sessions`
-      ).subscribe(sessions => {
-
-        if (!sessions.length) {
-          this.seasonPopupMessage = "No session available.";
-          this.showSeasonPopup = true;
-          return;
-        }
+  loadNearestSession() {
+    this.http.get<any[]>(`${environment.apiUrl}/api/seasons/${this.seasonId}/sessions`)
+      .subscribe(sessions => {
+        if (!sessions.length) return this.showSeasonError("No session available.");
 
         const today = new Date();
         today.setHours(0,0,0,0);
 
         const upcoming = sessions
           .filter(s => s.status !== false && new Date(s.date) >= today)
-          .sort((a,b) =>
-            new Date(a.date).getTime() - new Date(b.date).getTime()
-          );
+          .sort((a,b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
-        if (!upcoming.length) {
-          this.seasonPopupMessage = "No active session available.";
-          this.showSeasonPopup = true;
-          return;
-        }
+        if (!upcoming.length) return this.showSeasonError("No active session available.");
 
-        // ✅ มี session ใช้งานได้
+        this.sessionData = upcoming[0];
+        this.sessionId = upcoming[0]._id;
+
+        this.loadParticipants();
+      });
+  }
+
+  private showSeasonError(msg: string) {
+    this.seasonPopupMessage = msg;
+    this.showSeasonPopup = true;
+  }
+
+  isLoggedInUser(member: any): boolean {
+    return this.loggedInMember?.whatsapp === member.whatsapp;
+  }
+
+  // ================== FILTER ==================
+  filterMembers() {
+    const text = this.searchText.toLowerCase().trim();
+    this.filteredMembers = !text ? [...this.allMembers] : this.allMembers.filter(
+      m => (m.fullname || '').toLowerCase().includes(text) ||
+           (m.guardian || '').toLowerCase().includes(text) ||
+           String(m.whatsapp ?? '').includes(text)
+    );
+
+    this.filteredParticipants = !text ? [...this.participants] : this.participants.filter(
+      p => (p.fullname || '').toLowerCase().includes(text) ||
+           String(p.whatsapp ?? '').includes(text)
+    );
+
+    this.updateMemberCount();
+  }
+
+  updateMemberCount() {
+    this.totalMembers = this.filteredMembers.length;
+    this.activeMembers = this.filteredMembers.filter(m => m.status).length;
+  }
+
+  open(member: any) { this.selectedMember = member; this.popupMode = 'join'; }
+  openParticipant(member: any) { this.selectedMember = member; this.popupMode = 'remove'; }
+
+  joinMember() {
+    if (!this.loggedInMember) return alert("❌ Please login first");
+
+    this.http.post(`${environment.apiUrl}/api/participants/join`, {
+      memberId: this.loggedInMember._id,
+      seasonId: this.seasonId,
+      sessionId: this.sessionId
+    }).subscribe({
+      next: () => { alert("✅ Joined Event"); this.loadParticipants(); this.closePopup(); },
+      error: err => alert(err.error.message)
+    });
+  }
+
+  removeMember() {
+    const memberId = this.selectedMember._id;
+    const url = this.selectedMember.isTrial
+      ? `${environment.apiUrl}/api/participants/removeTrial/${this.sessionId}/${memberId}`
+      : `${environment.apiUrl}/api/participants/removeWithAttendance/${this.sessionId}/${memberId}`;
+
+    this.http.delete(url).subscribe(() => {
+      alert(`✅ ${this.selectedMember.isTrial ? "Trial Removed" : "Removed Member"}`);
+      this.loadParticipants();
+      this.closePopup();
+    });
+  }
+
+  closePopup() { this.selectedMember = null; }
+
+  checkEventStatus() {
+    this.http.get<any[]>(`${environment.apiUrl}/api/seasons`).subscribe(seasons => {
+      if (!seasons.length) return this.showSeasonError("No season available.");
+
+      const latestSeason = seasons.sort((a,b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0];
+      if (!latestSeason.status) return this.showSeasonError("Season is currently inactive.");
+
+      this.seasonId = latestSeason._id;
+
+      this.http.get<any[]>(`${environment.apiUrl}/api/seasons/${this.seasonId}/sessions`).subscribe(sessions => {
+        if (!sessions.length) return this.showSeasonError("No session available.");
+
+        const today = new Date(); today.setHours(0,0,0,0);
+        const upcoming = sessions.filter(s => s.status !== false && new Date(s.date) >= today)
+          .sort((a,b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+        if (!upcoming.length) return this.showSeasonError("No active session available.");
+
         this.sessionData = upcoming[0];
         this.sessionId = upcoming[0]._id;
 
@@ -410,6 +250,10 @@ checkEventStatus() {
         this.cdr.detectChanges();
       });
     });
-}
+  }
 
+  getImagePath(img: string) {
+    if (!img) return '/logo.png';
+    return img.includes('/uploads') ? `${environment.apiUrl}${img}` : img;
+  }
 }

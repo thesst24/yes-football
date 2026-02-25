@@ -1,69 +1,68 @@
 <div class="container" [class.blur]="showSeasonPopup">
   <div class="overlay">
-  <header *ngIf="sessionData">
-    <div class="pre-title">
-      <a routerLink="/card-user"><i class="pi pi-angle-left"></i></a>
-      <p>
-        {{ sessionData.name }}
-        :
-        {{ sessionData.date | date: 'yyyy/MM/dd' }}
-      </p>
-    </div>
+    <header *ngIf="sessionData">
+      <div class="pre-title">
+        <a routerLink="/card-user"><i class="pi pi-angle-left"></i></a>
+        <p>
+          {{ sessionData.name }} : {{ sessionData.date | date: 'yyyy/MM/dd' }}
+        </p>
+      </div>
 
-    <div class="search">
-      <i class="pi pi-search icon-search"></i>
-      <input
-        type="text"
-        placeholder="Search..."
-        [(ngModel)]="searchText"
-        (input)="filterMembers()"
-      />
-    </div>
-  </header>
+      <div class="search">
+        <i class="pi pi-search icon-search"></i>
+        <input
+          type="text"
+          placeholder="Search..."
+          [(ngModel)]="searchText"
+          (input)="filterMembers()"
+        />
+      </div>
+    </header>
 
-  <div class="content-con">
-    <div class="content con-club-member">
-      <div class="club-member">
-        <div class="title-content">
-          <h2>Club Members:</h2>
-          <p>({{ activeMembers }} / {{ totalMembers }})</p>
-        </div>
-        <div class="all-member">
-          <div class="list-member">
-            <div class="member" *ngIf="loggedInMember; else noLogin" (click)="open(loggedInMember)">
-              <div class="image-profile">
-                <img [src]="getImagePath(loggedInMember.image)" alt="profile" />
+    <div class="content-con">
+      <div class="content con-club-member">
+        <div class="club-member">
+          <div class="title-content">
+            <h2>Club Members:</h2>
+            <p>({{ activeMembers }} / {{ totalMembers }})</p>
+          </div>
+          <div class="all-member">
+            <div class="list-member">
+              <div class="member" *ngIf="loggedInMember; else noLogin" (click)="open(loggedInMember)">
+                <div class="image-profile">
+                  <img [src]="getImagePath(loggedInMember.image)" alt="profile" />
+                </div>
+                <p>{{ loggedInMember.fullname }}</p>
               </div>
-              <p>{{ loggedInMember.fullname }}</p>
-            </div>
 
-            <ng-template #noLogin>
-              <p>Please login first</p>
-            </ng-template>
+              <ng-template #noLogin>
+                <p>Please login first</p>
+              </ng-template>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <div class="content">
-      <div class="participants">
-        <div class="title-content">
-          <h2>Participants</h2>
-          <div class="content-par">
-            <p class="roster">
-              <i class="pi pi-circle-on icon-roster"></i>Roster: {{ participants.length }} /
-              {{ totalMembers }}
-            </p>
+      <div class="content">
+        <div class="participants">
+          <div class="title-content">
+            <h2>Participants</h2>
+            <div class="content-par">
+              <p class="roster">
+                <i class="pi pi-circle-on icon-roster"></i>
+                Roster: {{ participants.length }} / {{ totalMembers }}
+              </p>
+            </div>
           </div>
 
-        </div>
-        <div class="all-member">
-          <div class="list-member">
-            <div class="member" *ngFor="let p of filteredParticipants" (click)="openParticipant(p)">
-              <div class="image-profile">
-                <img [src]="getImagePath(p.image)" alt="profile" />
+          <div class="all-member">
+            <div class="list-member">
+              <div class="member" *ngFor="let p of filteredParticipants" (click)="openParticipant(p)">
+                <div class="image-profile">
+                  <img [src]="getImagePath(p.image)" alt="profile" />
+                </div>
+                <p>{{ p.fullname }}</p>
               </div>
-              <p>{{ p.fullname }}</p>
             </div>
           </div>
         </div>
@@ -78,7 +77,7 @@
     <div class="box-img-popup">
       <img
         class="img-popup"
-        [src]="selectedMember.image ? 'http://localhost:3000' + selectedMember.image : '/logo.png'"
+        [src]="getImagePath(selectedMember.image)"
         alt="profile"
         width="120"
       />
@@ -88,11 +87,7 @@
 
     <!-- ✅ JOIN MODE -->
     <button
-      *ngIf="popupMode === 'join' && 
-      !isPastSession && 
-      !isAlreadyParticipant(selectedMember._id) &&
-      isLoggedInUser(selectedMember) && 
-       canJoin(selectedMember._id) "
+      *ngIf="popupMode === 'join' && !isPastSession && !isAlreadyParticipant(selectedMember._id) && isLoggedInUser(selectedMember) && canJoin(selectedMember._id)"
       class="btn-join"
       (click)="joinMember()"
     >
@@ -102,32 +97,32 @@
       {{ selectedMember.status }}
     </span>
     <p *ngIf="popupMode === 'join' && !canJoin(selectedMember._id)" class="text-red-500">
-  Card Inactive or Fully Used (Please Renew)
-</p>
+      Card Inactive or Fully Used (Please Renew)
+    </p>
     <p *ngIf="isAlreadyParticipant(selectedMember._id)">✅ Already Joined</p>
     <p *ngIf="isPastSession" class="text-red-500 mt-2">Past Session: Attendance Only</p>
-<!-- ✅ REMOVE MODE -->
-    <button 
-    *ngIf="popupMode === 'remove' &&
-    !isPastSession &&
-    selectedMember?.status === 'pending' &&
-    isLoggedInUser(selectedMember)" 
-    class="btn-remove" (click)="removeMember()">
+
+    <!-- ✅ REMOVE MODE -->
+    <button
+      *ngIf="popupMode === 'remove' && !isPastSession && selectedMember?.status === 'pending' && isLoggedInUser(selectedMember)"
+      class="btn-remove"
+      (click)="removeMember()"
+    >
       REMOVE
     </button>
     <button class="btn-close" (click)="closePopup()">✕</button>
   </div>
-  </div>
 </div>
+
 <!-- ✅ Season Popup -->
 <div class="popup-overlay" *ngIf="showSeasonPopup">
   <div class="popup-box">
-    <img src="/exclamation.png" width="80" />
+    <img [src]="getImagePath('/exclamation.png')" width="80" />
     <h2>Event Unavailable</h2>
     <p>{{ seasonPopupMessage }}</p>
 
     <button class="btn-back" routerLink="/card-user">
-      Go ot Card
+      Go to Card
     </button>
   </div>
 </div>

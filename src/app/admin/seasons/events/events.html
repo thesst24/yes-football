@@ -96,12 +96,7 @@
 <div class="popup-overlay" *ngIf="selectedMember">
   <div class="popup-box">
     <div class="box-img-popup">
-      <img
-        class="img-popup"
-        [src]="selectedMember.image ? 'http://localhost:3000' + selectedMember.image : '/logo.png'"
-        alt="profile"
-        width="120"
-      />
+      <img class="img-popup" [src]="getImagePath(selectedMember.image)" alt="profile" width="120" />
     </div>
     <h2>{{ selectedMember.fullname }}</h2>
     <p>{{ selectedMember.whatsapp }}</p>
@@ -123,8 +118,8 @@
       {{ selectedMember.status }}
     </span>
     <p *ngIf="popupMode === 'join' && !canJoin(selectedMember._id)" class="text-red-500">
-  Card Inactive or Fully Used (Please Renew)
-</p>
+      Card Inactive or Fully Used (Please Renew)
+    </p>
     <p *ngIf="isAlreadyParticipant(selectedMember._id)" class="text-green-600">Already Joined</p>
     <p *ngIf="isPastSession" class="text-red-500 mt-2">Past Session: Attendance Only</p>
     <!-- ✅ REMOVE MODE -->

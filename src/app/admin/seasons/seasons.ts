@@ -6,6 +6,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { TableModule } from 'primeng/table';
 import { Season } from '../../services/season';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-seasons',
@@ -58,7 +59,7 @@ export class Seasons {
     this.loadSeasons();
   }
   getLatestSessions() {
-    this.http.get<any[]>('http://localhost:3000/api/latest-sessions ').subscribe({
+    this.http.get<any[]>(`${environment.apiUrl}/api/latest-sessions`).subscribe({
       next: (data) => {
         this.latestSessions = data;
       },
@@ -89,9 +90,8 @@ export class Seasons {
   }
 
   loadSeasons() {
-    this.http.get<any[]>('http://localhost:3000/api/seasons').subscribe({
+    this.http.get<any[]>(`${environment.apiUrl}/api/seasons`).subscribe({
       next: (data) => {
-        // เรียงจากใหม่ไปเก่า
         this.seasons = data.sort(
           (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
         );
@@ -102,7 +102,7 @@ export class Seasons {
         if (found) {
           this.selectSeason(found);
         } else if (this.seasons.length > 0) {
-          this.selectSeason(this.seasons[0]); // ถ้าไม่มีที่บันทึกไว้ ให้เลือกอันล่าสุด
+          this.selectSeason(this.seasons[0]);
         }
 
         this.cdr.detectChanges();
@@ -112,21 +112,19 @@ export class Seasons {
   }
 
   loadSessions(seasonId: string) {
-    this.http.get<any[]>('http://localhost:3000/api/sessions/season/' + seasonId).subscribe({
+    this.http.get<any[]>(`${environment.apiUrl}/api/sessions/season/${seasonId}`).subscribe({
       next: (res) => {
         this.sessions = res;
 
-        // ✅ เปรียบเทียบวันแบบตัดเวลาออก
+        if (!res || res.length === 0) return;
+
         const sessionDate = new Date(res[0].date);
         sessionDate.setHours(0, 0, 0, 0);
 
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
-        // ✅ Past Session ?
         this.isPastSessions = sessionDate < today;
-
-        console.log('Past Session =', this.isPastSession);
 
         this.cdr.detectChanges();
       },
