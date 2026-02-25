@@ -1,12 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class Participant {
-   api = "http://localhost:3000/api/participants";
+  api = `${environment.apiUrl}/api/participants`;
 
   constructor(private http: HttpClient) {}
 
@@ -29,10 +29,8 @@ export class Participant {
       status,
     });
   }
-    // ✅ เพิ่มตรงนี้
+
   removeAll(sessionId: string) {
-    return this.http.delete(
-      "http://localhost:3000/api/participants/removeAll/" + sessionId
-    );
+    return this.http.delete(`${this.api}/removeAll/${sessionId}`);
   }
 }

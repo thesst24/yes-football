@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient} from '@angular/common/http';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class Member {
-   api = 'http://localhost:3000/api/members';
+    api = `${environment.apiUrl}/api/members`;
 
   constructor(private http: HttpClient) {}
 
@@ -13,12 +14,9 @@ export class Member {
     return this.http.patch(`${this.api}/${id}/status`, { status });
   }
 
-
-
   getAll() {
-  return this.http.get<any[]>(this.api);
-}
-
+    return this.http.get<any[]>(this.api);
+  }
 
   create(data: FormData) {
     return this.http.post(this.api, data);
@@ -32,33 +30,25 @@ export class Member {
     return this.http.delete(`${this.api}/${id}`);
   }
 
-  
-loginByWhatsapp(whatsapp: string) {
-  return this.http.post<any>(
-    `${this.api}/user-login`,
-    { whatsapp }
-  );
-}
+  loginByWhatsapp(whatsapp: string) {
+    return this.http.post<any>(`${this.api}/user-login`, { whatsapp });
+  }
 
-checkIn(memberId: string) {
-  return this.http.post<any>('http://localhost:3000/api/members/checkin', {
-    memberId
-  });
-}
+  checkIn(memberId: string) {
+    return this.http.post<any>(`${this.api}/checkin`, { memberId });
+  }
 
-  // member.service.ts
-getCard(memberId: string) {
-  return this.http.get(
-    `http://localhost:3000/api/cards/${memberId}`
-  );
-}
+  getCard(memberId: string) {
+    return this.http.get(
+      `${environment.apiUrl}/api/cards/${memberId}`
+    );
+  }
 
-
-renew(memberId: string) {
-  return this.http.patch(
-    `http://localhost:3000/api/members/renew/${memberId}`,
-    {}
-  );
-}
+  renew(memberId: string) {
+    return this.http.patch(
+      `${this.api}/renew/${memberId}`,
+      {}
+    );
+  }
 
 }

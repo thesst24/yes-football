@@ -1,22 +1,26 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class Season {
 
-  constructor(private http:HttpClient){}
-getSessionsBySeason(seasonId: string) {
-  return this.http.get(
-    `http://localhost:3000/api/seasons/${seasonId}/sessions`
-  );
-}
+ private apiUrl = `${environment.apiUrl}/api`;
 
- getSessionById(sessionId: string): Observable<any> {
+  constructor(private http: HttpClient) {}
+
+  getSessionsBySeason(seasonId: string) {
     return this.http.get(
-      `http://localhost:3000/api/sessions/${sessionId}`
+      `${this.apiUrl}/seasons/${seasonId}/sessions`
+    );
+  }
+
+  getSessionById(sessionId: string): Observable<any> {
+    return this.http.get(
+      `${this.apiUrl}/sessions/${sessionId}`
     );
   }
 }
