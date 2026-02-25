@@ -1,11 +1,5 @@
 import { ChangeDetectorRef, Component, EventEmitter, Output } from '@angular/core';
-import {
-  ActivatedRoute,
-  Router,
-  RouterLink,
-  RouterLinkActive,
-  RouterOutlet,
-} from '@angular/router';
+import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
 import { ManageSeason } from './manage-season/manage-season';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -15,15 +9,7 @@ import { Season } from '../../services/season';
 
 @Component({
   selector: 'app-seasons',
-  imports: [
-    RouterLink,
-    ManageSeason,
-    FormsModule,
-    TableModule,
-    CommonModule,
-    RouterLinkActive,
-    RouterOutlet,
-  ],
+  imports: [ManageSeason, FormsModule, TableModule, CommonModule, RouterOutlet],
   templateUrl: './seasons.html',
   styleUrl: './seasons.css',
 })
@@ -83,7 +69,7 @@ export class Seasons {
   selectedSessionId: string = '';
 
   isPastSession(session: any) {
-    return session.status === "completed";
+    return session.status === 'completed';
   }
 
   isTodaySession(session: any) {
