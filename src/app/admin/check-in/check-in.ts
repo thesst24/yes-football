@@ -49,11 +49,8 @@ export class CheckIn {
     // โหลด member list
     this.load();
 
-    // ✅ โหลด season
-    this.loadSeason();
-
-    // ✅ โหลด session ที่ใกล้สุดของ season นี้
-    this.loadNextSessionOfSeason();
+    // โหลด season ล่าสุด + session ใกล้ที่สุด
+  this.loadLatestSeasonAndSession();
   }
 
  loadSeason() {
@@ -68,52 +65,21 @@ export class CheckIn {
     });
 }
 
-loadNextSessionOfSeason() {
-  this.http
-    .get<any[]>(environment.apiUrl + '/api/sessions/season/' + this.seasonId)
+loadLatestSeasonAndSession() {
+  this.http.get<any>(`${environment.apiUrl}/checkin/latest-session`)
     .subscribe({
-      next: (sessions) => {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-
-        const todayDay = today.getDay();
-
-        const sameWeekday = sessions.filter((s) => {
-          const d = new Date(s.date);
-          return d.getDay() === todayDay;
-        });
-
-        sameWeekday.sort((a, b) => {
-          const diffA = Math.abs(new Date(a.date).getTime() - today.getTime());
-          const diffB = Math.abs(new Date(b.date).getTime() - today.getTime());
-          return diffA - diffB;
-        });
-
-        if (sameWeekday.length > 0) {
-          this.session = sameWeekday[0];
-        } else {
-          const upcoming = sessions.filter(
-            (s) => new Date(s.date) >= today
-          );
-
-          upcoming.sort(
-            (a, b) =>
-              new Date(a.date).getTime() -
-              new Date(b.date).getTime()
-          );
-
-          if (upcoming.length > 0) {
-            this.session = upcoming[0];
-          } else {
-            alert('❌ No sessions found');
-            return;
-          }
-        }
-
-        this.sessionId = this.session._id;
+      next: (res) => {
+        console.log('✅ Latest Season + Session:', res);
+        this.season = res.season;
+        this.session = res.session;
+        this.seasonId = res.season._id;
+        this.sessionId = res.session._id;
         this.cdr.detectChanges();
       },
-      error: (err) => console.log('❌ Session Load Error:', err),
+      error: (err) => {
+        console.log('❌ Latest Season/Session Error:', err);
+        alert(err.error?.message || 'Failed to load latest season/session');
+      }
     });
 }
 

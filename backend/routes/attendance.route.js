@@ -1,11 +1,16 @@
 const express = require("express");
 const router = express.Router();
-
+const Session = require('../models/session.model');
+const Season = require('../models/season.model');
 const Attendance = require("../models/attendance.model");
 const Card = require("../models/memberCard.model");
 const Member = require('../models/member.model');
 const Participant = require("../models/participant.model");
-
+const dayjs = require("dayjs");
+const utc = require("dayjs/plugin/utc");
+const timezone = require("dayjs/plugin/timezone");
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 
 router.post("/checkin", async (req, res) => {
@@ -116,6 +121,44 @@ router.get("/session/:sessionId", async (req, res) => {
     .populate("memberId");
 
   res.json(data);
+});
+
+
+
+// ===============================
+// GET latest active season + nearest upcoming session
+// ===============================
+router.get("/latest-session", async (req, res) => {
+  try {
+    // 1️⃣ หา season ล่าสุดที่ active
+    const latestSeason = await Season.findOne({ status: true }).sort({ createdAt: -1 });
+    if (!latestSeason) {
+      return res.status(404).json({ message: "No active season found" });
+    }
+
+    // 2️⃣ หา session ของ season นี้
+    const sessions = await Session.find({ seasonId: latestSeason._id, status: { $ne: "completed" } }).sort({ date: 1 });
+
+    if (!sessions || sessions.length === 0) {
+      return res.status(404).json({ message: "No upcoming session found for this season" });
+    }
+
+    // 3️⃣ หา session ใกล้ที่สุด (วันที่วันนี้หรือหลังวันนี้)
+    const today = dayjs().tz("Asia/Vientiane").startOf("day").toDate();
+    let nearestSession = sessions.find(s => s.date >= today);
+
+    // ถ้าไม่มี session หลังวันนี้ → เอา session ล่าสุดที่ยังไม่ complete
+    if (!nearestSession) nearestSession = sessions[sessions.length - 1];
+
+    res.json({
+      season: latestSeason,
+      session: nearestSession
+    });
+
+  } catch (err) {
+    console.error("🔥 Latest session error:", err);
+    res.status(500).json({ message: err.message });
+  }
 });
 
 
