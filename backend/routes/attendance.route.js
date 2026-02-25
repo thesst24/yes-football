@@ -1,16 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const Session = require('../models/session.model');
-const Season = require('../models/season.model');
 const Attendance = require("../models/attendance.model");
 const Card = require("../models/memberCard.model");
 const Member = require('../models/member.model');
 const Participant = require("../models/participant.model");
-const dayjs = require("dayjs");
-const utc = require("dayjs/plugin/utc");
-const timezone = require("dayjs/plugin/timezone");
-dayjs.extend(utc);
-dayjs.extend(timezone);
 
 
 
@@ -125,39 +118,7 @@ router.get("/session/:sessionId", async (req, res) => {
 });
 
 
-// GET latest season + next upcoming session
-router.get("/latest-session", async (req, res) => {
-  try {
-    // 1️⃣ Find the latest active season
-    const season = await Season.findOne({ status: { $ne: "inactive" } })
-      .sort({ createdAt: -1 });
 
-    if (!season) {
-      return res.status(404).json({ message: "No active seasons found" });
-    }
-
-    // 2️⃣ Find the next session of this season
-    const today = dayjs().tz("Asia/Vientiane").startOf("day").toDate();
-
-    const session = await Session.findOne({
-      seasonId: season._id,
-      date: { $gte: today }
-    })
-    .sort({ date: 1 }); // nearest upcoming session
-
-    if (!session) {
-      return res.status(404).json({ message: "No upcoming sessions found" });
-    }
-
-    res.json({
-      season,
-      session
-    });
-  } catch (err) {
-    console.error("🔥 latest-session error:", err);
-    res.status(500).json({ message: err.message });
-  }
-});
 
 
 module.exports = router;

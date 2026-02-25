@@ -48,25 +48,88 @@ export class CheckIn {
 
     // โหลด member list
     this.load();
+  // ✅ โหลด season
+  this.loadSeason();
 
-    this.loadLatestSeasonAndSession();
+  // ✅ โหลด session ที่ใกล้สุดของ season นี้
+  this.loadNextSessionOfSeason();
 
   }
-loadLatestSeasonAndSession() {
-  this.http.get<any>(`${environment.apiUrl}/api/attendance/latest-session`)
+ loadSeason() {
+    
+  this.http
+    .get("http://localhost:3000/api/seasons/" + this.seasonId)
     .subscribe({
       next: (res) => {
-        console.log('✅ Latest Season + Session:', res);
-        this.season = res.season;
-        this.session = res.session;
-        this.seasonId = res.season._id;
-        this.sessionId = res.session._id;
+        console.log("✅ Season Loaded:", res);
+        this.season = res;
         this.cdr.detectChanges();
       },
-      error: (err) => {
-        console.log('❌ Latest Season/Session Error:', err);
-        alert(err.error?.message || 'Failed to load latest season/session');
-      }
+      error: (err) => console.log("❌ Season Error:", err)
+    });
+    
+}
+
+
+loadNextSessionOfSeason() {
+
+  this.http
+    .get<any[]>("http://localhost:3000/api/sessions/season/" + this.seasonId)
+    .subscribe({
+
+      next: (sessions) => {
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const todayDay = today.getDay(); // วันในสัปดาห์
+
+        // ✅ เอา session ที่เป็นวันเดียวกัน (พุธ/เสาร์/อาทิตย์)
+        const sameWeekday = sessions.filter(s => {
+          const d = new Date(s.date);
+          return d.getDay() === todayDay;
+        });
+
+        // ✅ Sort ตามวันที่ใกล้วันนี้ที่สุด
+        sameWeekday.sort((a, b) => {
+
+          const diffA = Math.abs(new Date(a.date).getTime() - today.getTime());
+          const diffB = Math.abs(new Date(b.date).getTime() - today.getTime());
+
+          return diffA - diffB;
+        });
+
+        // ✅ เลือก session ที่ใกล้วันนี้ที่สุด
+        if (sameWeekday.length > 0) {
+
+          this.session = sameWeekday[0];
+          this.sessionId = this.session._id;
+
+          console.log("✅ Closest Session:", this.session);
+
+        } else {
+
+          // fallback → upcoming
+          const upcoming = sessions.filter(s =>
+            new Date(s.date) >= today
+          );
+
+          upcoming.sort((a, b) =>
+            new Date(a.date).getTime() - new Date(b.date).getTime()
+          );
+
+          if (upcoming.length > 0) {
+            this.session = upcoming[0];
+            this.sessionId = this.session._id;
+          } else {
+            alert("❌ No sessions found");
+          }
+        }
+
+        this.cdr.detectChanges();
+      },
+
+      error: (err) => console.log("❌ Session Load Error:", err)
     });
 }
 
